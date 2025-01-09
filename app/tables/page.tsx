@@ -12,10 +12,10 @@ export const metadata: Metadata = {
     "This is Next.js Tables page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 };
 
-const TablesPage = () => {
+const Membership = () => {
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Tables" />
+      <Breadcrumb pageName="Memberships" />
 
       <div className="flex flex-col gap-10">
         <TableOne />
@@ -26,4 +26,4 @@ const TablesPage = () => {
   );
 };
 
-export default TablesPage;
+export default Membership;

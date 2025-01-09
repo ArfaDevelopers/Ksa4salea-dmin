@@ -84,8 +84,8 @@ const menuGroups = [
             />
           </svg>
         ),
-        label: "Products",
-        route: "/products",
+        label: "Listings",
+        route: "/Listings",
       },
       {
         icon: (
@@ -142,11 +142,11 @@ const menuGroups = [
             />
           </svg>
         ),
-        label: "Forms",
+        label: "Reviews",
         route: "#",
         children: [
-          { label: "Form Elements", route: "/forms/form-elements" },
-          { label: "Form Layout", route: "/forms/form-layout" },
+          { label: "Review Type", route: "/forms/form-elements" },
+          { label: "Review", route: "/forms/form-layout" },
         ],
       },
       {
@@ -177,8 +177,8 @@ const menuGroups = [
             </defs>
           </svg>
         ),
-        label: "Tables",
-        route: "/tables",
+        label: "Membership",
+        route: "/Membership",
       },
       {
         icon: (

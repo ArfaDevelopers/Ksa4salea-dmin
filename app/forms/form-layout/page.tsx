@@ -1,238 +1,561 @@
+"use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-
-import { Metadata } from "next";
+import CheckboxFive from "@/components/Checkboxes/CheckboxFive";
+import CheckboxFour from "@/components/Checkboxes/CheckboxFour";
+import CheckboxOne from "@/components/Checkboxes/CheckboxOne";
+import CheckboxThree from "@/components/Checkboxes/CheckboxThree";
+import CheckboxTwo from "@/components/Checkboxes/CheckboxTwo";
+import SwitcherFour from "@/components/Switchers/SwitcherFour";
+import SwitcherOne from "@/components/Switchers/SwitcherOne";
+import SwitcherThree from "@/components/Switchers/SwitcherThree";
+import SwitcherTwo from "@/components/Switchers/SwitcherTwo";
+import DatePickerTwo from "@/components/FormElements/DatePicker/DatePickerTwo";
+import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
+import MultiSelect from "@/components/FormElements/MultiSelect";
+import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
+import { useState } from "react";
+import {
+  FiMenu,
+  FiGrid,
+  FiSettings,
+  FiFilter,
+  FiArrowDown,
+  FiPlus,
+  FiX,
+} from "react-icons/fi"; // FiX is for the cancel icon
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import SelectGroupOne from "@/components/SelectGroup/SelectGroupOne";
-import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Next.js Form Layout | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Form Layout page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-};
-
 const FormLayout = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to handle modal visibility
+  const [formData, setFormData] = useState({
+    name: "Sample Listing",
+    email: "sample@example.com",
+    image: null,
+    category: "Category 1",
+    date: "2025-01-01",
+    status: "Pending",
+  });
+
+  const tabs = [
+    { id: "Name", label: "Name" },
+    { id: "Email", label: "Email" },
+    { id: "Category", label: "Category" },
+    { id: "Date", label: "Date" },
+    { id: "Status", label: "Status" },
+  ];
+
+  const tabContent = {
+    Name: formData.name,
+    Email: formData.email,
+    Category: formData.category,
+    Date: formData.date,
+    Status: formData.status,
+  };
+
+  // Handle input changes
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle file change (image upload)
+  const handleFileChange = (e: any) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      image: e.target.files[0],
+    }));
+  };
+
+  // Handle form submit
+  const handleSubmit = () => {
+    console.log(formData);
+    setIsModalOpen(false); // Close the modal after submission
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="FormLayout" />
+      <>
+        <Breadcrumb pageName="Review" />
+        {/* <DefaultLayout> */}
+        <div className="w-[100%] max-w-7xl ">
+          {/* Breadcrumb and Toolbar with margin top */}
+          <div className="flex items-center justify-between mb-6">
+            {/* Left Side */}
+            <h1
+              style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}
+            >
+              Review{" "}
+            </h1>
 
-      <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-        <div className="flex flex-col gap-9">
-          {/* <!-- Contact Form --> */}
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Contact Form
-              </h3>
-            </div>
-            <form action="#">
-              <div className="p-6.5">
-                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                  <div className="w-full xl:w-1/2">
-                    <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                      First name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter your first name"
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    />
-                  </div>
-
-                  <div className="w-full xl:w-1/2">
-                    <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                      Last name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter your last name"
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Email <span className="text-meta-1">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email address"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  />
-                </div>
-
-                <div className="mb-4.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Select subject"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  />
-                </div>
-
-                <SelectGroupOne />
-
-                <div className="mb-6">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Message
-                  </label>
-                  <textarea
-                    rows={6}
-                    placeholder="Type your message"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  ></textarea>
-                </div>
-
-                <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                  Send Message
+            {/* Right Side */}
+            <div className="flex items-center bg-white p-4 rounded-lg shadow-md">
+              {/* Buttons Group */}
+              <div className="flex items-center space-x-2">
+                <button className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                  <FiMenu size={18} />
+                </button>
+                <button className="p-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">
+                  <FiGrid size={18} />
+                </button>
+                <button className="p-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">
+                  <FiSettings size={18} />
                 </button>
               </div>
-            </form>
+
+              {/* Middle Group */}
+              <div className="flex items-center space-x-4 ml-4">
+                <button className="flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">
+                  <FiFilter size={18} className="mr-2" />
+                  Filter
+                </button>
+                <button className="flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">
+                  <FiArrowDown size={18} className="mr-2" />
+                  Sort by A - Z
+                </button>
+              </div>
+
+              {/* Add Listing Button */}
+              <button
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 ml-4"
+                onClick={() => setIsModalOpen(true)} // Open modal
+              >
+                <FiPlus size={18} className="mr-2" />
+                Add Listing
+              </button>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="bg-white shadow-md rounded-lg p-4">
+            {/* <div className="flex border-b border-gray-200 mb-4">
+            <button
+              onClick={() => setActiveTab("All Listings")}
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === "All Listings"
+                  ? "text-red-500 border-b-2 border-red-500"
+                  : "text-gray-500 hover:text-red-500"
+              }`}
+            >
+              All Listings
+            </button>
+            <button
+              onClick={() => setActiveTab("Pending Listings")}
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === "Pending Listings"
+                  ? "text-red-500 border-b-2 border-red-500"
+                  : "text-gray-500 hover:text-red-500"
+              }`}
+            >
+              Pending Listings
+            </button>
+            <button
+              onClick={() => setActiveTab("Approved Listings")}
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === "Approved Listings"
+                  ? "text-red-500 border-b-2 border-red-500"
+                  : "text-gray-500 hover:text-red-500"
+              }`}
+            >
+              Approved Listings
+            </button>
+            <button
+              onClick={() => setActiveTab("Rejected Listings")}
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === "Rejected Listings"
+                  ? "text-red-500 border-b-2 border-red-500"
+                  : "text-gray-500 hover:text-red-500"
+              }`}
+            >
+              Rejected Listings
+            </button>
+          </div> */}
+
+            {/* Tab Content */}
+            <div>
+              <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <div className="flex items-center justify-between flex-col md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
+                  <div>
+                    <button
+                      id="dropdownActionButton"
+                      data-dropdown-toggle="dropdownAction"
+                      className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                      type="button"
+                    >
+                      <span className="sr-only">Action button</span>
+                      Action
+                      <svg
+                        className="w-2.5 h-2.5 ms-2.5"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m1 1 4 4 4-4"
+                        />
+                      </svg>
+                    </button>
+                    {/* Dropdown menu */}
+                    <div
+                      id="dropdownAction"
+                      className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+                    >
+                      <ul
+                        className="py-1 text-sm text-gray-700 dark:text-gray-200"
+                        aria-labelledby="dropdownActionButton"
+                      >
+                        <li>
+                          <a
+                            href="#"
+                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            Reward
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            Promote
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            Activate account
+                          </a>
+                        </li>
+                      </ul>
+                      <div className="py-1">
+                        <a
+                          href="#"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        >
+                          Delete User
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <label htmlFor="table-search" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                      <svg
+                        className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      id="table-search-users"
+                      className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Search for users"
+                    />
+                  </div>
+                </div>
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="p-4">
+                        <div className="flex items-center">
+                          <input
+                            id="checkbox-all-search"
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            htmlFor="checkbox-all-search"
+                            className="sr-only"
+                          >
+                            checkbox
+                          </label>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Review Type
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Status
+                      </th>
+
+                      <th scope="col" className="px-6 py-3">
+                        Date
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Status
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {
+                        name: "High",
+                        position: "React Developer",
+                        // subCategory: "Web",
+
+                        date: "2024-01-09",
+                        status: "Online",
+                      },
+                      {
+                        name: "Normal",
+                        position: "Designer",
+                        // subCategory: "Design",
+
+                        date: "2024-01-10",
+                        status: "Offline",
+                      },
+                    ].map((user, index) => (
+                      <tr
+                        key={index}
+                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      >
+                        <td className="w-4 p-4">
+                          <div className="flex items-center">
+                            <input
+                              id={`checkbox-table-search-${index + 1}`}
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            />
+                            <label
+                              htmlFor={`checkbox-table-search-${index + 1}`}
+                              className="sr-only"
+                            >
+                              checkbox
+                            </label>
+                          </div>
+                        </td>
+                        <th
+                          scope="row"
+                          className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                          <div className="ps-3">
+                            <div className="font-normal text-gray-500">
+                              {user.name}
+                            </div>
+                          </div>
+                        </th>
+                        <td className="px-6 py-4">
+                          {/* Toggler to replace position */}
+                          <label className="inline-flex relative items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="sr-only peer"
+                              defaultChecked={
+                                user.position === "React Developer"
+                              } // Example logic for checking
+                            />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600"></div>
+                            <span className="ml-3 text-gray-900">
+                              {user.position}
+                            </span>
+                          </label>
+                        </td>
+                        <td className="px-6 py-4">{user.date}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full ${
+                                user.status === "Online"
+                                  ? "bg-green-500"
+                                  : "bg-red-500"
+                              } me-2`}
+                            ></div>
+                            {user.status}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {/* Modal toggle */}
+                          <a
+                            href="#"
+                            type="button"
+                            data-modal-target="editUserModal"
+                            data-modal-show="editUserModal"
+                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                          >
+                            Edit user
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-9">
-          {/* <!-- Sign In Form --> */}
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Sign In Form
-              </h3>
-            </div>
-            <form action="#">
-              <div className="p-6.5">
-                <div className="mb-4.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email address"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Enter password"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  />
-                </div>
-
-                <div className="mb-5.5 mt-5 flex items-center justify-between">
-                  <label htmlFor="formCheckbox" className="flex cursor-pointer">
-                    <div className="relative pt-0.5">
-                      <input
-                        type="checkbox"
-                        id="formCheckbox"
-                        className="taskCheckbox sr-only"
-                      />
-                      <div className="box mr-3 flex h-5 w-5 items-center justify-center rounded border border-stroke dark:border-strokedark">
-                        <span className="text-white opacity-0">
-                          <svg
-                            className="fill-current"
-                            width="10"
-                            height="7"
-                            viewBox="0 0 10 7"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M9.70685 0.292804C9.89455 0.480344 10 0.734667 10 0.999847C10 1.26503 9.89455 1.51935 9.70685 1.70689L4.70059 6.7072C4.51283 6.89468 4.2582 7 3.9927 7C3.72721 7 3.47258 6.89468 3.28482 6.7072L0.281063 3.70701C0.0986771 3.5184 -0.00224342 3.26578 3.785e-05 3.00357C0.00231912 2.74136 0.10762 2.49053 0.29326 2.30511C0.4789 2.11969 0.730026 2.01451 0.992551 2.01224C1.25508 2.00996 1.50799 2.11076 1.69683 2.29293L3.9927 4.58607L8.29108 0.292804C8.47884 0.105322 8.73347 0 8.99896 0C9.26446 0 9.51908 0.105322 9.70685 0.292804Z"
-                              fill=""
-                            />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                    <p>Remember me</p>
-                  </label>
-
-                  <Link
-                    href="#"
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Forget password?
-                  </Link>
-                </div>
-
-                <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                  Sign In
+        {/* Modal for Add Listing */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-96">
+              {/* Close Icon */}
+              <div className="absolute top-2 right-2">
+                <button
+                  className="text-gray-600 hover:text-gray-900"
+                  onClick={handleCloseModal}
+                >
+                  <FiX size={24} />
                 </button>
               </div>
-            </form>
-          </div>
 
-          {/* <!-- Sign Up Form --> */}
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Sign Up Form
-              </h3>
-            </div>
-            <form action="#">
-              <div className="p-6.5">
-                <div className="mb-4.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+              <h2 className="text-lg font-semibold mb-4">Add Listing</h2>
+
+              <form onSubmit={(e) => e.preventDefault()}>
+                <div className="mb-4">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Name
                   </label>
                   <input
                     type="text"
-                    placeholder="Enter your full name"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md mt-1"
+                    placeholder="Enter listing name"
                   />
                 </div>
 
-                <div className="mb-4.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                <div className="mb-4">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Email
                   </label>
                   <input
                     type="email"
-                    placeholder="Enter your email address"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md mt-1"
+                    placeholder="Enter email"
                   />
                 </div>
 
-                <div className="mb-4.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Password
+                <div className="mb-4">
+                  <label
+                    htmlFor="image"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Image
                   </label>
                   <input
-                    type="password"
-                    placeholder="Enter password"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    type="file"
+                    id="image"
+                    name="image"
+                    onChange={handleFileChange}
+                    className="w-full p-2 border border-gray-300 rounded-md mt-1"
                   />
                 </div>
 
-                <div className="mb-5.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Re-type Password
+                <div className="mb-4">
+                  <label
+                    htmlFor="category"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Category
                   </label>
                   <input
-                    type="password"
-                    placeholder="Re-enter password"
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    type="text"
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md mt-1"
+                    placeholder="Enter category"
                   />
                 </div>
 
-                <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                  Sign Up
-                </button>
-              </div>
-            </form>
+                <div className="mb-4">
+                  <label
+                    htmlFor="date"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md mt-1"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="status"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Status
+                  </label>
+                  <input
+                    type="text"
+                    id="status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md mt-1"
+                    placeholder="Enter status"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      </div>
+        )}
+        {/* </DefaultLayout> */}
+      </>
     </DefaultLayout>
   );
 };
