@@ -7,10 +7,9 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Sidebar from "@/components/Sidebar";
 interface AddblogProps {
   closeModal: () => void;
-  isModalOpen: boolean;
 }
 
-const Addblog: React.FC<AddblogProps> = ({ closeModal, isModalOpen }) => {
+const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
