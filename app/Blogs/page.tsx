@@ -101,10 +101,7 @@ const Blogs = () => {
 
                   {/* Modal Body */}
                   <div className="mt-4 " style={{ overflow: "scroll" }}>
-                    <Addblog
-                      isModalOpen={isModalOpen}
-                      closeModal={closeModal}
-                    />
+                    <Addblog closeModal={closeModal} />
                   </div>
                 </div>
               </div>
