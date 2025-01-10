@@ -5,7 +5,7 @@ import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Importing icons
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Sidebar from "@/components/Sidebar";
-import Addblog from "../Addblog/page";
+// import Addblog from "../Addblog/page";
 
 const Blogs = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -78,17 +78,14 @@ const Blogs = () => {
                 Add New
               </button>
             </div>
-            {isModalOpen && (
-              <div
-                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 "
-                style={{ overflow: "scroll" }}
-              >
+
+            {/* {isModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
                 <div
                   className="bg-white rounded-lg shadow-lg p-6 mt-17  w-[65%]"
-                  // style={{ overflow: "scroll" }}
+                  style={{ overflow: "scroll" }}
                 >
-                  {/* Modal Header */}
-                  <div className="flex justify-between items-center border-b pb-4">
+                   <div className="flex justify-between items-center border-b pb-4">
                     <h3 className="text-lg font-bold">Add New Blog</h3>
                     <button
                       onClick={closeModal}
@@ -98,13 +95,15 @@ const Blogs = () => {
                     </button>
                   </div>
 
-                  {/* Modal Body */}
-                  <div className="mt-4 " style={{ overflow: "scroll" }}>
-                    <Addblog closeModal={closeModal} />
+                   <div className="mt-4 ">
+                    <Addblog
+                      isModalOpen={isModalOpen}
+                      closeModal={closeModal}
+                    />
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
             <div className="overflow-x-auto p-6.5">
               <table className="min-w-full table-auto">
                 <thead>
