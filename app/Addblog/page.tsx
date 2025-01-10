@@ -5,11 +5,11 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Sidebar from "@/components/Sidebar";
 
-interface AddblogProps {
-  closeModal: () => void;
+interface AddBlogFormProps {
+  closeModal?: () => void;
 }
 
-const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
+const Addblog: React.FC<AddBlogFormProps> = ({ closeModal }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -92,7 +92,6 @@ const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
       });
 
       alert("Blog Category added successfully!");
-      closeModal(); // Close modal after successful submission
     } catch (error: any) {
       console.error("Error creating blog category:", error);
       alert(error.message || "Failed to add blog category. Please try again.");
