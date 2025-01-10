@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Sidebar from "@/components/Sidebar";
+
 interface AddblogProps {
   closeModal: () => void;
 }
@@ -54,7 +54,6 @@ const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    closeModal();
     try {
       const formDataToSubmit = new FormData();
       formDataToSubmit.append("name", formData.name);
@@ -80,6 +79,7 @@ const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
       const result = await response.json();
       console.log("Blog Category created:", result);
 
+      // Reset form data
       setFormData({
         name: "",
         description: "",
@@ -92,34 +92,21 @@ const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
       });
 
       alert("Blog Category added successfully!");
+      closeModal(); // Close modal after successful submission
     } catch (error: any) {
       console.error("Error creating blog category:", error);
       alert(error.message || "Failed to add blog category. Please try again.");
     }
   };
 
-  const handleCancel = () => {
-    setFormData({
-      name: "",
-      description: "",
-      language: "",
-      slug: "",
-      tags: "",
-      heading: "",
-      blogImage: null,
-      status: "active",
-    });
-  };
-
   return (
-    // <DefaultLayout>
     <div className="flex">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="p-5 w-full">
         <Breadcrumb pageName="Add Blog" />
         <div className="rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="border-b border-stroke py-4 px-6 dark:border-strokedark">
-            <h3 className="font-medium text-black dark:text-white ">
+            <h3 className="font-medium text-black dark:text-white">
               Add New Blog
             </h3>
           </div>
@@ -133,7 +120,8 @@ const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
                 name="language"
                 value={formData.language}
                 onChange={handleInputChange}
-                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                className="w-full rounded ```tsx
+                border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                 required
               >
                 <option value="">Select Language</option>
@@ -285,7 +273,6 @@ const Addblog: React.FC<AddblogProps> = ({ closeModal }) => {
         </div>
       </div>
     </div>
-    // </DefaultLayout>
   );
 };
 
