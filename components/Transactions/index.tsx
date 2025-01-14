@@ -49,14 +49,14 @@ const Transactions = () => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFormData((prevData) => ({
-        ...prevData,
-        image: e.target.files![0],
-      }));
-    }
-  };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files) {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       image: e.target.files![0],
+  //     }));
+  //   }
+  // };
 
   const handleSubmit = () => {
     console.log(formData);
@@ -182,7 +182,7 @@ const Transactions = () => {
                   type="file"
                   id="image"
                   name="image"
-                  onChange={handleFileChange}
+                  // onChange={handleFileChange}
                   className="w-full p-2 border border-gray-300 rounded-md mt-1"
                 />
               </div>
