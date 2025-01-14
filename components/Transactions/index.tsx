@@ -350,10 +350,28 @@ const Transactions = () => {
                   </div>
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Name
+                  Customer
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Provider
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Service
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Amount
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Discount
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Tax
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Position
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Payment Type
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Status
@@ -397,11 +415,53 @@ const Transactions = () => {
                     </div>
                   </div>
                 </th>
+                <td className=" mr-2">
+                  {" "}
+                  <th
+                    scope="row"
+                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/the-history-of-football-in-england/2xgajj3.jpg"
+                      alt="User image"
+                    />
+                    <div className="ps-3">
+                      <div className="text-base font-semibold">Neil Sims</div>
+                      <div className="font-normal text-gray-500">
+                        neil.sims@flowbite.com
+                      </div>
+                    </div>
+                  </th>
+                </td>
+                <td className=" mr-2">
+                  {" "}
+                  <th
+                    scope="row"
+                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/the-history-of-football-in-england/2xgajj3.jpg"
+                      alt="User image"
+                    />
+                    <div className="ps-3">
+                      <div className="font-normal text-gray-500">
+                        Computer Repair{" "}
+                      </div>
+                    </div>
+                  </th>
+                </td>
+                <td className="px-6 py-4">$68</td>
+                <td className="px-6 py-4">$6</td>
+                <td className="px-6 py-4">$1</td>
                 <td className="px-6 py-4">React Developer</td>
+
+                <td className="px-6 py-4">Paypal</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center">
                     <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
-                    Online
+                    Successful
                   </div>
                 </td>
                 <td className="px-6 py-4">
