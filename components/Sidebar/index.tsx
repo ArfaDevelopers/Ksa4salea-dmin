@@ -10,6 +10,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { FaClipboardList } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
 import { FaSignal } from "react-icons/fa6";
+import { FaHome } from "react-icons/fa";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -244,6 +245,23 @@ const menuGroups = [
         ),
         label: "Settings",
         route: "/settings",
+      },
+      {
+        icon: (
+          <FaHome
+            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
+          />
+        ),
+        label: "Home",
+        route: "#",
+        children: [
+          { label: "Ads", route: "/Ads" },
+          { label: "Automotive", route: "/Automotive" },
+          { label: "Real Estate", route: "/RealEstate" },
+          { label: "Electronic", route: "/Electronic" },
+          { label: "Healthcare", route: "/Healthcare" },
+          { label: "Games & Sport", route: "/GamesSport" },
+        ],
       },
     ],
   },
