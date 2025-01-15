@@ -61,7 +61,7 @@ const GamesSport = () => {
     setTimeAgo(new Date());
     setImageFile(null);
     setheathcaretype("");
-    setIsOpen(false);
+    // setIsOpen(false);
   };
   const handleUpdate = async (adId: any) => {
     try {
