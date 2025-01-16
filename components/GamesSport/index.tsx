@@ -48,9 +48,19 @@ const GamesSport = () => {
   const [slidesToShow, setSlidesToShow] = useState(5);
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
   const [refresh, setRefresh] = useState(false);
-  console.log(selectedAd, "adsList___________selectedAd");
+  console.log("Updating listing with img:", img);
+  console.log("Updating listing with imageFile:", imageFile);
+
+  const filteredAds = ads.filter(
+    (ad) =>
+      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
+      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
+  );
+  console.log(ads, "adsList___________selectedAd");
   const resetForm = () => {
     setTitle("");
     setImg("");
@@ -97,8 +107,13 @@ const GamesSport = () => {
             : ad
         )
       );
-
-      alert("Listing updated successfully!");
+      MySwal.fire({
+        title: "Added Item!",
+        text: "Listing added successfully!",
+        icon: "success",
+        timer: 1000,
+      });
+      // alert("Listing updated successfully!");
     } catch (error) {
       console.error("Error updating listing:", error);
       alert("Error updating listing.");
@@ -110,7 +125,7 @@ const GamesSport = () => {
     try {
       if (selectedAd) {
         await handleUpdate(selectedAd.id);
-      } else {
+      } else if (selectedAd == null) {
         // Handle image upload logic (if applicable)
         const imageData = await handleImageUpload(imageFile); // Ensure handleImageUpload has a proper return type
 
@@ -120,12 +135,24 @@ const GamesSport = () => {
           description,
           location,
           price,
+
           link,
           img: imageData.url || "", // Safely access 'url' here
           timeAgo: timeAgo ? timeAgo.toLocaleDateString() : "",
           heathcaretype,
         };
         setAds([...ads, newAd]);
+        const adCollectionRef = collection(db, "GamesSport");
+        await addDoc(adCollectionRef, {
+          img: newAd.img,
+          title: newAd.title,
+          description: newAd.description,
+          location: newAd.location,
+          price: newAd.price,
+          type: newAd.heathcaretype, // Correcting key naming
+          link: newAd.link,
+          timeAgo: newAd.timeAgo, // Store as a string
+        });
         MySwal.fire({
           title: "Added Item!",
           text: "Listing added successfully!",
@@ -134,6 +161,8 @@ const GamesSport = () => {
         });
       }
       closeModal();
+      setRefresh(!refresh);
+
       resetForm();
     } catch (error) {
       // console.error("Error adding/updating listing:", error.message);
@@ -152,6 +181,8 @@ const GamesSport = () => {
         setPrice(adData.price);
         setTitle(adData.title);
         setLink(adData.link);
+        setImg(adData.img);
+        setheathcaretype(adData.Type);
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
           id,
@@ -218,6 +249,7 @@ const GamesSport = () => {
         "https://api.cloudinary.com/v1_1/duvddbfbf/image/upload",
         formData
       );
+      setImg(response.data.secure_url);
       console.log("Image uploaded successfully:", response.data.secure_url);
       return { url: response.data.secure_url }; // Return the URL wrapped in an object
     } catch (error) {
@@ -287,6 +319,7 @@ const GamesSport = () => {
         onClick={() => {
           setIsOpen(true);
           setSelectedAd(null);
+
           resetForm();
         }}
         className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
@@ -390,6 +423,8 @@ const GamesSport = () => {
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search for users"
+              value={searchTerm} // Bind input value to state
+              onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
           </div>
         </div>
@@ -424,7 +459,7 @@ const GamesSport = () => {
             </tr>
           </thead>
           <tbody>
-            {ads.map((ad) => (
+            {filteredAds.map((ad) => (
               <tr
                 key={ad.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -536,11 +571,19 @@ const GamesSport = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    required
                     className="w-full p-3 border border-gray-300 rounded-md"
                   />
                 </div>
-
+                {img && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500 mb-2">Preview:</p>
+                    <img
+                      src={img}
+                      alt="Uploaded Preview"
+                      className="w-full h-auto rounded-md border border-gray-300"
+                    />
+                  </div>
+                )}
                 {/* Sport & Games Type */}
                 <div className="mb-6">
                   <label
