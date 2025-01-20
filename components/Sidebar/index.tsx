@@ -9,9 +9,9 @@ import ClickOutside from "@/components/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { FaClipboardList } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
-import { FaSignal } from "react-icons/fa6";
+import { FaSignal ,FaCar} from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
-
+ 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
@@ -75,6 +75,15 @@ const menuGroups = [
         ),
         label: "Categories",
         route: "/Categories",
+      },
+      {
+        icon: (
+          <FaCar
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Cars",
+        route: "/Cars",
       },
       {
         icon: (
