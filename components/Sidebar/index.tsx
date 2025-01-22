@@ -11,7 +11,8 @@ import { FaClipboardList } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
 import { FaSignal ,FaCar} from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
- 
+import { MdElectricBike } from "react-icons/md";
+
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
@@ -84,6 +85,15 @@ const menuGroups = [
         ),
         label: "Cars",
         route: "/Cars",
+      },
+      {
+        icon: (
+          <MdElectricBike
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Bikes",
+        route: "/Bikes",
       },
       {
         icon: (
