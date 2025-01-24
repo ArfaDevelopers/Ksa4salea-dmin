@@ -9,9 +9,12 @@ import ClickOutside from "@/components/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { FaClipboardList } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
-import { FaSignal ,FaCar} from "react-icons/fa6";
+import { FaSignal, FaCar } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
 import { MdElectricBike } from "react-icons/md";
+import { MdHealthAndSafety } from "react-icons/md";
+import { FcElectronics } from "react-icons/fc";
+import { BsFillHddNetworkFill } from "react-icons/bs";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -94,6 +97,42 @@ const menuGroups = [
         ),
         label: "Bikes",
         route: "/Bikes",
+      },
+      {
+        icon: (
+          <FcElectronics
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Electronic",
+        route: "/ElectronicComp",
+      },
+      {
+        icon: (
+          <MdHealthAndSafety
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "HealthCare",
+        route: "/HealthCareComp",
+      },
+      {
+        icon: (
+          <MdElectricBike
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "FashionStyle",
+        route: "/FashionStyle",
+      },
+      {
+        icon: (
+          <BsFillHddNetworkFill
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Jobboard",
+        route: "/JOBBOARD",
       },
       {
         icon: (
