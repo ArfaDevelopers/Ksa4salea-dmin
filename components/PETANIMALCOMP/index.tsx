@@ -14,16 +14,12 @@ import axios from "axios";
 // Register the English locale
 registerLocale("en-US", enUS);
 
-const JOBBOARDPage = () => {
+const PETANIMALCOMP = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [SalaryRange, setSalaryRange] = useState("");
+  const [price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
-  const [SallaryFromRange, setSallaryFromRange] = useState("");
-  const [SallaryToRange, serSallaryToRange] = useState("");
-
-
 
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
@@ -32,7 +28,12 @@ const JOBBOARDPage = () => {
   const [assembly, setAssembly] = useState("Imported");
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [PhoneNumber, setPhoneNumber] = useState("");
-  const [jobdescription, setJobDescription] = useState("");
+  const [Breed, setBreed] = useState("");
+  const [Age, setAge] = useState("");
+  const [Gender, setGender] = useState("");
+
+
+
 
   const [model, setModel] = useState("2022");
 
@@ -52,7 +53,20 @@ const JOBBOARDPage = () => {
   const [MeasurementUnits, setMeasurementUnits] = useState("");
   const [SpeedofMeasurement, setSpeedofMeasurement] = useState("");
   const [SellerType, setSellerType] = useState("");
-  const [JobTitle, setJobTitle] = useState("");
+  const [Size, setSize] = useState("");
+  const [Amenities, setAmenities] = useState("");
+  const [PropertyFeatures, setPropertyFeatures] = useState("");
+  const [BuildingType, setBuildingType] = useState("");
+  const [Accessibility, setAccessibility] = useState("");
+  const [Color, setColor] = useState("");
+  const [Temperament, setTemperament] = useState("");
+  const [HealthStatus, setHealthStatus] = useState("");
+  const [TrainingLevel, setTrainingLevel] = useState("");
+  const [DietaryPreferences, setDietaryPreferences] = useState("");
+
+
+
+
 
   const [ScreenSize, setScreenSize] = useState("");
 
@@ -164,10 +178,6 @@ const JOBBOARDPage = () => {
     console.log(city, "city___________"); // Log selected city to the console
   };
   const [selectedStates, setSelectedStates] = useState("");
-  const [Protective, setProtective] = useState("");
-  const [Vaccinated, setVaccinated] = useState("");
-
-
 
   const handleLocationChange = (event: any) => {
     const location = event.target.value;
@@ -175,12 +185,7 @@ const JOBBOARDPage = () => {
     console.log(location); // Log selected location to the console
   };
   const [selectedCarBrand, setSelectedCarBrand] = useState("");
-  const [JobType, setJobType] = useState("");
-  const [Company, setCompany] = useState("");
-  const [EmploymentType, setEmploymentType] = useState("");
-  const [ExperienceLevel, setExperienceLevel] = useState("");
-  const [Industry, setIndustry] = useState("");
-  const [RequiredSkills, setRequiredSkills] = useState("");
+  const [PropertyType, setPropertyType] = useState("");
 
   const handleCarBrandChange = (event: any) => {
     const carBrand = event.target.value;
@@ -231,7 +236,7 @@ const JOBBOARDPage = () => {
 
     try {
       // Get a reference to the 'carData' collection
-      const carsCollection = collection(db, "JOBBOARD");
+      const carsCollection = collection(db, "PETANIMALCOMP");
 
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
@@ -243,28 +248,30 @@ const JOBBOARDPage = () => {
         img5: imageUrls[4], // img5
         img6: imageUrls[5], // img6
         location: location,
-        SalaryRange: SalaryRange,
-        SallaryFromRange:SallaryFromRange,
-        SallaryToRange:SallaryToRange,
-        JobType: JobType,
-        JobTitle: JobTitle,
-        Industry: Industry,
+        price: price,
+        RAM: RAM,
+        Size: Size,
+        Breed:Breed,
+        Color:Color,
         Brand: selectedCarBrand,
-        jobdescription: jobdescription,
-        Vaccinated:Vaccinated,
+        Temperament:Temperament,
+        HealthStatus:HealthStatus,
+        DietaryPreferences:DietaryPreferences,
         Accuracy: Accuracy,
-        EmploymentType: EmploymentType,
+        Gender:Gender,
         StorageCapacity: StorageCapacity,
         SpeedofMeasurement: SpeedofMeasurement,
+        BuildingType: BuildingType,
+        PropertyFeatures: PropertyFeatures,
+        Accessibility: Accessibility,
+        Amenities: Amenities,
         Features: Features,
         CuffSize: CuffSize,
+        PropertyType: PropertyType,
         MeasurementRange: MeasurementRange,
         BatteryLife: BatteryLife,
-        Protective:Protective,
-        RequiredSkills: RequiredSkills,
         StorageType: StorageType,
-        Company: Company,
-        ExperienceLevel: ExperienceLevel,
+        Age:Age,
         Storagecapacity: Storagecapacity,
         GraphicsCard: GraphicsCard,
         DisplayQuality: DisplayQuality,
@@ -273,6 +280,7 @@ const JOBBOARDPage = () => {
         BatteryType: BatteryType,
         DisplayType: DisplayType,
         MeasurementUnits: MeasurementUnits,
+        TrainingLevel:TrainingLevel,
         Compatibility: Compatibility,
         SellerType: SellerType,
         link: link,
@@ -286,8 +294,13 @@ const JOBBOARDPage = () => {
         model: model,
         whatsapp: whatsapp,
         Type: Type,
+        isFeatured: selectedAdType,
+        VideoAvailability: selectedVideoAvailability,
+        PictureAvailability: selectedPictureAvailability,
         AdType: selectedAdType,
+        Assembly: selectedAssembly,
         BodyType: selectedBodyType,
+        Registeredin: Registeredin,
         City: selectedCity,
         PhoneNumber: PhoneNumber,
 
@@ -300,7 +313,7 @@ const JOBBOARDPage = () => {
       // setImageUrls(Array(6).fill("")); // Reset all image URLs
       // setImageFiles(Array(6).fill(null)); // Reset all image files
       // setLocation("");
-      // setSalaryRange("");
+      // setPrice("");
       // setLink("");
       // setDescription("");
       setTimeAgo(new Date()); // Reset time to current date
@@ -323,7 +336,7 @@ const JOBBOARDPage = () => {
         <div className="w-full max-w-lg">
           <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <h3 className="text-center text-2xl font-bold mb-4">
-              Add a New JOBBOARD
+              Add a New health Care
             </h3>
             <form onSubmit={handleAddCar}>
               {/* Name */}
@@ -383,254 +396,264 @@ const JOBBOARDPage = () => {
                   <option value="Illinois">Illinois</option>
                 </select>
               </div>
-                     <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                Protective
-                </label>
-                <select
-                  onChange={(e) => setProtective(e.target.value)}
-                  value={Protective}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                  <option value="">Select Protective</option>
-                  <option value="Protective">Protective</option>
-                  <option value="Not Protective">Not Protective</option>
-                  <option value="Newyork">Newyork</option>
-                  <option value="Florida">Florida</option>
-                  <option value="Illinois">Illinois</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                Vaccinated
-                </label>
-                <select
-                  onChange={(e) => setVaccinated(e.target.value)}
-                  value={Vaccinated}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                  <option value="">Select Vaccinated</option>
-                  <option value="Vaccinated">Vaccinated</option>
-                  <option value="Not Vaccinated">Not Vaccinated</option>
-                 
-                </select>
-              </div>
-
 
               {/* Car Brand Selection */}
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Job Title
+                Breed
                 </label>
+
                 <select
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  value={JobTitle}
+                  onChange={(e) => setBreed(e.target.value)}
+                  value={Breed}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
                   <option disabled value="">
-                    Job Title
+                    Select Breed
                   </option>
-                  <option value="Full Stack ">Full Stack</option>
-                  <option value="Software Engineer">Software Engineer</option>
-                  <option value="Front-end Developer">
-                    Front-end Developer
-                  </option>
-                  <option value="Data Scientist">Data Scientist</option>
-                  <option value="Backend Engineer">Backend Engineer</option>
-                </select>
+                  <option value="German Shepherd">German Shepherd</option>
+                  <option value="Labrador Retriever">Labrador Retriever</option>
+                  <option value="Golden Retriever">Golden Retriever</option>
+                  <option value="Beagle">Beagle</option>
+                 </select>
               </div>
 
-              {/* SalaryRange */}
+              {/* Price */}
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formSalaryRange"
+                  htmlFor="formPrice"
                 >
-             Expected  Salary Range
+                  Price
                 </label>
                 <input
                   type="number"
-                  placeholder="Enter SalaryRange"
-                  value={SalaryRange}
-                  onChange={(e) => setSalaryRange(e.target.value)}
-                  required
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formSalaryRange"
-                >
-               Sallary From Range
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter SalaryRange"
-                  value={SallaryFromRange}
-                  onChange={(e) => setSallaryFromRange(e.target.value)}
+                  placeholder="Enter price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
                   required
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
               </div>
               <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="formSalaryRange"
-                >
-               Sallary To Range
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter SalaryRange"
-                  value={SallaryToRange}
-                  onChange={(e) => serSallaryToRange(e.target.value)}
-                  required
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-              </div>
-
-
-
-
-
-
-
-
-
-              <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Job Type
+                Age
                 </label>
                 <select
-                  onChange={(e) => setJobType(e.target.value)}
-                  value={JobType}
+                  onChange={(e) => setAge(e.target.value)}
+                  value={Age}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                  <option disabled value="">
-                    Select Job Type
+                  <option value="" disabled>
+                  Age
                   </option>
-                  <option value="Remote">Remote</option>
-                  <option value="Hybrid">Hybrid</option>
-                  <option value="On-site">On-site</option>
+                  <option value="Puppy (0–1 year)">Puppy (0–1 year)</option>
+                  <option value="Young (1–3 years)">Young (1–3 years)</option>
+                  <option value="Adult (3–6 years)">Adult (3–6 years)</option>
+                 
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Company
+                Gender
                 </label>
                 <select
-                  onChange={(e) => setCompany(e.target.value)}
-                  value={Company}
+                  onChange={(e) => setGender(e.target.value)}
+                  value={Gender}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                  <option disabled value="">
-                    Select Company
+                  <option value="" disabled>
+                  Gender
                   </option>
-                  <option value="Google">Google</option>
-                  <option value="Microsoft">Microsoft</option>
-                  <option value="Apple">Apple</option>
-
-                  <option value="Amazon">Amazon</option>
-                  <option value="Facebook">Facebook</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Employment Type
+                Color
                 </label>
                 <select
-                  onChange={(e) => setEmploymentType(e.target.value)}
-                  value={EmploymentType}
+                  onChange={(e) => setColor(e.target.value)}
+                  value={Color}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                  <option disabled value="">
-                    Employment Type
+                  <option value="" disabled>
+                  Color
                   </option>
-                  <option value="Full-time">Full-time</option>
-                  <option value="Part-time">Part-time</option>
-                  <option value="Temporary">Temporary</option>
+                  <option value="Yellow">Yellow</option>
+                  <option value="Black">Black</option>
+                  <option value="Chocolate">Chocolate</option>
 
-                  <option value="Internship">Internship</option>
+                  
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Experience Level
+                  Size
                 </label>
-
                 <select
-                  onChange={(e) => setExperienceLevel(e.target.value)}
-                  value={ExperienceLevel}
+                  onChange={(e) => setSize(e.target.value)}
+                  value={Size}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                  <option disabled value="">
-                    Experience Level
+                  <option value="" disabled>
+                    Size
                   </option>
-                  <option value="Entry-level">Entry-level</option>
-                  <option value="Mid-level">Mid-level</option>
-                  <option value="Senior-level">Senior-level</option>
+                  <option value="Small (10–20 lbs)">Small (10–20 lbs)</option>
+                  <option value="Medium (20–50 lbs)">Medium (20–50 lbs)</option>
+                  <option value="Large (50–80 lbs)">Large (50–80 lbs)</option>
 
-                  <option value="Executive">Executive</option>
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Industry
+                Temperament
                 </label>
-
                 <select
-                  onChange={(e) => setIndustry(e.target.value)}
-                  value={Industry}
+                  onChange={(e) => setTemperament(e.target.value)}
+                  value={Temperament}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                  <option disabled value="">
-                    Industry
+                  <option value="" disabled>
+                  Temperament
                   </option>
-                  <option value="Finance">Finance</option>
-                  <option value="Information Technology">
-                    Information Technology
-                  </option>
-                  <option value="Education">Education</option>
-
-                  <option value="Consulting">Consulting</option>
+                  <option value="Friendly">Friendly</option>
+                  <option value="Protective">Protective</option>
+                  <option value="Playful">Playful</option>
+            
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Required Skills
+                Health Status
                 </label>
-
                 <select
-                  onChange={(e) => setRequiredSkills(e.target.value)}
-                  value={RequiredSkills}
+                  onChange={(e) => setHealthStatus(e.target.value)}
+                  value={HealthStatus}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                  <option disabled value="">
-                    Required Skills
+                  <option value="" disabled>
+                  Health Status
                   </option>
-                  <option value="Programming Languages">
-                    Programming Languages
-                  </option>
-                  <option value="Frameworks/Tools">Frameworks/Tools</option>
-                  <option value="Databases">Databases</option>
-
-                  <option value="Soft Skills">Soft Skills</option>
-                </select>
+                  <option value="Spayed/Neutered">Spayed/Neutered</option>
+                  <option value="Vaccinated">Vaccinated</option>
+                  <option value="Dewormed">Dewormed</option>
+                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Description
+                Training Level
+                
                 </label>
-                <textarea
-                  rows={3}
-                  placeholder="Enter description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
+                <select
+                  onChange={(e) => setTrainingLevel(e.target.value)}
+                  value={TrainingLevel}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
+                >
+                  <option value="" disabled>
+                  Training Level 
+                  </option>
+                  <option value="Untrained">Untrained</option>
+                  <option value="Basic Commands">Basic Commands</option>
+                  <option value="Fully Trained">Fully Trained</option>
+                 </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                Dietary Preferences
+                         </label>
+                <select
+                  onChange={(e) => setDietaryPreferences(e.target.value)}
+                  value={DietaryPreferences}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="" disabled>
+                  Dietary Preferences
+                  </option>
+                  <option value="Grain-Free Diet">
+                  Grain-Free Diet
+                  </option>
+                  <option value="Standard Dog Food">Standard Dog Food</option>
+                  <option value="Organic Food">Organic Food</option>4
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Seller Type
+                </label>
+
+                <select
+                  onChange={(e) => setSellerType(e.target.value)}
+                  value={SellerType}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="" disabled>
+                    Seller Type{" "}
+                  </option>
+                  <option value="Brand Seller">Brand Seller</option>
+                  <option value="Individuals">Individuals</option>
+                  <option value="Retailer">Retailer</option>
+                  <option value="Marketplace">Marketplace</option>
+
+                </select>
+              </div>
+              {/* Ad Type */}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Ad Type
+                </label>
+                <select
+                  onChange={(e) => setSelectedAdType(e.target.value)}
+                  value={selectedAdType}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="" disabled>
+                    Select Ad Type
+                  </option>
+                  <option value="Featured Ad">Featured Ad</option>
+                </select>
+              </div>
+
+              {/* Picture Availability */}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Picture Availability
+                </label>
+                <select
+                  onChange={(e) =>
+                    setSelectedPictureAvailability(e.target.value)
+                  }
+                  value={selectedPictureAvailability}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="" disabled>
+                    Select Picture Availability
+                  </option>
+                  <option value="With Pictures">With Pictures</option>
+                  <option value="Without Pictures">Without Pictures</option>
+                </select>
+              </div>
+
+              {/* Video Availability */}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Video Availability
+                </label>
+                <select
+                  onChange={(e) => setSelectedVideoAvailability(e.target.value)}
+                  value={selectedVideoAvailability}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="" disabled>
+                    Select Video Availability
+                  </option>
+                  <option value="With Video">With Video</option>
+                  <option value="Without Video">Without Video</option>
+                </select>
               </div>
 
               {/* Image Uploads */}
@@ -679,6 +702,19 @@ const JOBBOARDPage = () => {
               </div>
 
               {/* Description */}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Enter description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
 
               {/* Time Ago */}
               <div className="mb-4">
@@ -686,8 +722,8 @@ const JOBBOARDPage = () => {
                   Time Ago (Date Posted)
                 </label>
                 <DatePicker
-                  selected={timeAgo} // Pass the state as the selected value.
-                  onChange={(date: Date | null) => setTimeAgo(date)} // Update state when a new date is selected.
+                  selected={timeAgo}
+                  onChange={(date) => setTimeAgo(date)} // Works because state allows null
                   dateFormat="MMMM d, yyyy"
                   showYearDropdown
                   scrollableYearDropdown
@@ -725,19 +761,7 @@ const JOBBOARDPage = () => {
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Job Description
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Enter description"
-                  value={jobdescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
-                  required
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-              </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
@@ -753,4 +777,4 @@ const JOBBOARDPage = () => {
   );
 };
 
-export default JOBBOARDPage;
+export default PETANIMALCOMP;

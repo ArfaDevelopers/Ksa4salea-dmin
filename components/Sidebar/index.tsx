@@ -15,6 +15,12 @@ import { MdElectricBike } from "react-icons/md";
 import { MdHealthAndSafety } from "react-icons/md";
 import { FcElectronics } from "react-icons/fc";
 import { BsFillHddNetworkFill } from "react-icons/bs";
+import { MdCastForEducation } from "react-icons/md";
+import { SiElectronbuilder } from "react-icons/si";
+import { FaRoute } from "react-icons/fa";
+import { MdOutlineSportsSoccer } from "react-icons/md";
+import { GiAnimalHide } from "react-icons/gi";
+import { DiSmashingMagazine } from "react-icons/di";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -128,11 +134,65 @@ const menuGroups = [
       {
         icon: (
           <BsFillHddNetworkFill
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
           />
         ),
         label: "Jobboard",
         route: "/JOBBOARD",
+      },
+      {
+        icon: (
+          <MdCastForEducation
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Education",
+        route: "/Education",
+      },
+      {
+        icon: (
+          <SiElectronbuilder
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Real Estate ",
+        route: "/REALESTATECOMP",
+      },
+      {
+        icon: (
+          <FaRoute
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Travel",
+        route: "/TRAVEL",
+      },
+      {
+        icon: (
+          <MdOutlineSportsSoccer
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Sports & Games",
+        route: "/SPORTSGAMESCompPage",
+      },
+      {
+        icon: (
+          <GiAnimalHide
+            style={{ fontSize: "1em", height: "1rem", width: "1rem" }}
+          />
+        ),
+        label: "Pet & Animal",
+        route: "/PETANIMALCOMP",
+      },
+      {
+        icon: (
+          <DiSmashingMagazine
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Magazines",
+        route: "/MAGAZINESCOMP",
       },
       {
         icon: (
