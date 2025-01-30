@@ -21,6 +21,7 @@ import { FaRoute } from "react-icons/fa";
 import { MdOutlineSportsSoccer } from "react-icons/md";
 import { GiAnimalHide } from "react-icons/gi";
 import { DiSmashingMagazine } from "react-icons/di";
+import { FaAd } from "react-icons/fa";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -85,6 +86,15 @@ const menuGroups = [
         ),
         label: "Categories",
         route: "/Categories",
+      },
+      {
+        icon: (
+          <FaAd
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Banner Image",
+        route: "/Bannerimg",
       },
       {
         icon: (
