@@ -9,6 +9,7 @@ import {
   deleteDoc,
   getDoc,
 } from "firebase/firestore";
+import { MdEdit } from "react-icons/md";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -16,10 +17,10 @@ import { enUS } from "date-fns/locale"; // Import English locale
 import "react-datepicker/dist/react-datepicker.css";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
+import { RiDeleteBin5Line } from "react-icons/ri";
+
 // Cloudinary upload
 import axios from "axios";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { MdEdit } from "react-icons/md";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -64,8 +65,7 @@ type Ad = {
   FuelType: any;
   galleryImages: any;
 };
-
-const Cars = () => {
+const Reported = () => {
   const MySwal = withReactContent(Swal);
 
   const [name, setName] = useState("");
@@ -73,6 +73,7 @@ const Cars = () => {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
+  const [selectedFuelType, setSelectedFuelType] = useState("");
 
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
@@ -100,30 +101,30 @@ const Cars = () => {
   const [selectedAssembly, setSelectedAssembly] = useState("");
   const [selectedBodyType, setSelectedBodyType] = useState("");
   const [selectedNumberOfDoors, setSelectedNumberOfDoors] = useState("");
-  const [selectedSeatingCapacity, setSelectedSeatingCapacity] = useState("");
   const [selectedModalCategory, setSelectedModalCategory] = useState("");
   const [selectedSellerType, setSelectedSellerType] = useState("");
+  const [Mileage, setMileage] = useState("");
+
   const [selectedPictureAvailability, setSelectedPictureAvailability] =
     useState("");
   const [selectedVideoAvailability, setSelectedVideoAvailability] =
     useState("");
-  const [selectedFuelType, setSelectedFuelType] = useState("");
-  const [selectedAdType, setSelectedAdType] = useState("");
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
 
   const closeModal = () => setIsOpen(false);
-  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
+  const [selectedAdType, setSelectedAdType] = useState("");
   useEffect(() => {
     const fetchAds = async () => {
       try {
         const adsCollection = collection(db, "Cars"); // Get reference to the 'Cars' collection
         const adsSnapshot = await getDocs(adsCollection); // Fetch the data
 
-        const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
+        const adsList = adsSnapshot.docs.map((doc) => {
           const data = doc.data() || {}; // Ensure data exists
 
           return {
@@ -136,7 +137,7 @@ const Cars = () => {
             img: data.img || "",
             price: data.price || "",
             Assembly: data.Assembly || "",
-            BodyType: data.BodyType || "", // Fixed typo here
+            BodyType: data.BodyType || "",
             Color: data.Color || "",
             DrivenKm: data.DrivenKm || "",
             EngineCapacity: data.EngineCapacity || "",
@@ -145,7 +146,7 @@ const Cars = () => {
             EngineType: data.EngineType || "",
             ManufactureYear: data.ManufactureYear || "",
             ModalCategory: data.ModalCategory || "",
-            CoNumberOfDoorsor: data.NumberOfDoors || "", // Ensure correct property name
+            CoNumberOfDoorsor: data.NumberOfDoors || "",
             PhoneNumber: data.PhoneNumber || "",
             Registeredin: data.Registeredin || "",
             SeatingCapacity: data.SeatingCapacity || "",
@@ -166,13 +167,31 @@ const Cars = () => {
             whatsapp: data.whatsapp || "",
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
-            galleryImages: data.galleryImages || {},
+            galleryImages: data.galleryImages || "",
+
+            reportTypes: data.reportTypes || [], // Ensure reportTypes is included
           };
         });
 
-        console.log(adsList, "adsList___________adsList");
+        // Filter ads based on reportTypes
+        const filteredAds = adsList.filter(
+          (ad) =>
+            ad.reportTypes &&
+            ad.reportTypes.some((type: any) =>
+              [
+                "Sexual",
+                "Illegal",
+                "Abusive",
+                "Harassment",
+                "Fraud",
+                "Spam",
+              ].includes(type)
+            )
+        );
 
-        setAds(adsList); // Set the state with the ads data
+        console.log(filteredAds, "filteredAds___________filteredAds");
+
+        setAds(filteredAds); // Set the state with the filtered ads data
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);
@@ -182,48 +201,62 @@ const Cars = () => {
 
     fetchAds();
   }, [refresh]);
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true); // Show spinner
+        const carsCollectionRef = collection(db, "Cars");
+        const querySnapshot = await getDocs(carsCollectionRef);
+        const carsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-  const handleDelete = async (ad: any) => {
-    // Display confirmation dialog
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        // Proceed with deletion
-        MySwal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-          timer: 1000,
-        });
-
-        // Delete the ad from Firestore (Firebase)
-        try {
-          // Delete the document from Firestore using the ad's id
-          await deleteDoc(doc(db, "Cars", ad.id)); // Delete document by id
-          console.log("Ad deleted from Firestore:", ad.id);
-          setRefresh(!refresh);
-          // Optionally, update the state or re-fetch the data after deletion
-          // For example, you can call a function to refetch ads here
-        } catch (error) {
-          console.error("Error deleting ad from Firestore:", error);
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        MySwal.fire({
-          title: "Cancelled",
-          text: "Your file is safe :)",
-          icon: "error",
-          timer: 1000,
-        });
+        console.log(carsData, "carsData_________");
+      } catch (error) {
+        console.error("Error getting cars:", error);
       }
-    });
+    };
+
+    fetchCars();
+  }, []);
+  const resetForm = () => {
+    setDescription("");
+    setLink("");
+    setManufactureYear("");
+    setCondition("");
+    setAssembly("");
+    setTimeAgo(new Date());
+
+    setRegisteredCity("");
+    setDrivenKm("");
+    setModel("");
+    setPhoneNumber("");
+    setPurpose("");
+    setType("");
+    setPrice("");
+    setLocation("");
+    setName("");
+    setSelectedAd(null); // Assuming it's an object or string
+    setTrustedCars("");
+    setSelectedCity("");
+    setSelectedEngineType("");
+    setSelectedColor("");
+    setSelectedTransmission("");
+    setSelectedVideoAvailability("");
+    setSelectedPictureAvailability("");
+    setSelectedSellerType("");
+    setSelectedModalCategory("");
+    setSelectedNumberOfDoors("");
+    setSelectedBodyType("");
+    setSelectedAssembly("");
+    setSelectedFuelType("");
   };
+  const filteredAds = ads.filter(
+    (ad) =>
+      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
+      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
+  );
   const handleEditClick = async (id: any) => {
     console.log(id, "WhatWhat");
     try {
@@ -305,7 +338,6 @@ const Cars = () => {
         setSelectedPictureAvailability(selectedAd.PictureAvailability); // Pass a valid Ad object to setSelectedAd
         setSelectedSellerType(selectedAd.sellerType); // Pass a valid Ad object to setSelectedAd
         setSelectedModalCategory(selectedAd.ModalCategory); // Pass a valid Ad object to setSelectedAd
-        setSelectedSeatingCapacity(selectedAd.SeatingCapacity); // Pass a valid Ad object to setSelectedAd
         setSelectedNumberOfDoors(selectedAd.CoNumberOfDoorsor); // Pass a valid Ad object to setSelectedAd
         setSelectedBodyType(selectedAd.bodyType);
         setSelectedAssembly(selectedAd.assembly);
@@ -321,50 +353,47 @@ const Cars = () => {
       console.error("Error fetching ad by ID:", error);
     }
   };
-  // const resetForm = () => {
-  //   setLocation("");
-  //   ("");
-  //   setLink("");
-  //   setDescription("");
+  const handleDelete = async (ad: any) => {
+    // Display confirmation dialog
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        // Proceed with deletion
+        MySwal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+          timer: 1000,
+        });
 
-  //   // setIsOpen(false);
-  // };
-  const resetForm = () => {
-    setDescription("");
-    setLink("");
-    setManufactureYear("");
-    setCondition("");
-    setAssembly("");
-    setTimeAgo(new Date());
-
-    setRegisteredCity("");
-    setDrivenKm("");
-    setModel("");
-    setPhoneNumber("");
-    setPurpose("");
-    setType("");
-    setPrice("");
-    setLocation("");
-    setName("");
-    setSelectedAd(null); // Assuming it's an object or string
-    setTrustedCars("");
-    setSelectedCity("");
-    setSelectedEngineType("");
-    setSelectedColor("");
-    setSelectedTransmission("");
-    setSelectedVideoAvailability("");
-    setSelectedPictureAvailability("");
-    setSelectedSellerType("");
-    setSelectedModalCategory("");
-    setSelectedSeatingCapacity("");
-    setSelectedNumberOfDoors("");
-    setSelectedBodyType("");
-    setSelectedAssembly("");
-    setSelectedFuelType("");
+        // Delete the ad from Firestore (Firebase)
+        try {
+          // Delete the document from Firestore using the ad's id
+          await deleteDoc(doc(db, "Cars", ad.id)); // Delete document by id
+          console.log("Ad deleted from Firestore:", ad.id);
+          setRefresh(!refresh);
+          // Optionally, update the state or re-fetch the data after deletion
+          // For example, you can call a function to refetch ads here
+        } catch (error) {
+          console.error("Error deleting ad from Firestore:", error);
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your file is safe :)",
+          icon: "error",
+          timer: 1000,
+        });
+      }
+    });
   };
-
-  // Call `resetForm` when you need to reset all fields
-
   const handleFuelTypeChange = (event: any) => {
     const fuelType = event.target.value;
     setSelectedFuelType(fuelType);
@@ -396,11 +425,7 @@ const Cars = () => {
     setSelectedModalCategory(modalCategory);
     console.log(modalCategory); // Log selected modal category to the console
   };
-  const handleSeatingCapacityChange = (event: any) => {
-    const seatingCapacity = event.target.value;
-    setSelectedSeatingCapacity(seatingCapacity);
-    console.log(seatingCapacity); // Log selected seating capacity to the console
-  };
+
   const handleNumberOfDoorsChange = (event: any) => {
     const numberOfDoors = event.target.value;
     setSelectedNumberOfDoors(numberOfDoors);
@@ -452,11 +477,11 @@ const Cars = () => {
     setSelectedCity(city);
     console.log(city, "city___________"); // Log selected city to the console
   };
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedStates, setSelectedStates] = useState("");
 
   const handleLocationChange = (event: any) => {
     const location = event.target.value;
-    setSelectedLocation(location);
+    setSelectedStates(location);
     console.log(location); // Log selected location to the console
   };
   const [selectedCarBrand, setSelectedCarBrand] = useState("");
@@ -498,31 +523,7 @@ const Cars = () => {
       handleImageUpload(file, index); // Upload the selected file
     }
   };
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        setLoading(true); // Show spinner
-        const carsCollectionRef = collection(db, "Cars");
-        const querySnapshot = await getDocs(carsCollectionRef);
-        const carsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
 
-        console.log(carsData, "carsData_________");
-      } catch (error) {
-        console.error("Error getting cars:", error);
-      }
-    };
-
-    fetchCars();
-  }, []);
-
-  const filteredAds = ads.filter(
-    (ad) =>
-      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
-      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
-  );
   // Function to add a new car to Firestore
   const handleAddCar = async (e: any) => {
     e.preventDefault();
@@ -538,43 +539,44 @@ const Cars = () => {
 
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
-        Title: name,
+        title: name,
         img: imageUrls[0], // img1
         img2: imageUrls[1], // img2
         img3: imageUrls[2], // img3
         img4: imageUrls[3], // img4
         img5: imageUrls[4], // img5
         img6: imageUrls[5], // img6
-        Location: location,
-        Price: price,
-        Link: link,
+        location: location,
+        price: price,
+        link: link,
+        FuelType: selectedFuelType,
+        make: selectedCarBrand,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
-
-        Description: description,
+        States: selectedStates,
+        description: description,
+        sellerType: selectedSellerType,
+        mileage: Mileage,
         registeredCity: registeredCity,
         assembly: assembly,
-        LastUpdated: lastUpdated.toISOString(),
-        Condition: condition,
-        Purpose: purpose,
-        Model: model,
+        engineCapacity: selectedEngineCapacity,
+        bodyType: selectedBodyType,
+        lastUpdated: lastUpdated.toISOString(),
+        condition: condition,
+        purpose: purpose,
+        model: model,
         whatsapp: whatsapp,
         type: type,
         isFeatured: selectedAdType,
         VideoAvailability: selectedVideoAvailability,
         PictureAvailability: selectedPictureAvailability,
-        FuelType: selectedFuelType,
         AdType: selectedAdType,
         ModalCategory: selectedModalCategory,
         SellerType: selectedSellerType,
-        NumberOfDoors: selectedNumberOfDoors,
-        SeatingCapacity: selectedSeatingCapacity,
         Assembly: selectedAssembly,
         BodyType: selectedBodyType,
         Color: selectedColor,
         EngineType: selectedEngineType,
         EngineCapacity: selectedEngineCapacity,
-        Transmission: selectedTransmission,
-        TrustedCars: TrustedCars,
         Registeredin: Registeredin,
         City: selectedCity,
         DrivenKm: DrivenKm,
@@ -608,7 +610,6 @@ const Cars = () => {
 
   return (
     <>
-      {/* Add New Button */}
       <button
         onClick={() => {
           setIsOpen(true);
@@ -813,7 +814,6 @@ const Cars = () => {
           </tbody>
         </table>
       </div>
-
       {isOpen && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
@@ -821,11 +821,11 @@ const Cars = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "69%" }}
+            style={{ marginTop: "75%" }}
           >
             <div
               className="relative w-full max-w-lg"
-              style={{ marginTop: "72%" }}
+              style={{ marginTop: "50%" }}
             >
               <button
                 onClick={closeModal}
@@ -835,7 +835,7 @@ const Cars = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Car Listing
+                  Add a New Bike Listing
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}
@@ -869,7 +869,7 @@ const Cars = () => {
                       <option disabled value="">
                         Select City
                       </option>
-                      <option value="New York">New York</option>
+                      <option value="America">America</option>
                       <option value="Bogotá">Bogotá</option>
                       <option value="Dubai">Dubai</option>
                       <option value="Tokyo">Tokyo</option>
@@ -880,18 +880,19 @@ const Cars = () => {
                   {/* Location Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Location
+                      States
                     </label>
                     <select
-                      onChange={(e) => setSelectedLocation(e.target.value)}
-                      value={selectedLocation}
+                      onChange={(e) => setSelectedStates(e.target.value)}
+                      value={selectedStates}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option value="">Select Location</option>
-                      <option value="Dubai Marina">Dubai Marina</option>
-                      <option value="Jumeirah">Jumeirah</option>
-                      <option value="Deira">Deira</option>
-                      <option value="Business Bay">Business Bay</option>
+                      <option value="">Select State</option>
+                      <option value="California">California</option>
+                      <option value="Texas">Texas</option>
+                      <option value="Newyork">Newyork</option>
+                      <option value="Florida">Florida</option>
+                      <option value="Illinois">Illinois</option>
                     </select>
                   </div>
 
@@ -908,11 +909,17 @@ const Cars = () => {
                       <option disabled value="">
                         Select Make
                       </option>
-                      <option value="Toyota">Toyota</option>
-                      <option value="Mercedez-Benz">Mercedez-Benz</option>
-                      <option value="Nissan">Nissan</option>
-                      <option value="BMW">BMW</option>
-                      <option value="Lamborghini">Lamborghini</option>
+                      <option value="Trek Bicycle Corporation">
+                        Trek Bicycle Corporation
+                      </option>
+                      <option value="Specialized Bicycle">
+                        Specialized Bicycle
+                      </option>
+                      <option value="Cannondale">Cannondale</option>
+                      <option value="Santa Cruz">Santa Cruz</option>
+                      <option value="Huffy Corporation">
+                        Huffy Corporation
+                      </option>
                     </select>
                   </div>
 
@@ -951,7 +958,23 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
+                  {/* Manufacture Year */}
+                  <div className="mb-4">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="Mileage"
+                    >
+                      Mileage{" "}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter Mileage"
+                      value={Mileage}
+                      onChange={(e) => setMileage(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
                   {/* Registered In */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -965,50 +988,11 @@ const Cars = () => {
                       <option value="" disabled>
                         Select Registered In
                       </option>
-                      <option value="Downtown Dubai">Downtown Dubai</option>
-                      <option value="Dubai Marina">Dubai Marina</option>
-                      <option value="Jumeirah">Jumeirah</option>
-                      <option value="Deira">Deira</option>
-                      <option value="Business Bay">Business Bay</option>
-                    </select>
-                  </div>
-
-                  {/* Trusted Cars */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Trusted Cars
-                    </label>
-                    <select
-                      onChange={(e) => setTrustedCars(e.target.value)}
-                      value={TrustedCars}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Trusted Cars
-                      </option>
-                      <option value="Toyota">Toyota</option>
-                      <option value="Mercedez-Benz">Mercedez-Benz</option>
-                      <option value="Nissan">Nissan</option>
-                      <option value="BMW">BMW</option>
-                      <option value="Lamborghini">Lamborghini</option>
-                    </select>
-                  </div>
-
-                  {/* Transmission */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Transmission
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedTransmission(e.target.value)}
-                      value={selectedTransmission}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Transmission
-                      </option>
-                      <option value="Manual">Manual</option>
-                      <option value="Automatic">Automatic</option>
+                      <option value="California">California</option>
+                      <option value="Texas">Texas</option>
+                      <option value="Newyork">Newyork</option>
+                      <option value="Florida">Florida</option>
+                      <option value="Illinios">Illinios</option>
                     </select>
                   </div>
 
@@ -1056,22 +1040,17 @@ const Cars = () => {
                       <option value="" disabled>
                         Select Engine Type
                       </option>
-                      <option value="Inline-4 (14) Engine">
-                        Inline-4 (14) Engine
+                      <option value="Single-Cylinder Engine">
+                        Single-Cylinder Engine{" "}
                       </option>
-                      <option value="V6 Engine">V6 Engine</option>
-                      <option value="V8 Engine">V8 Engine</option>
-                      <option value="Inline-6 (16) Engine">
-                        Inline-6 (16) Engine
+                      <option value="Parallel-Twin Engine">
+                        Parallel-Twin Engine
                       </option>
-                      <option value="V12 Engine">V12 Engine</option>
-                      <option value="Inline-3 Engine">Inline-3 Engine</option>
-                      <option value="V10 Engine">V10 Engine</option>
-                      <option value="Flat-4 Engine">Flat-4 Engine</option>
-                      <option value="Flat-6 Engine">Flat-6 Engine</option>
-                      <option value="W12 Engine">W12 Engine</option>
-                      <option value="W16 Engine">W16 Engine</option>
-                      <option value="Electric Motor">Electric Motor</option>
+                      <option value="V-Twin Engine">V-Twin Engine</option>
+                      <option value="Inline-Four Engine">
+                        Inline-Four Engine{" "}
+                      </option>
+                      <option value="Boxer Engine">Boxer Engine</option>
                     </select>
                   </div>
 
@@ -1122,67 +1101,12 @@ const Cars = () => {
                       <option value="" disabled>
                         Select Body Type
                       </option>
-                      <option value="Coupe">Coupe</option>
-                      <option value="Sedan">Sedan (Saloon)</option>
-                      <option value="SUV">SUV</option>
-                      <option value="Hatchback">Hatchback</option>
-                      <option value="Convertible">Convertible</option>
-                      <option value="Crossover">Crossover</option>
-                      <option value="Station Wagon">Station Wagon</option>
-                      <option value="Minivan">Minivan</option>
-                      <option value="Pickup Truck">Pickup Truck</option>
-                      <option value="Roadster">Roadster</option>
-                      <option value="MPV">MPV (Multi-Purpose Vehicle)</option>
-                      <option value="Luxury Sedan">Luxury Sedan</option>
-                      <option value="Limousine">Limousine</option>
-                      <option value="Coupe SUV">Coupe SUV</option>
-                    </select>
-                  </div>
-
-                  {/* Number of Doors */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Number of Doors
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedNumberOfDoors(e.target.value)}
-                      value={selectedNumberOfDoors}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Number of Doors
-                      </option>
-                      <option value="4">4 Doors</option>
-                      <option value="5">5 Doors</option>
-                      <option value="2">2 Doors</option>
-                      <option value="3">3 Doors</option>
-                      <option value="0">
-                        No Doors (e.g., a truck or a specialized vehicle)
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* Seating Capacity */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Seating Capacity
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedSeatingCapacity(e.target.value)
-                      }
-                      value={selectedSeatingCapacity}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Seating Capacity
-                      </option>
-                      <option value="4">4 Seats</option>
-                      <option value="5">5 Seats</option>
-                      <option value="2">2 Seats</option>
-                      <option value="3">3 Seats</option>
-                      <option value="0">
-                        No Seats (e.g., for cargo or specialty vehicles)
+                      <option value="Cruiser">Cruiser</option>
+                      <option value="Sport Bike">Sport Bike</option>
+                      <option value="Touring Bike">Touring Bike</option>
+                      <option value="Dirt Bike">Dirt Bike</option>
+                      <option value="Standard (Naked Bike)">
+                        Standard (Naked Bike)
                       </option>
                     </select>
                   </div>
@@ -1354,7 +1278,22 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Fuel Type
+                    </label>
+                    <select
+                      onChange={handleFuelTypeChange}
+                      value={selectedFuelType}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Fuel Type
+                      </option>
+                      <option value="Petroleum">Petroleum</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
                   {/* Time Ago */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -1433,22 +1372,6 @@ const Cars = () => {
                       <option value="Rent">Rent</option>
                     </select>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Fuel Type
-                    </label>
-                    <select
-                      onChange={handleFuelTypeChange}
-                      value={selectedFuelType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Fuel Type
-                      </option>
-                      <option value="Petroleum">Petroleum</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
 
                   {/* Phone */}
                   <div className="mb-4">
@@ -1520,7 +1443,6 @@ const Cars = () => {
                   </button>
                 </form>
               </div>
-              {/* </div> */}
             </div>
           </div>
         </div>
@@ -1529,4 +1451,4 @@ const Cars = () => {
   );
 };
 
-export default Cars;
+export default Reported;

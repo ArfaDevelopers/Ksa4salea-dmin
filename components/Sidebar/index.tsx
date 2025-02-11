@@ -22,6 +22,7 @@ import { MdOutlineSportsSoccer } from "react-icons/md";
 import { GiAnimalHide } from "react-icons/gi";
 import { DiSmashingMagazine } from "react-icons/di";
 import { FaAd } from "react-icons/fa";
+import { GoReport } from "react-icons/go";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -203,6 +204,15 @@ const menuGroups = [
         ),
         label: "Magazines",
         route: "/MAGAZINESCOMP",
+      },
+      {
+        icon: (
+          <GoReport
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Reported",
+        route: "/Reported",
       },
       {
         icon: (
