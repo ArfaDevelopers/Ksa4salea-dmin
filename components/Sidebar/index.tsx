@@ -23,6 +23,7 @@ import { GiAnimalHide } from "react-icons/gi";
 import { DiSmashingMagazine } from "react-icons/di";
 import { FaAd } from "react-icons/fa";
 import { GoReport } from "react-icons/go";
+import { FaPersonDressBurst } from "react-icons/fa6";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -135,7 +136,7 @@ const menuGroups = [
       },
       {
         icon: (
-          <MdElectricBike
+          <FaPersonDressBurst
             style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
           />
         ),

@@ -22,6 +22,9 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 // Cloudinary upload
 import axios from "axios";
 import SPORTSGAMESReported from "../SPORTSGAMESReported";
+import BikesReported from "../BikesReported";
+import ElectronicCompReported from "../ElectronicCompReported";
+import FashionStyleReported from "../FashionStyleReported";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -647,7 +650,7 @@ const Reported = () => {
                   : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
               }`}
             >
-              Tab 3
+              Bikes{" "}
             </button>
           </li>
           <li className="me-2">
@@ -659,7 +662,7 @@ const Reported = () => {
                   : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
               }`}
             >
-              Tab 4
+              Electronic
             </button>
           </li>
           <li className="me-2">
@@ -671,7 +674,7 @@ const Reported = () => {
                   : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
               }`}
             >
-              Tab 5
+              Fashion Style{" "}
             </button>
           </li>
         </ul>
@@ -1572,9 +1575,9 @@ const Reported = () => {
               <SPORTSGAMESReported />
             </>
           )}
-          {activeTab === 2 && <p>Content for Tab 3</p>}
-          {activeTab === 3 && <p>Content for Tab 4</p>}
-          {activeTab === 4 && <p>Content for Tab 5</p>}
+          {activeTab === 2 && <BikesReported />}
+          {activeTab === 3 && <ElectronicCompReported />}
+          {activeTab === 4 && <FashionStyleReported />}
         </div>
       </div>
     </>
