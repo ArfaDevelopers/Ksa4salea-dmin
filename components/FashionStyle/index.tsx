@@ -63,6 +63,7 @@ type Ad = {
   whatsapp: string;
   AdType: any;
   FuelType: any;
+  galleryImages: any;
 };
 const FashionStyle = () => {
   const MySwal = withReactContent(Swal);
@@ -220,6 +221,7 @@ const FashionStyle = () => {
             whatsapp: data.whatsapp || "",
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
+            galleryImages: data.galleryImages || "",
           };
         });
 
@@ -311,6 +313,7 @@ const FashionStyle = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
+          galleryImages: adData.galleryImages || "galleryImages",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
@@ -775,7 +778,7 @@ const FashionStyle = () => {
                 >
                   <img
                     className="w-10 h-10 rounded-full"
-                    src={ad.img}
+                    src={ad.galleryImages[0]}
                     alt={ad.title}
                   />
                   <div className="ps-3">

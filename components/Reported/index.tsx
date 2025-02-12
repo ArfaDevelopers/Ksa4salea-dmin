@@ -21,6 +21,7 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 
 // Cloudinary upload
 import axios from "axios";
+import SPORTSGAMESReported from "../SPORTSGAMESReported";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -607,846 +608,975 @@ const Reported = () => {
       alert("Error adding car.");
     }
   };
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <>
-      <button
-        onClick={() => {
-          setIsOpen(true);
-          setSelectedAd(null);
-
-          resetForm();
-        }}
-        className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
-      >
-        Add New
-      </button>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
-          <div>
+      <div>
+        <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+          <li className="me-2">
             <button
-              id="dropdownActionButton"
-              data-dropdown-toggle="dropdownAction"
-              className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-              type="button"
+              onClick={() => setActiveTab(0)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 0
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
             >
-              <span className="sr-only">Action button</span>
-              Action
-              <svg
-                className="w-2.5 h-2.5 ms-2.5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
+              Cars Reported{" "}
             </button>
-            {/* Dropdown menu */}
-            <div
-              id="dropdownAction"
-              className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(1)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 1
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
             >
-              <ul
-                className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                aria-labelledby="dropdownActionButton"
-              >
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    Reward
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    Promote
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    Activate account
-                  </a>
-                </li>
-              </ul>
-              <div className="py-1">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Delete User
-                </a>
-              </div>
-            </div>
-          </div>
-          <label htmlFor="table-search" className="sr-only">
-            Search
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </div>
-            <input
-              type="text"
-              id="table-search-users"
-              className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
-              value={searchTerm} // Bind input value to state
-              onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
-            />
-          </div>
-        </div>
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="p-4">
-                <div className="flex items-center">
-                  <input
-                    id="checkbox-all-search"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="checkbox-all-search" className="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Title
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Description
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Location
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Price
-              </th>
-              <th scope="col" className="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAds.map((ad) => (
-              <tr
-                key={ad.id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <td className="w-4 p-4">
-                  <div className="flex items-center">
-                    <input
-                      id={`checkbox-table-search-${ad.id}`}
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor={`checkbox-table-search-${ad.id}`}
-                      className="sr-only"
-                    >
-                      checkbox
-                    </label>
-                  </div>
-                </td>
-                <th
-                  scope="row"
-                  className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  <img
-                    className="w-10 h-10 rounded-full"
-                    src={ad.galleryImages[0]}
-                    alt={ad.title}
-                  />
-                  <div className="ps-3">
-                    <div className="text-base font-semibold">{ad.title}</div>
-                    <div className="font-normal text-gray-500"></div>
-                  </div>
-                </th>
-                <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
-                <td className="px-6 py-4">{ad.price}</td>
-                <td className="px-6 py-4">
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => handleDelete(ad)}
-                    className="text-red-600 dark:text-red-500 hover:text-red-700"
-                    title="Delete"
-                  >
-                    <RiDeleteBin5Line size={20} />
-                  </button>
-                  {/* Edit Button */}
-                  <button
-                    onClick={() => handleEditClick(ad.id)} // Fetch the ad by ID and open modal
-                    className="text-blue-600 dark:text-blue-500 hover:text-blue-700 ml-3"
-                    title="Edit"
-                  >
-                    <MdEdit size={20} style={{ color: "green" }} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "-2%" }}
-        >
-          <div
-            className="flex justify-center items-center h-full"
-            style={{ marginTop: "75%" }}
-          >
-            <div
-              className="relative w-full max-w-lg"
-              style={{ marginTop: "50%" }}
+              Sports and Games{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(2)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 2
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
             >
+              Tab 3
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(3)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 3
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              Tab 4
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(4)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 4
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              Tab 5
+            </button>
+          </li>
+        </ul>
+        <div className="p-4 mt-2 border rounded-lg bg-gray-100 dark:bg-gray-800">
+          {activeTab === 0 && (
+            <>
               <button
-                onClick={closeModal}
-                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
+                onClick={() => {
+                  setIsOpen(true);
+                  setSelectedAd(null);
+
+                  resetForm();
+                }}
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
               >
-                &times;
+                Add New
               </button>
-              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Bike Listing
-                </h3>
-                <form onSubmit={handleAddCar}>
-                  {/* Name */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formName"
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
 
-                  {/* City Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      City
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      value={selectedCity}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
+                  <div>
+                    <button
+                      id="dropdownActionButton"
+                      data-dropdown-toggle="dropdownAction"
+                      className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                      type="button"
                     >
-                      <option disabled value="">
-                        Select City
-                      </option>
-                      <option value="America">America</option>
-                      <option value="Bogotá">Bogotá</option>
-                      <option value="Dubai">Dubai</option>
-                      <option value="Tokyo">Tokyo</option>
-                      <option value="Paris">Paris</option>
-                    </select>
-                  </div>
-
-                  {/* Location Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      States
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedStates(e.target.value)}
-                      value={selectedStates}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      <span className="sr-only">Action button</span>
+                      Action
+                      <svg
+                        className="w-2.5 h-2.5 ms-2.5"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m1 1 4 4 4-4"
+                        />
+                      </svg>
+                    </button>
+                    {/* Dropdown menu */}
+                    <div
+                      id="dropdownAction"
+                      className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                     >
-                      <option value="">Select State</option>
-                      <option value="California">California</option>
-                      <option value="Texas">Texas</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinois">Illinois</option>
-                    </select>
-                  </div>
-
-                  {/* Car Brand Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Make
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedCarBrand(e.target.value)}
-                      value={selectedCarBrand}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Select Make
-                      </option>
-                      <option value="Trek Bicycle Corporation">
-                        Trek Bicycle Corporation
-                      </option>
-                      <option value="Specialized Bicycle">
-                        Specialized Bicycle
-                      </option>
-                      <option value="Cannondale">Cannondale</option>
-                      <option value="Santa Cruz">Santa Cruz</option>
-                      <option value="Huffy Corporation">
-                        Huffy Corporation
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* Price */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formPrice"
-                    >
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter price"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Manufacture Year */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formManufactureYear"
-                    >
-                      Manufacture Year
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Manufacture Year"
-                      value={ManufactureYear}
-                      onChange={(e) => setManufactureYear(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  {/* Manufacture Year */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="Mileage"
-                    >
-                      Mileage{" "}
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Mileage"
-                      value={Mileage}
-                      onChange={(e) => setMileage(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  {/* Registered In */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Registered in
-                    </label>
-                    <select
-                      onChange={(e) => setRegisteredin(e.target.value)}
-                      value={Registeredin}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Registered In
-                      </option>
-                      <option value="California">California</option>
-                      <option value="Texas">Texas</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinios">Illinios</option>
-                    </select>
-                  </div>
-
-                  {/* Color */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Color
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedColor(e.target.value)}
-                      value={selectedColor}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Color
-                      </option>
-                      <option value="White">White</option>
-                      <option value="Black">Black</option>
-                      <option value="Grey">Grey</option>
-                      <option value="Red">Red</option>
-                      <option value="Yellow">Yellow</option>
-                      <option value="Blue">Blue</option>
-                      <option value="Green">Green</option>
-                      <option value="Silver">Silver</option>
-                      <option value="Orange">Orange</option>
-                      <option value="Purple">Purple</option>
-                      <option value="Brown">Brown</option>
-                      <option value="Pink">Pink</option>
-                      <option value="Beige">Beige</option>
-                      <option value="Maroon">Maroon</option>
-                      <option value="Turquoise">Turquoise</option>
-                    </select>
-                  </div>
-
-                  {/* Engine Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Engine Type
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedEngineType(e.target.value)}
-                      value={selectedEngineType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Engine Type
-                      </option>
-                      <option value="Single-Cylinder Engine">
-                        Single-Cylinder Engine{" "}
-                      </option>
-                      <option value="Parallel-Twin Engine">
-                        Parallel-Twin Engine
-                      </option>
-                      <option value="V-Twin Engine">V-Twin Engine</option>
-                      <option value="Inline-Four Engine">
-                        Inline-Four Engine{" "}
-                      </option>
-                      <option value="Boxer Engine">Boxer Engine</option>
-                    </select>
-                  </div>
-
-                  {/* Engine Capacity */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Engine Capacity (cc)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Engine Capacity (cc)"
-                      value={selectedEngineCapacity}
-                      onChange={(e) =>
-                        setSelectedEngineCapacity(e.target.value)
-                      }
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Assembly */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Assembly
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedAssembly(e.target.value)}
-                      value={selectedAssembly}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Assembly
-                      </option>
-                      <option value="Local">Local</option>
-                      <option value="Imported">Imported</option>
-                    </select>
-                  </div>
-
-                  {/* Body Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Body Type
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedBodyType(e.target.value)}
-                      value={selectedBodyType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Body Type
-                      </option>
-                      <option value="Cruiser">Cruiser</option>
-                      <option value="Sport Bike">Sport Bike</option>
-                      <option value="Touring Bike">Touring Bike</option>
-                      <option value="Dirt Bike">Dirt Bike</option>
-                      <option value="Standard (Naked Bike)">
-                        Standard (Naked Bike)
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* Modal Category */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Modal Category
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedModalCategory(e.target.value)}
-                      value={selectedModalCategory}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Modal Category
-                      </option>
-                      <option value="A-Class">A-Class (Compact)</option>
-                      <option value="B-Class">B-Class (Compact MPV)</option>
-                      <option value="C-Class">C-Class (Compact Exe)</option>
-                      <option value="E-Class">E-Class (Executive)</option>
-                      <option value="S-Class">S-Class (Luxury)</option>
-                      <option value="CLA">CLA (Compact Coupe)</option>
-                      <option value="CLS">CLS (Executive Coupe)</option>
-                      <option value="GLA">GLA (Compact SUV)</option>
-                      <option value="GLC">GLC (Luxury SUV)</option>
-                      <option value="GLE">GLE (Luxury SUV)</option>
-                      <option value="GLS">GLS (Full-Size SUV)</option>
-                      <option value="G-Class">G-Class (Off-Road SUV)</option>
-                      <option value="SLK">SLK (Compact Roadster)</option>
-                      <option value="SLC">SLC (Compact Roadster)</option>
-                      <option value="AMG GT">AMG GT (Performance)</option>
-                      <option value="EQC">EQC (Electric SUV)</option>
-                      <option value="EQS">EQS (Electric Luxury Sedan)</option>
-                    </select>
-                  </div>
-
-                  {/* Seller Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Seller Type
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedSellerType(e.target.value)}
-                      value={selectedSellerType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Seller Type
-                      </option>
-                      <option value="Dealers">Dealers</option>
-                      <option value="Individuals">Individuals</option>
-                    </select>
-                  </div>
-
-                  {/* Picture Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Picture Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedPictureAvailability(e.target.value)
-                      }
-                      value={selectedPictureAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Picture Availability
-                      </option>
-                      <option value="With Pictures">With Pictures</option>
-                      <option value="Without Pictures">Without Pictures</option>
-                    </select>
-                  </div>
-
-                  {/* Video Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Video Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedVideoAvailability(e.target.value)
-                      }
-                      value={selectedVideoAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Video Availability
-                      </option>
-                      <option value="With Video">With Video</option>
-                      <option value="Without Video">Without Video</option>
-                    </select>
-                  </div>
-
-                  {/* Ad Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Ad Type
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedAdType(e.target.value)}
-                      value={selectedAdType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Ad Type
-                      </option>
-                      <option value="Featured Ad">Featured Ad</option>
-                    </select>
-                  </div>
-
-                  {/* Image Uploads */}
-                  {[...Array(6)].map((_, index) => (
-                    <div className="mb-4" key={index}>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
-                        index + 1
-                      }`}</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange(index)}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      />
+                      <ul
+                        className="py-1 text-sm text-gray-700 dark:text-gray-200"
+                        aria-labelledby="dropdownActionButton"
+                      >
+                        <li>
+                          <a
+                            href="#"
+                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            Reward
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            Promote
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            Activate account
+                          </a>
+                        </li>
+                      </ul>
+                      <div className="py-1">
+                        <a
+                          href="#"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        >
+                          Delete User
+                        </a>
+                      </div>
                     </div>
-                  ))}
-
-                  {/* Location */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Location
-                    </label>
+                  </div>
+                  <label htmlFor="table-search" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                      <svg
+                        className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                        />
+                      </svg>
+                    </div>
                     <input
                       type="text"
-                      placeholder="Enter location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="table-search-users"
+                      className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Search for users"
+                      value={searchTerm} // Bind input value to state
+                      onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
                     />
                   </div>
-
-                  {/* Link */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Link
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter link"
-                      value={link}
-                      onChange={(e) => setLink(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Fuel Type
-                    </label>
-                    <select
-                      onChange={handleFuelTypeChange}
-                      value={selectedFuelType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Fuel Type
-                      </option>
-                      <option value="Petroleum">Petroleum</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  {/* Time Ago */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Time Ago (Date Posted)
-                    </label>
-                    <DatePicker
-                      selected={timeAgo}
-                      onChange={(date) => setTimeAgo(date)} // Works because state allows null
-                      dateFormat="MMMM d, yyyy"
-                      showYearDropdown
-                      scrollableYearDropdown
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      required
-                    />
-                  </div>
-
-                  {/* Registered City */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Registered City
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter registered city"
-                      value={registeredCity}
-                      onChange={(e) => setRegisteredCity(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Assembly */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Assembly
-                    </label>
-                    <select
-                      onChange={(e) => setAssembly(e.target.value)}
-                      value={assembly}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="Imported">Imported</option>
-                      <option value="Local">Local</option>
-                    </select>
-                  </div>
-
-                  {/* Condition */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Condition
-                    </label>
-                    <select
-                      onChange={(e) => setCondition(e.target.value)}
-                      value={condition}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="New">New</option>
-                      <option value="Used">Used</option>
-                    </select>
-                  </div>
-
-                  {/* Purpose */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Purpose
-                    </label>
-                    <select
-                      onChange={(e) => setPurpose(e.target.value)}
-                      value={purpose}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="Sell">Sell</option>
-                      <option value="Rent">Rent</option>
-                    </select>
-                  </div>
-
-                  {/* Phone */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Phone Number"
-                      value={PhoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* WhatsApp */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      WhatsApp
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter WhatsApp number"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Driven KM */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Driven KM
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Driven KMS"
-                      value={DrivenKm}
-                      onChange={(e) => setDrivenKm(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Type
-                    </label>
-                    <select
-                      onChange={(e) => setType(e.target.value)}
-                      value={type}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="Sale">Sale</option>
-                      <option value="Lease">Lease</option>
-                    </select>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-                  >
-                    Add Listing
-                  </button>
-                </form>
+                </div>
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="p-4">
+                        <div className="flex items-center">
+                          <input
+                            id="checkbox-all-search"
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            htmlFor="checkbox-all-search"
+                            className="sr-only"
+                          >
+                            checkbox
+                          </label>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Title
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Description
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Location
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Price
+                      </th>
+                      <th scope="col" className="px-6 py-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredAds.map((ad) => (
+                      <tr
+                        key={ad.id}
+                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      >
+                        <td className="w-4 p-4">
+                          <div className="flex items-center">
+                            <input
+                              id={`checkbox-table-search-${ad.id}`}
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            />
+                            <label
+                              htmlFor={`checkbox-table-search-${ad.id}`}
+                              className="sr-only"
+                            >
+                              checkbox
+                            </label>
+                          </div>
+                        </td>
+                        <th
+                          scope="row"
+                          className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                          <img
+                            className="w-10 h-10 rounded-full"
+                            src={ad.galleryImages[0]}
+                            alt={ad.title}
+                          />
+                          <div className="ps-3">
+                            <div className="text-base font-semibold">
+                              {ad.title}
+                            </div>
+                            <div className="font-normal text-gray-500"></div>
+                          </div>
+                        </th>
+                        <td className="px-6 py-4">{ad.description}</td>
+                        <td className="px-6 py-4">{ad.location}</td>
+                        <td className="px-6 py-4">{ad.price}</td>
+                        <td className="px-6 py-4">
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDelete(ad)}
+                            className="text-red-600 dark:text-red-500 hover:text-red-700"
+                            title="Delete"
+                          >
+                            <RiDeleteBin5Line size={20} />
+                          </button>
+                          {/* Edit Button */}
+                          <button
+                            onClick={() => handleEditClick(ad.id)} // Fetch the ad by ID and open modal
+                            className="text-blue-600 dark:text-blue-500 hover:text-blue-700 ml-3"
+                            title="Edit"
+                          >
+                            <MdEdit size={20} style={{ color: "green" }} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          </div>
+              {isOpen && (
+                <div
+                  className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
+                  style={{ marginTop: "-2%" }}
+                >
+                  <div
+                    className="flex justify-center items-center h-full"
+                    style={{ marginTop: "75%" }}
+                  >
+                    <div
+                      className="relative w-full max-w-lg"
+                      style={{ marginTop: "50%" }}
+                    >
+                      <button
+                        onClick={closeModal}
+                        className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
+                      >
+                        &times;
+                      </button>
+                      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h3 className="text-center text-2xl font-bold mb-4">
+                          Add a New Bike Listing
+                        </h3>
+                        <form onSubmit={handleAddCar}>
+                          {/* Name */}
+                          <div className="mb-4">
+                            <label
+                              className="block text-gray-700 text-sm font-bold mb-2"
+                              htmlFor="formName"
+                            >
+                              Name
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter name"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* City Selection */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              City
+                            </label>
+                            <select
+                              onChange={(e) => setSelectedCity(e.target.value)}
+                              value={selectedCity}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option disabled value="">
+                                Select City
+                              </option>
+                              <option value="America">America</option>
+                              <option value="Bogotá">Bogotá</option>
+                              <option value="Dubai">Dubai</option>
+                              <option value="Tokyo">Tokyo</option>
+                              <option value="Paris">Paris</option>
+                            </select>
+                          </div>
+
+                          {/* Location Selection */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              States
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedStates(e.target.value)
+                              }
+                              value={selectedStates}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="">Select State</option>
+                              <option value="California">California</option>
+                              <option value="Texas">Texas</option>
+                              <option value="Newyork">Newyork</option>
+                              <option value="Florida">Florida</option>
+                              <option value="Illinois">Illinois</option>
+                            </select>
+                          </div>
+
+                          {/* Car Brand Selection */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Make
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedCarBrand(e.target.value)
+                              }
+                              value={selectedCarBrand}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option disabled value="">
+                                Select Make
+                              </option>
+                              <option value="Trek Bicycle Corporation">
+                                Trek Bicycle Corporation
+                              </option>
+                              <option value="Specialized Bicycle">
+                                Specialized Bicycle
+                              </option>
+                              <option value="Cannondale">Cannondale</option>
+                              <option value="Santa Cruz">Santa Cruz</option>
+                              <option value="Huffy Corporation">
+                                Huffy Corporation
+                              </option>
+                            </select>
+                          </div>
+
+                          {/* Price */}
+                          <div className="mb-4">
+                            <label
+                              className="block text-gray-700 text-sm font-bold mb-2"
+                              htmlFor="formPrice"
+                            >
+                              Price
+                            </label>
+                            <input
+                              type="number"
+                              placeholder="Enter price"
+                              value={price}
+                              onChange={(e) => setPrice(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Manufacture Year */}
+                          <div className="mb-4">
+                            <label
+                              className="block text-gray-700 text-sm font-bold mb-2"
+                              htmlFor="formManufactureYear"
+                            >
+                              Manufacture Year
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter Manufacture Year"
+                              value={ManufactureYear}
+                              onChange={(e) =>
+                                setManufactureYear(e.target.value)
+                              }
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+                          {/* Manufacture Year */}
+                          <div className="mb-4">
+                            <label
+                              className="block text-gray-700 text-sm font-bold mb-2"
+                              htmlFor="Mileage"
+                            >
+                              Mileage{" "}
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter Mileage"
+                              value={Mileage}
+                              onChange={(e) => setMileage(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+                          {/* Registered In */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Registered in
+                            </label>
+                            <select
+                              onChange={(e) => setRegisteredin(e.target.value)}
+                              value={Registeredin}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Registered In
+                              </option>
+                              <option value="California">California</option>
+                              <option value="Texas">Texas</option>
+                              <option value="Newyork">Newyork</option>
+                              <option value="Florida">Florida</option>
+                              <option value="Illinios">Illinios</option>
+                            </select>
+                          </div>
+
+                          {/* Color */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Color
+                            </label>
+                            <select
+                              onChange={(e) => setSelectedColor(e.target.value)}
+                              value={selectedColor}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Color
+                              </option>
+                              <option value="White">White</option>
+                              <option value="Black">Black</option>
+                              <option value="Grey">Grey</option>
+                              <option value="Red">Red</option>
+                              <option value="Yellow">Yellow</option>
+                              <option value="Blue">Blue</option>
+                              <option value="Green">Green</option>
+                              <option value="Silver">Silver</option>
+                              <option value="Orange">Orange</option>
+                              <option value="Purple">Purple</option>
+                              <option value="Brown">Brown</option>
+                              <option value="Pink">Pink</option>
+                              <option value="Beige">Beige</option>
+                              <option value="Maroon">Maroon</option>
+                              <option value="Turquoise">Turquoise</option>
+                            </select>
+                          </div>
+
+                          {/* Engine Type */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Engine Type
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedEngineType(e.target.value)
+                              }
+                              value={selectedEngineType}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Engine Type
+                              </option>
+                              <option value="Single-Cylinder Engine">
+                                Single-Cylinder Engine{" "}
+                              </option>
+                              <option value="Parallel-Twin Engine">
+                                Parallel-Twin Engine
+                              </option>
+                              <option value="V-Twin Engine">
+                                V-Twin Engine
+                              </option>
+                              <option value="Inline-Four Engine">
+                                Inline-Four Engine{" "}
+                              </option>
+                              <option value="Boxer Engine">Boxer Engine</option>
+                            </select>
+                          </div>
+
+                          {/* Engine Capacity */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Engine Capacity (cc)
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter Engine Capacity (cc)"
+                              value={selectedEngineCapacity}
+                              onChange={(e) =>
+                                setSelectedEngineCapacity(e.target.value)
+                              }
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Assembly */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Assembly
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedAssembly(e.target.value)
+                              }
+                              value={selectedAssembly}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Assembly
+                              </option>
+                              <option value="Local">Local</option>
+                              <option value="Imported">Imported</option>
+                            </select>
+                          </div>
+
+                          {/* Body Type */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Body Type
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedBodyType(e.target.value)
+                              }
+                              value={selectedBodyType}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Body Type
+                              </option>
+                              <option value="Cruiser">Cruiser</option>
+                              <option value="Sport Bike">Sport Bike</option>
+                              <option value="Touring Bike">Touring Bike</option>
+                              <option value="Dirt Bike">Dirt Bike</option>
+                              <option value="Standard (Naked Bike)">
+                                Standard (Naked Bike)
+                              </option>
+                            </select>
+                          </div>
+
+                          {/* Modal Category */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Modal Category
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedModalCategory(e.target.value)
+                              }
+                              value={selectedModalCategory}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Modal Category
+                              </option>
+                              <option value="A-Class">A-Class (Compact)</option>
+                              <option value="B-Class">
+                                B-Class (Compact MPV)
+                              </option>
+                              <option value="C-Class">
+                                C-Class (Compact Exe)
+                              </option>
+                              <option value="E-Class">
+                                E-Class (Executive)
+                              </option>
+                              <option value="S-Class">S-Class (Luxury)</option>
+                              <option value="CLA">CLA (Compact Coupe)</option>
+                              <option value="CLS">CLS (Executive Coupe)</option>
+                              <option value="GLA">GLA (Compact SUV)</option>
+                              <option value="GLC">GLC (Luxury SUV)</option>
+                              <option value="GLE">GLE (Luxury SUV)</option>
+                              <option value="GLS">GLS (Full-Size SUV)</option>
+                              <option value="G-Class">
+                                G-Class (Off-Road SUV)
+                              </option>
+                              <option value="SLK">
+                                SLK (Compact Roadster)
+                              </option>
+                              <option value="SLC">
+                                SLC (Compact Roadster)
+                              </option>
+                              <option value="AMG GT">
+                                AMG GT (Performance)
+                              </option>
+                              <option value="EQC">EQC (Electric SUV)</option>
+                              <option value="EQS">
+                                EQS (Electric Luxury Sedan)
+                              </option>
+                            </select>
+                          </div>
+
+                          {/* Seller Type */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Seller Type
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedSellerType(e.target.value)
+                              }
+                              value={selectedSellerType}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Seller Type
+                              </option>
+                              <option value="Dealers">Dealers</option>
+                              <option value="Individuals">Individuals</option>
+                            </select>
+                          </div>
+
+                          {/* Picture Availability */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Picture Availability
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedPictureAvailability(e.target.value)
+                              }
+                              value={selectedPictureAvailability}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Picture Availability
+                              </option>
+                              <option value="With Pictures">
+                                With Pictures
+                              </option>
+                              <option value="Without Pictures">
+                                Without Pictures
+                              </option>
+                            </select>
+                          </div>
+
+                          {/* Video Availability */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Video Availability
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedVideoAvailability(e.target.value)
+                              }
+                              value={selectedVideoAvailability}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Video Availability
+                              </option>
+                              <option value="With Video">With Video</option>
+                              <option value="Without Video">
+                                Without Video
+                              </option>
+                            </select>
+                          </div>
+
+                          {/* Ad Type */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Ad Type
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                setSelectedAdType(e.target.value)
+                              }
+                              value={selectedAdType}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Ad Type
+                              </option>
+                              <option value="Featured Ad">Featured Ad</option>
+                            </select>
+                          </div>
+
+                          {/* Image Uploads */}
+                          {[...Array(6)].map((_, index) => (
+                            <div className="mb-4" key={index}>
+                              <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
+                                index + 1
+                              }`}</label>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange(index)}
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                              />
+                            </div>
+                          ))}
+
+                          {/* Location */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Location
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter location"
+                              value={location}
+                              onChange={(e) => setLocation(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Link */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Link
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter link"
+                              value={link}
+                              onChange={(e) => setLink(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Description */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Description
+                            </label>
+                            <textarea
+                              rows={3}
+                              placeholder="Enter description"
+                              value={description}
+                              onChange={(e) => setDescription(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Fuel Type
+                            </label>
+                            <select
+                              onChange={handleFuelTypeChange}
+                              value={selectedFuelType}
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="" disabled>
+                                Select Fuel Type
+                              </option>
+                              <option value="Petroleum">Petroleum</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+                          {/* Time Ago */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Time Ago (Date Posted)
+                            </label>
+                            <DatePicker
+                              selected={timeAgo}
+                              onChange={(date) => setTimeAgo(date)} // Works because state allows null
+                              dateFormat="MMMM d, yyyy"
+                              showYearDropdown
+                              scrollableYearDropdown
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                              required
+                            />
+                          </div>
+
+                          {/* Registered City */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Registered City
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter registered city"
+                              value={registeredCity}
+                              onChange={(e) =>
+                                setRegisteredCity(e.target.value)
+                              }
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Assembly */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Assembly
+                            </label>
+                            <select
+                              onChange={(e) => setAssembly(e.target.value)}
+                              value={assembly}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="Imported">Imported</option>
+                              <option value="Local">Local</option>
+                            </select>
+                          </div>
+
+                          {/* Condition */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Condition
+                            </label>
+                            <select
+                              onChange={(e) => setCondition(e.target.value)}
+                              value={condition}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="New">New</option>
+                              <option value="Used">Used</option>
+                            </select>
+                          </div>
+
+                          {/* Purpose */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Purpose
+                            </label>
+                            <select
+                              onChange={(e) => setPurpose(e.target.value)}
+                              value={purpose}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="Sell">Sell</option>
+                              <option value="Rent">Rent</option>
+                            </select>
+                          </div>
+
+                          {/* Phone */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Phone
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter Phone Number"
+                              value={PhoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* WhatsApp */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              WhatsApp
+                            </label>
+                            <input
+                              type="number"
+                              placeholder="Enter WhatsApp number"
+                              value={whatsapp}
+                              onChange={(e) => setWhatsapp(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Driven KM */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Driven KM
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter Driven KMS"
+                              value={DrivenKm}
+                              onChange={(e) => setDrivenKm(e.target.value)}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                          </div>
+
+                          {/* Type */}
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Type
+                            </label>
+                            <select
+                              onChange={(e) => setType(e.target.value)}
+                              value={type}
+                              required
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                              <option value="Sale">Sale</option>
+                              <option value="Lease">Lease</option>
+                            </select>
+                          </div>
+
+                          {/* Submit Button */}
+                          <button
+                            type="submit"
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                          >
+                            Add Listing
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          {activeTab === 1 && (
+            <>
+              <SPORTSGAMESReported />
+            </>
+          )}
+          {activeTab === 2 && <p>Content for Tab 3</p>}
+          {activeTab === 3 && <p>Content for Tab 4</p>}
+          {activeTab === 4 && <p>Content for Tab 5</p>}
         </div>
-      )}
+      </div>
     </>
   );
 };
