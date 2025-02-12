@@ -25,6 +25,7 @@ import SPORTSGAMESReported from "../SPORTSGAMESReported";
 import BikesReported from "../BikesReported";
 import ElectronicCompReported from "../ElectronicCompReported";
 import FashionStyleReported from "../FashionStyleReported";
+import JOBBOARDPageReported from "../JOBBOARDPageReported";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -675,6 +676,18 @@ const Reported = () => {
               }`}
             >
               Fashion Style{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(5)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 5
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              Jobboard{" "}
             </button>
           </li>
         </ul>
@@ -1578,6 +1591,7 @@ const Reported = () => {
           {activeTab === 2 && <BikesReported />}
           {activeTab === 3 && <ElectronicCompReported />}
           {activeTab === 4 && <FashionStyleReported />}
+          {activeTab === 5 && <JOBBOARDPageReported />}
         </div>
       </div>
     </>
