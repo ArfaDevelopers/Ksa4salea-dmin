@@ -31,7 +31,7 @@ type Ad = {
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -71,7 +71,7 @@ const ElectronicCompReported = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
 
   const [link, setLink] = useState("");
@@ -170,7 +170,7 @@ const ElectronicCompReported = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -208,20 +208,23 @@ const ElectronicCompReported = () => {
         });
 
         console.log(adsList, "adsList___________adsList");
-        const filteredAds = adsList.filter(
-          (ad) =>
-            Array.isArray(ad.reportTypes) &&
-            ad.reportTypes.some((type: any) =>
-              [
-                "Sexual",
-                "Illegal",
-                "Abusive",
-                "Harassment",
-                "Fraud",
-                "Spam",
-              ].includes(type.trim().toLowerCase())
-            )
-        );
+        const filteredAds = adsList.filter((ad) => {
+          // Ensure reportTypes is an array
+          const reportTypes = Array.isArray(ad.reportTypes)
+            ? ad.reportTypes
+            : ad.reportTypes
+            ? [ad.reportTypes]
+            : [];
+
+          return reportTypes.some((type) =>
+            ["Sexual", "Illegal", "Abusive", "Harassment", "Fraud", "Spam"]
+              .map((type) => type.trim().toLowerCase()) // Normalize types to lowercase and trim
+              .includes(type.trim().toLowerCase())
+          );
+        });
+
+        console.log(filteredAds, "adsList___________filteredAds");
+
         setAds(filteredAds); // Set the state with the ads data
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
@@ -260,7 +263,7 @@ const ElectronicCompReported = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPrice(adData.Price);
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -271,7 +274,7 @@ const ElectronicCompReported = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -319,7 +322,7 @@ const ElectronicCompReported = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -542,7 +545,7 @@ const ElectronicCompReported = () => {
         img5: imageUrls[4], // img5
         img6: imageUrls[5], // img6
         location: location,
-        price: price,
+        Price: Price,
         OperatingSystem: OperatingSystem,
         ScreenSize: ScreenSize,
         Processor: Processor,
@@ -787,7 +790,7 @@ const ElectronicCompReported = () => {
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">{ad.location}</td>
-                <td className="px-6 py-4">{ad.price}</td>
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button
@@ -919,8 +922,8 @@ const ElectronicCompReported = () => {
                   </label>
                   <input
                     type="number"
-                    placeholder="Enter price"
-                    value={price}
+                    placeholder="Enter Price"
+                    value={Price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

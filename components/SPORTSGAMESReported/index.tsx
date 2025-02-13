@@ -29,7 +29,7 @@ type Ad = {
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   galleryImages: string;
   reportTypes: any;
 };
@@ -40,7 +40,7 @@ const SPORTSGAMESReported = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Price, setPrice] = useState("");
   const [link, setLink] = useState("");
   const [timeAgo, setTimeAgo] = useState<Date | null>(new Date());
   const [imageFile, setImageFile] = useState(null); // For storing the selected image file
@@ -85,7 +85,7 @@ const SPORTSGAMESReported = () => {
         title: title,
         description: description,
         location: location,
-        price: price,
+        Price: Price,
         Type: heathcaretype,
         link: link,
         // timeAgo: timeAgo.toLocaleDateString(), // Store as string for consistency
@@ -101,7 +101,7 @@ const SPORTSGAMESReported = () => {
                 title,
                 description,
                 location,
-                price,
+                Price,
                 Type: heathcaretype,
                 link,
                 // timeAgo: timeAgo.toLocaleDateString(),
@@ -136,7 +136,7 @@ const SPORTSGAMESReported = () => {
           title,
           description,
           location,
-          price,
+          Price,
 
           link,
           img: imageData.url || "", // Safely access 'url' here
@@ -153,7 +153,7 @@ const SPORTSGAMESReported = () => {
           title: newAd.title,
           description: newAd.description,
           location: newAd.location,
-          price: newAd.price,
+          Price: newAd.Price,
           type: newAd.heathcaretype, // Correcting key naming
           link: newAd.link,
           timeAgo: newAd.timeAgo, // Store as a string
@@ -183,7 +183,7 @@ const SPORTSGAMESReported = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPrice(adData.Price);
         setTitle(adData.title);
         setLink(adData.link);
         setImg(adData.img);
@@ -197,7 +197,7 @@ const SPORTSGAMESReported = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           galleryImages: adData.galleryImages || "",
           reportTypes: adData.reportTypes || "",
         };
@@ -224,24 +224,25 @@ const SPORTSGAMESReported = () => {
           description: doc.data().description || "", // Provide fallback if data is missing
           location: doc.data().location || "", // Provide fallback if data is missing
           img: doc.data().img || "", // Provide fallback if data is missing
-          price: doc.data().price || "", // Provide fallback if data is missing
+          Price: doc.data().Price || "", // Provide fallback if data is missing
           galleryImages: doc.data().galleryImages || "", // Provide fallback if data is missing
           reportTypes: doc.data().reportTypes || "", // Provide fallback if data is missing
         }));
-        const filteredAds = adsList.filter(
-          (ad) =>
-            Array.isArray(ad.reportTypes) &&
-            ad.reportTypes.some((type: any) =>
-              [
-                "Sexual",
-                "Illegal",
-                "Abusive",
-                "Harassment",
-                "Fraud",
-                "Spam",
-              ].includes(type.trim().toLowerCase())
-            )
-        );
+        const filteredAds = adsList.filter((ad) => {
+          // Ensure reportTypes is an array
+          const reportTypes = Array.isArray(ad.reportTypes)
+            ? ad.reportTypes
+            : ad.reportTypes
+            ? [ad.reportTypes]
+            : [];
+
+          return reportTypes.some((type) =>
+            ["Sexual", "Illegal", "Abusive", "Harassment", "Fraud", "Spam"]
+              .map((type) => type.trim().toLowerCase()) // Normalize types to lowercase and trim
+              .includes(type.trim().toLowerCase())
+          );
+        });
+
         console.log(adsList);
         setAds(filteredAds); // Set the state with the ads data
         setLoading(false); // Stop loading when data is fetched
@@ -517,7 +518,7 @@ const SPORTSGAMESReported = () => {
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">{ad.location}</td>
-                <td className="px-6 py-4">{ad.price}</td>
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button
@@ -651,16 +652,16 @@ const SPORTSGAMESReported = () => {
                 {/* Price */}
                 <div className="mb-6">
                   <label
-                    htmlFor="price"
+                    htmlFor="Price"
                     className="block text-lg text-gray-700 mb-2"
                   >
                     Price
                   </label>
                   <input
-                    id="price"
+                    id="Price"
                     type="number"
-                    placeholder="Enter price"
-                    value={price}
+                    placeholder="Enter Price"
+                    value={Price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
                     className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"

@@ -31,7 +31,7 @@ type Ad = {
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -185,7 +185,7 @@ const JOBBOARDPageReported = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -221,20 +221,20 @@ const JOBBOARDPageReported = () => {
             reportTypes: data.reportTypes || "",
           };
         });
-        const filteredAds = adsList.filter(
-          (ad) =>
-            Array.isArray(ad.reportTypes) &&
-            ad.reportTypes.some((type: any) =>
-              [
-                "Sexual",
-                "Illegal",
-                "Abusive",
-                "Harassment",
-                "Fraud",
-                "Spam",
-              ].includes(type.trim().toLowerCase())
-            )
-        );
+        const filteredAds = adsList.filter((ad) => {
+          // Ensure reportTypes is an array
+          const reportTypes = Array.isArray(ad.reportTypes)
+            ? ad.reportTypes
+            : ad.reportTypes
+            ? [ad.reportTypes]
+            : [];
+
+          return reportTypes.some((type) =>
+            ["Sexual", "Illegal", "Abusive", "Harassment", "Fraud", "Spam"]
+              .map((type) => type.trim().toLowerCase()) // Normalize types to lowercase and trim
+              .includes(type.trim().toLowerCase())
+          );
+        });
 
         console.log(adsList, "adsList___________adsList");
 
@@ -365,7 +365,7 @@ const JOBBOARDPageReported = () => {
           galleryImages: adData.FuelType || "galleryImages",
           reportTypes: adData.reportTypes || "reportTypes",
 
-          price: "",
+          Price: "",
           DrivenKm: undefined,
         };
         setDescription(selectedAd.description);
@@ -821,7 +821,7 @@ const JOBBOARDPageReported = () => {
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">{ad.location}</td>
-                <td className="px-6 py-4">{ad.price}</td>
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button
