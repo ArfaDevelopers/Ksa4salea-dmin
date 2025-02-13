@@ -602,7 +602,7 @@ const EducationReported = () => {
 
   return (
     <>
-      <button
+      {/* <button
         onClick={() => {
           setIsOpen(true);
           setSelectedAd(null);
@@ -612,7 +612,7 @@ const EducationReported = () => {
         className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
       >
         Add New
-      </button>
+      </button> */}
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div>
@@ -746,63 +746,71 @@ const EducationReported = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAds.map((ad) => (
-              <tr
-                key={ad.id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <td className="w-4 p-4">
-                  <div className="flex items-center">
-                    <input
-                      id={`checkbox-table-search-${ad.id}`}
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor={`checkbox-table-search-${ad.id}`}
-                      className="sr-only"
-                    >
-                      checkbox
-                    </label>
-                  </div>
-                </td>
-                <th
-                  scope="row"
-                  className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+            {filteredAds.length > 0 ? (
+              filteredAds.map((ad) => (
+                <tr
+                  key={ad.id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  <img
-                    className="w-10 h-10 rounded-full"
-                    src={ad.galleryImages[0]}
-                    alt={ad.title}
-                  />
-                  <div className="ps-3">
-                    <div className="text-base font-semibold">{ad.title}</div>
-                    <div className="font-normal text-gray-500"></div>
-                  </div>
-                </th>
-                <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
-                <td className="px-6 py-4">{ad.Price}</td>
-                <td className="px-6 py-4">
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => handleDelete(ad)}
-                    className="text-red-600 dark:text-red-500 hover:text-red-700"
-                    title="Delete"
+                  <td className="w-4 p-4">
+                    <div className="flex items-center">
+                      <input
+                        id={`checkbox-table-search-${ad.id}`}
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor={`checkbox-table-search-${ad.id}`}
+                        className="sr-only"
+                      >
+                        checkbox
+                      </label>
+                    </div>
+                  </td>
+                  <th
+                    scope="row"
+                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    <RiDeleteBin5Line size={20} />
-                  </button>
-                  {/* Edit Button */}
-                  <button
-                    onClick={() => handleEditClick(ad.id)} // Fetch the ad by ID and open modal
-                    className="text-blue-600 dark:text-blue-500 hover:text-blue-700 ml-3"
-                    title="Edit"
-                  >
-                    <MdEdit size={20} style={{ color: "green" }} />
-                  </button>
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src={ad.galleryImages[0]}
+                      alt={ad.title}
+                    />
+                    <div className="ps-3">
+                      <div className="text-base font-semibold">{ad.title}</div>
+                      <div className="font-normal text-gray-500"></div>
+                    </div>
+                  </th>
+                  <td className="px-6 py-4">{ad.description}</td>
+                  <td className="px-6 py-4">{ad.location}</td>
+                  <td className="px-6 py-4">{ad.Price}</td>
+                  <td className="px-6 py-4">
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => handleDelete(ad)}
+                      className="text-red-600 dark:text-red-500 hover:text-red-700"
+                      title="Delete"
+                    >
+                      <RiDeleteBin5Line size={20} />
+                    </button>
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => handleEditClick(ad.id)}
+                      className="text-blue-600 dark:text-blue-500 hover:text-blue-700 ml-3"
+                      title="Edit"
+                    >
+                      <MdEdit size={20} style={{ color: "green" }} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                  No reported data available
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

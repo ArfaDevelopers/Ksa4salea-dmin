@@ -635,7 +635,7 @@ const TRAVELReported = () => {
 
   return (
     <>
-      <button
+      {/* <button
         onClick={() => {
           setIsOpen(true);
           setSelectedAd(null);
@@ -645,7 +645,7 @@ const TRAVELReported = () => {
         className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
       >
         Add New
-      </button>
+      </button> */}
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div>
