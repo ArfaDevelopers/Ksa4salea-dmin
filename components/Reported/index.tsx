@@ -26,6 +26,11 @@ import BikesReported from "../BikesReported";
 import ElectronicCompReported from "../ElectronicCompReported";
 import FashionStyleReported from "../FashionStyleReported";
 import JOBBOARDPageReported from "../JOBBOARDPageReported";
+import EducationReported from "../EducationReported";
+import REALESTATECOMPReported from "../REALESTATECOMPReported";
+import TRAVELReported from "../TRAVELReported";
+import PETANIMALCOMPReported from "../PETANIMALCOMPReported";
+import MAGAZINESCOMPReported from "../MAGAZINESCOMPReported";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -688,6 +693,66 @@ const Reported = () => {
               }`}
             >
               Jobboard{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(6)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 6
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              Education{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(7)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 7
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              REALESTATE{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(8)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 8
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              TRAVEL{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(9)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 9
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              Pet & Animal{" "}
+            </button>
+          </li>
+          <li className="me-2">
+            <button
+              onClick={() => setActiveTab(10)}
+              className={`inline-block px-4 py-3 rounded-lg ${
+                activeTab === 10
+                  ? "text-white bg-blue-600"
+                  : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+              }`}
+            >
+              Magazines{" "}
             </button>
           </li>
         </ul>
@@ -1592,6 +1657,11 @@ const Reported = () => {
           {activeTab === 3 && <ElectronicCompReported />}
           {activeTab === 4 && <FashionStyleReported />}
           {activeTab === 5 && <JOBBOARDPageReported />}
+          {activeTab === 6 && <EducationReported />}
+          {activeTab === 7 && <REALESTATECOMPReported />}
+          {activeTab === 8 && <TRAVELReported />}
+          {activeTab === 9 && <PETANIMALCOMPReported />}
+          {activeTab === 10 && <MAGAZINESCOMPReported />}
         </div>
       </div>
     </>

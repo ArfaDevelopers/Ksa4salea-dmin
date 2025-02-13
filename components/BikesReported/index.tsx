@@ -63,6 +63,7 @@ type Ad = {
   whatsapp: string;
   AdType: any;
   FuelType: any;
+  reportTypes: any;
 };
 const BikesReported = () => {
   const MySwal = withReactContent(Swal);
@@ -166,12 +167,26 @@ const BikesReported = () => {
             whatsapp: data.whatsapp || "",
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
+            reportTypes: data.reportTypes || "",
           };
         });
-
+        const filteredAds = adsList.filter(
+          (ad) =>
+            Array.isArray(ad.reportTypes) &&
+            ad.reportTypes.some((type: any) =>
+              [
+                "Sexual",
+                "Illegal",
+                "Abusive",
+                "Harassment",
+                "Fraud",
+                "Spam",
+              ].includes(type.trim().toLowerCase())
+            )
+        );
         console.log(adsList, "adsList___________adsList");
 
-        setAds(adsList); // Set the state with the ads data
+        setAds(filteredAds); // Set the state with the ads data
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);
@@ -289,6 +304,7 @@ const BikesReported = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
+          reportTypes: adData.reportTypes || "reportTypes",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);

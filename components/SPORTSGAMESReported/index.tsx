@@ -31,6 +31,7 @@ type Ad = {
   img: string;
   price: string;
   galleryImages: string;
+  reportTypes: any;
 };
 const SPORTSGAMESReported = () => {
   const MySwal = withReactContent(Swal);
@@ -141,7 +142,9 @@ const SPORTSGAMESReported = () => {
           img: imageData.url || "", // Safely access 'url' here
           timeAgo: timeAgo ? timeAgo.toLocaleDateString() : "",
           heathcaretype,
-          galleryImages: "", // Add this property with a default value, e.g., an empty string
+          galleryImages: "",
+          reportTypes: "", // Add this property with a default value, e.g., an empty string
+          // Add this property with a default value, e.g., an empty string
         };
         setAds([...ads, newAd]);
         const adCollectionRef = collection(db, "SPORTSGAMESComp");
@@ -196,6 +199,7 @@ const SPORTSGAMESReported = () => {
           img: adData.img || "",
           price: adData.price || "0",
           galleryImages: adData.galleryImages || "",
+          reportTypes: adData.reportTypes || "",
         };
 
         setSelectedAd(selectedAd); // Pass a valid Ad object to setSelectedAd
@@ -222,9 +226,24 @@ const SPORTSGAMESReported = () => {
           img: doc.data().img || "", // Provide fallback if data is missing
           price: doc.data().price || "", // Provide fallback if data is missing
           galleryImages: doc.data().galleryImages || "", // Provide fallback if data is missing
+          reportTypes: doc.data().reportTypes || "", // Provide fallback if data is missing
         }));
+        const filteredAds = adsList.filter(
+          (ad) =>
+            Array.isArray(ad.reportTypes) &&
+            ad.reportTypes.some((type: any) =>
+              [
+                "Sexual",
+                "Illegal",
+                "Abusive",
+                "Harassment",
+                "Fraud",
+                "Spam",
+              ].includes(type.trim().toLowerCase())
+            )
+        );
         console.log(adsList);
-        setAds(adsList); // Set the state with the ads data
+        setAds(filteredAds); // Set the state with the ads data
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);

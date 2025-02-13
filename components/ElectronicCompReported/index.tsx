@@ -63,6 +63,7 @@ type Ad = {
   AdType: any;
   FuelType: any;
   galleryImages: any;
+  reportTypes: any;
 };
 const ElectronicCompReported = () => {
   const MySwal = withReactContent(Swal);
@@ -202,12 +203,26 @@ const ElectronicCompReported = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+            reportTypes: data.reportTypes || "",
           };
         });
 
         console.log(adsList, "adsList___________adsList");
-
-        setAds(adsList); // Set the state with the ads data
+        const filteredAds = adsList.filter(
+          (ad) =>
+            Array.isArray(ad.reportTypes) &&
+            ad.reportTypes.some((type: any) =>
+              [
+                "Sexual",
+                "Illegal",
+                "Abusive",
+                "Harassment",
+                "Fraud",
+                "Spam",
+              ].includes(type.trim().toLowerCase())
+            )
+        );
+        setAds(filteredAds); // Set the state with the ads data
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);
@@ -289,6 +304,7 @@ const ElectronicCompReported = () => {
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
+          reportTypes: adData.reportTypes || "reportTypes",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
