@@ -18,6 +18,8 @@ import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
+import { MdRemoveRedEye } from "react-icons/md";
+import { DocumentData } from "firebase/firestore";
 // Cloudinary upload
 import axios from "axios";
 
@@ -142,6 +144,32 @@ const JOBBOARDPageReported = () => {
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<DocumentData | null>(null);
+
+  const handleRevertClick = async (id: string) => {
+    try {
+      const adsCollection = collection(db, "JOBBOARD");
+      const docRef = doc(adsCollection, id); // Fetching ad by ID
+
+      // Fetch existing document
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        setModalData(docSnapshot.data() as DocumentData); // Explicitly define the type
+        setModalOpen(true); // Open modal
+      } else {
+        console.log("Document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error fetching document:", error);
+    }
+  };
+
+  const handleClose = () => {
+    setModalOpen(false);
+    setModalData(null);
+  };
   const resetForm = () => {
     setDescription("");
     setLink("");
@@ -840,6 +868,60 @@ const JOBBOARDPageReported = () => {
                     >
                       <MdEdit size={20} style={{ color: "green" }} />
                     </button>
+                    <button
+                      onClick={() => handleRevertClick(ad.id)}
+                      className="text-blue-600 dark:text-blue-500 hover:text-blue-700 ml-3"
+                      title="View and Revert"
+                    >
+                      <MdRemoveRedEye size={20} style={{ color: "green" }} />
+                    </button>
+                    {modalOpen && (
+                      <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div className="bg-white p-5 rounded-lg shadow-lg w-96">
+                          <h2 className="text-lg font-semibold mb-3">
+                            Ad Details
+                          </h2>
+
+                          {/* Display Data */}
+                          {modalData ? (
+                            <div>
+                              <p>
+                                <strong>Id:</strong> {modalData.userId || "N/A"}
+                              </p>
+
+                              {/* Display Report Types */}
+                              {modalData.reportTypes &&
+                              modalData.reportTypes.length > 0 ? (
+                                <div>
+                                  <strong>Report Types:</strong>
+                                  <ul className="list-disc ml-4">
+                                    {modalData.reportTypes.map(
+                                      (report: string, index: number) => (
+                                        <li key={index}>{report}</li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              ) : (
+                                <p>
+                                  <strong>Report Types:</strong> N/A
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p>Loading...</p>
+                          )}
+
+                          {/* Bottom Button */}
+                          <button
+                            onClick={handleClose}
+                            className="bg-red-500 text-white px-4 py-2 mt-4 w-full rounded hover:bg-red-600"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))
