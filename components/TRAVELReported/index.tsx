@@ -935,7 +935,7 @@ const TRAVELReported = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "35%" }}
+            style={{ marginTop: "45%" }}
           >
             <div className="relative w-full max-w-lg">
               <button
@@ -946,7 +946,7 @@ const TRAVELReported = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New health Care
+                  Add a New Travel
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}

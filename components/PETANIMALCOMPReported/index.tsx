@@ -965,7 +965,7 @@ const PETANIMALCOMPReported = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New health Care
+                  Add a New Pet and Animal{" "}
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}

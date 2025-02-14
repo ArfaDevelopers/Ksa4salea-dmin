@@ -1057,16 +1057,13 @@ const Reported = () => {
               {isOpen && (
                 <div
                   className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-                  style={{ marginTop: "-2%" }}
+                  style={{ marginTop: "8%" }}
                 >
                   <div
                     className="flex justify-center items-center h-full"
-                    style={{ marginTop: "75%" }}
+                    style={{ marginTop: "68%" }}
                   >
-                    <div
-                      className="relative w-full max-w-lg"
-                      style={{ marginTop: "50%" }}
-                    >
+                    <div className="relative w-full max-w-lg">
                       <button
                         onClick={closeModal}
                         className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
@@ -1075,7 +1072,7 @@ const Reported = () => {
                       </button>
                       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h3 className="text-center text-2xl font-bold mb-4">
-                          Add a New Bike Listing
+                          Add a New Car
                         </h3>
                         <form onSubmit={handleAddCar}>
                           {/* Name */}
