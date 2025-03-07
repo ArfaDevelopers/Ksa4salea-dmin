@@ -25,6 +25,7 @@ import { FaAd } from "react-icons/fa";
 import { GoReport } from "react-icons/go";
 import { FaPersonDressBurst } from "react-icons/fa6";
 import { FaBuysellads } from "react-icons/fa6";
+import { SiWoocommerce } from "react-icons/si";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -98,6 +99,15 @@ const menuGroups = [
         ),
         label: "Banner Image",
         route: "/Bannerimg",
+      },
+      {
+        icon: (
+          <SiWoocommerce
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Commercial Ads",
+        route: "/CommercialAdscom",
       },
       {
         icon: (

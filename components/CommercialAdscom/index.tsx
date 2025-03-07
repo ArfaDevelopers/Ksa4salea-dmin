@@ -1,13 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { db } from "../Firebase/FirebaseConfig";
+import { db } from "./../Firebase/FirebaseConfig";
 import {
   addDoc,
   collection,
-  deleteDoc,
-  doc,
-  getDoc,
   getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
+  setDoc,
 } from "firebase/firestore";
 
 // For date picker
@@ -16,10 +17,13 @@ import { enUS } from "date-fns/locale"; // Import English locale
 import "react-datepicker/dist/react-datepicker.css";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { MdEdit } from "react-icons/md";
+
+// Register the English locale
+registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
@@ -60,75 +64,37 @@ type Ad = {
   AdType: any;
   FuelType: any;
   galleryImages: any;
+  image: any;
+  Title: any;
 };
-// Register the English locale
-registerLocale("en-US", enUS);
 
-const MAGAZINESCOMP = () => {
+const CommercialAdscom = () => {
   const MySwal = withReactContent(Swal);
 
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Phone, setPhone] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
 
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
   const [timeAgo, setTimeAgo] = useState<Date | null>(new Date());
   const [imageFiles, setImageFiles] = useState(Array(6).fill(null)); // Array to hold selected image files
+  const [registeredCity, setRegisteredCity] = useState("Un-Registered");
   const [assembly, setAssembly] = useState("Imported");
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [condition, setCondition] = useState("Used");
+  const [purpose, setPurpose] = useState("Sell");
   const [PhoneNumber, setPhoneNumber] = useState("");
-  const [Breed, setBreed] = useState("");
-  const [Age, setAge] = useState("");
-  const [Gender, setGender] = useState("");
-  const [SubscriptionType, setSubscriptionType] = useState("");
-  const [IssueType, setIssueType] = useState("");
-  const [Language, setLanguage] = useState("");
-  const [AgeGroup, setAgeGroup] = useState("");
 
   const [model, setModel] = useState("2022");
+  const [DrivenKm, setDrivenKm] = useState("");
 
   const [whatsapp, setWhatsapp] = useState("03189391781");
-  const [Type, setType] = useState("");
+  const [type, setType] = useState("Sale");
   const [selectedCity, setSelectedCity] = useState("");
   const [Registeredin, setRegisteredin] = useState("");
-  const [OperatingSystem, setOperatingSystem] = useState("");
-  const [MeasurementRange, setMeasurementRange] = useState("");
-  const [Features, setFeatures] = useState("");
-  const [Accuracy, setAccuracy] = useState("");
-  const [CuffSize, setCuffSize] = useState("");
-  const [DisplayType, setDisplayType] = useState("");
-  const [BatteryType, setBatteryType] = useState("");
-  const [Compatibility, setCompatibility] = useState("");
-  const [StorageCapacity, setStorageCapacity] = useState("");
-  const [MeasurementUnits, setMeasurementUnits] = useState("");
-  const [SpeedofMeasurement, setSpeedofMeasurement] = useState("");
-  const [SellerType, setSellerType] = useState("");
-  const [Size, setSize] = useState("");
-  const [Amenities, setAmenities] = useState("");
-  const [PropertyFeatures, setPropertyFeatures] = useState("");
-  const [BuildingType, setBuildingType] = useState("");
-  const [Accessibility, setAccessibility] = useState("");
-  const [Color, setColor] = useState("");
-  const [Temperament, setTemperament] = useState("");
-  const [HealthStatus, setHealthStatus] = useState("");
-  const [TrainingLevel, setTrainingLevel] = useState("");
-  const [DietaryPreferences, setDietaryPreferences] = useState("");
-
-  const [ScreenSize, setScreenSize] = useState("");
-
-  const [Processor, setProcessor] = useState("");
-  const [RAM, setRAM] = useState("");
-  const [StorageType, setStorageType] = useState("");
-  const [Storagecapacity, setStoragecapacity] = useState("");
-  const [GraphicsCard, setGraphicsCard] = useState("");
-  const [BatteryLife, setBatteryLife] = useState("");
-  const [DisplayQuality, setDisplayQuality] = useState("");
-  const [Connectivity, setConnectivity] = useState("");
-  const [SpecialFeatures, setSpecialFeatures] = useState("");
-
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -137,28 +103,28 @@ const MAGAZINESCOMP = () => {
   const [selectedAssembly, setSelectedAssembly] = useState("");
   const [selectedBodyType, setSelectedBodyType] = useState("");
   const [selectedNumberOfDoors, setSelectedNumberOfDoors] = useState("");
+  const [selectedSeatingCapacity, setSelectedSeatingCapacity] = useState("");
   const [selectedModalCategory, setSelectedModalCategory] = useState("");
   const [selectedSellerType, setSelectedSellerType] = useState("");
-  const [Mileage, setMileage] = useState("");
-  console.log(OperatingSystem, "OperatingSystem_______"); // Log selected ad type to the console
-
   const [selectedPictureAvailability, setSelectedPictureAvailability] =
     useState("");
   const [selectedVideoAvailability, setSelectedVideoAvailability] =
     useState("");
+  const [selectedFuelType, setSelectedFuelType] = useState("");
   const [selectedAdType, setSelectedAdType] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
-  const [ads, setAds] = useState<Ad[]>([]);
   const [refresh, setRefresh] = useState(false);
-  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
-
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [isOpen, setIsOpen] = useState(false);
+  const [image, setimage] = useState<string | null>(null);
+  console.log(image, "image____________");
   const closeModal = () => setIsOpen(false);
+  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const adsCollection = collection(db, "MAGAZINESCOMP"); // Get reference to the 'Cars' collection
+        const adsCollection = collection(db, "CommercialAdscom"); // Get reference to the 'Cars' collection
         const adsSnapshot = await getDocs(adsCollection); // Fetch the data
 
         const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
@@ -204,7 +170,9 @@ const MAGAZINESCOMP = () => {
             whatsapp: data.whatsapp || "",
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
-            galleryImages: data.galleryImages || "",
+            galleryImages: data.galleryImages || {},
+            image: data.image || "",
+            Title: data.Title || "",
           };
         });
 
@@ -220,40 +188,58 @@ const MAGAZINESCOMP = () => {
 
     fetchAds();
   }, [refresh]);
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        setLoading(true); // Show spinner
-        const carsCollectionRef = collection(db, "MAGAZINESCOMP");
-        const querySnapshot = await getDocs(carsCollectionRef);
-        const carsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
 
-        console.log(carsData, "carsData_________");
-      } catch (error) {
-        console.error("Error getting cars:", error);
+  const handleDelete = async (ad: any) => {
+    // Display confirmation dialog
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        // Proceed with deletion
+        MySwal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+          timer: 1000,
+        });
+
+        // Delete the ad from Firestore (Firebase)
+        try {
+          // Delete the document from Firestore using the ad's id
+          await deleteDoc(doc(db, "CommercialAdscom", ad.id)); // Delete document by id
+          console.log("Ad deleted from Firestore:", ad.id);
+          setRefresh(!refresh);
+          // Optionally, update the state or re-fetch the data after deletion
+          // For example, you can call a function to refetch ads here
+        } catch (error) {
+          console.error("Error deleting ad from Firestore:", error);
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your file is safe :)",
+          icon: "error",
+          timer: 1000,
+        });
       }
-    };
-
-    fetchCars();
-  }, []);
-  const filteredAds = ads.filter(
-    (ad) =>
-      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
-      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
-  );
+    });
+  };
   const handleEditClick = async (id: any) => {
     console.log(id, "WhatWhat");
     try {
-      const adDoc = await getDoc(doc(db, "MAGAZINESCOMP", id));
+      const adDoc = await getDoc(doc(db, "CommercialAdscom", id));
       if (adDoc.exists()) {
         const adData = adDoc.data();
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPhone(adData.price);
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -296,22 +282,24 @@ const MAGAZINESCOMP = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
-          galleryImages: adData.FuelType || "galleryImages",
+          galleryImages: adData.galleryImages || "galleryImages",
+          image: adData.image || "image",
+          Title: adData.Title || "Title",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
-        // setCondition(selectedAd.condition);
+        setCondition(selectedAd.condition);
         setAssembly(selectedAd.assembly);
-        // setRegisteredCity(selectedAd.registeredCity);
+        setRegisteredCity(selectedAd.registeredCity);
 
-        // setDrivenKm(selectedAd.DrivenKm);
+        setDrivenKm(selectedAd.DrivenKm);
         setModel(selectedAd.model);
         setPhoneNumber(selectedAd.PhoneNumber);
-        // setPurpose(selectedAd.purpose);
+        setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPhone(selectedAd.price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -325,76 +313,48 @@ const MAGAZINESCOMP = () => {
         setSelectedPictureAvailability(selectedAd.PictureAvailability); // Pass a valid Ad object to setSelectedAd
         setSelectedSellerType(selectedAd.sellerType); // Pass a valid Ad object to setSelectedAd
         setSelectedModalCategory(selectedAd.ModalCategory); // Pass a valid Ad object to setSelectedAd
+        setSelectedSeatingCapacity(selectedAd.SeatingCapacity); // Pass a valid Ad object to setSelectedAd
         setSelectedNumberOfDoors(selectedAd.CoNumberOfDoorsor); // Pass a valid Ad object to setSelectedAd
         setSelectedBodyType(selectedAd.bodyType);
         setSelectedAssembly(selectedAd.assembly);
-        // setSelectedFuelType(selectedAd.FuelType);
+        setSelectedFuelType(selectedAd.FuelType);
 
         // Pass a valid Ad object to setSelectedAd
         setIsOpen(true);
       } else {
         console.error("No such document!");
       }
-      setPrice;
+      setPhone;
     } catch (error) {
       console.error("Error fetching ad by ID:", error);
     }
   };
-  const handleDelete = async (ad: any) => {
-    // Display confirmation dialog
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        // Proceed with deletion
-        MySwal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-          timer: 1000,
-        });
+  // const resetForm = () => {
+  //   setLocation("");
+  //   ("");
+  //   setLink("");
+  //   setDescription("");
 
-        // Delete the ad from Firestore (Firebase)
-        try {
-          // Delete the document from Firestore using the ad's id
-          await deleteDoc(doc(db, "MAGAZINESCOMP", ad.id)); // Delete document by id
-          console.log("Ad deleted from Firestore:", ad.id);
-          setRefresh(!refresh);
-          // Optionally, update the state or re-fetch the data after deletion
-          // For example, you can call a function to refetch ads here
-        } catch (error) {
-          console.error("Error deleting ad from Firestore:", error);
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        MySwal.fire({
-          title: "Cancelled",
-          text: "Your file is safe :)",
-          icon: "error",
-          timer: 1000,
-        });
-      }
-    });
-  };
-
+  //   // setIsOpen(false);
+  // };
   const resetForm = () => {
     setDescription("");
     setLink("");
     setManufactureYear("");
+    setCondition("");
     setAssembly("");
     setTimeAgo(new Date());
 
+    setRegisteredCity("");
+    setDrivenKm("");
     setModel("");
     setPhoneNumber("");
+    setPurpose("");
     setType("");
-    setPrice("");
+    setPhone("");
     setLocation("");
     setName("");
+    setSelectedAd(null); // Assuming it's an object or string
     setTrustedCars("");
     setSelectedCity("");
     setSelectedEngineType("");
@@ -404,9 +364,19 @@ const MAGAZINESCOMP = () => {
     setSelectedPictureAvailability("");
     setSelectedSellerType("");
     setSelectedModalCategory("");
+    setSelectedSeatingCapacity("");
     setSelectedNumberOfDoors("");
     setSelectedBodyType("");
     setSelectedAssembly("");
+    setSelectedFuelType("");
+  };
+
+  // Call `resetForm` when you need to reset all fields
+
+  const handleFuelTypeChange = (event: any) => {
+    const fuelType = event.target.value;
+    setSelectedFuelType(fuelType);
+    console.log(fuelType); // Log selected fuel type to the console
   };
   const handleAdTypeChange = (event: any) => {
     const adType = event.target.value;
@@ -434,7 +404,11 @@ const MAGAZINESCOMP = () => {
     setSelectedModalCategory(modalCategory);
     console.log(modalCategory); // Log selected modal category to the console
   };
-
+  const handleSeatingCapacityChange = (event: any) => {
+    const seatingCapacity = event.target.value;
+    setSelectedSeatingCapacity(seatingCapacity);
+    console.log(seatingCapacity); // Log selected seating capacity to the console
+  };
   const handleNumberOfDoorsChange = (event: any) => {
     const numberOfDoors = event.target.value;
     setSelectedNumberOfDoors(numberOfDoors);
@@ -486,16 +460,14 @@ const MAGAZINESCOMP = () => {
     setSelectedCity(city);
     console.log(city, "city___________"); // Log selected city to the console
   };
-  const [selectedStates, setSelectedStates] = useState("");
-  const [Category, setCategory] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   const handleLocationChange = (event: any) => {
     const location = event.target.value;
-    setSelectedStates(location);
+    setSelectedLocation(location);
     console.log(location); // Log selected location to the console
   };
   const [selectedCarBrand, setSelectedCarBrand] = useState("");
-  const [PropertyType, setPropertyType] = useState("");
 
   const handleCarBrandChange = (event: any) => {
     const carBrand = event.target.value;
@@ -534,101 +506,64 @@ const MAGAZINESCOMP = () => {
       handleImageUpload(file, index); // Upload the selected file
     }
   };
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true); // Show spinner
+        const carsCollectionRef = collection(db, "CommercialAdscom");
+        const querySnapshot = await getDocs(carsCollectionRef);
+        const carsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
+        console.log(carsData, "carsData_________");
+      } catch (error) {
+        console.error("Error getting cars:", error);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  const filteredAds = ads.filter(
+    (ad) =>
+      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
+      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
+  );
   // Function to add a new car to Firestore
   const handleAddCar = async (e: any) => {
     e.preventDefault();
 
-    // if (imageUrls.some((url) => !url)) {
-    //   alert("Please upload all images before submitting.");
-    //   return;
-    // }
+    if (!image) {
+      alert("Please upload image before submitting.");
+      return;
+    }
 
     try {
       // Get a reference to the 'carData' collection
-      const carsCollection = collection(db, "MAGAZINESCOMP");
+      const carsCollection = collection(db, "CommercialAdscom");
 
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
-        title: name,
-        img: imageUrls[0], // img1
-        img2: imageUrls[1], // img2
-        img3: imageUrls[2], // img3
-        img4: imageUrls[3], // img4
-        img5: imageUrls[4], // img5
-        img6: imageUrls[5], // img6
-        location: location,
-        price: price,
-        RAM: RAM,
-        Size: Size,
-        Category: Category,
-        AgeGroup: AgeGroup,
-        Breed: Breed,
-        Color: Color,
-        Brand: selectedCarBrand,
-        Language: Language,
-        SubscriptionType: SubscriptionType,
-        Temperament: Temperament,
-        HealthStatus: HealthStatus,
-        DietaryPreferences: DietaryPreferences,
-        Accuracy: Accuracy,
-        Gender: Gender,
-        StorageCapacity: StorageCapacity,
-        SpeedofMeasurement: SpeedofMeasurement,
-        BuildingType: BuildingType,
-        PropertyFeatures: PropertyFeatures,
-        Accessibility: Accessibility,
-        Amenities: Amenities,
-        Features: Features,
-        CuffSize: CuffSize,
-        IssueType: IssueType,
-        PropertyType: PropertyType,
-        MeasurementRange: MeasurementRange,
-        BatteryLife: BatteryLife,
-        StorageType: StorageType,
-        Age: Age,
-        Storagecapacity: Storagecapacity,
-        GraphicsCard: GraphicsCard,
-        DisplayQuality: DisplayQuality,
-        Connectivity: Connectivity,
-        SpecialFeatures: SpecialFeatures,
-        BatteryType: BatteryType,
-        DisplayType: DisplayType,
-        MeasurementUnits: MeasurementUnits,
-        TrainingLevel: TrainingLevel,
-        Compatibility: Compatibility,
-        SellerType: SellerType,
-        link: link,
+        Title: name,
+        Location: location,
+        Phone: Phone,
+        Link: link,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
-        States: selectedStates,
-        description: description,
-        sellerType: selectedSellerType,
-        engineCapacity: selectedEngineCapacity,
-        bodyType: selectedBodyType,
-        lastUpdated: lastUpdated.toISOString(),
-        model: model,
-        whatsapp: whatsapp,
-        Type: Type,
-        isFeatured: selectedAdType,
-        VideoAvailability: selectedVideoAvailability,
-        PictureAvailability: selectedPictureAvailability,
-        AdType: selectedAdType,
-        Assembly: selectedAssembly,
-        BodyType: selectedBodyType,
-        Registeredin: Registeredin,
-        City: selectedCity,
-        PhoneNumber: PhoneNumber,
-
+        image: image,
         ManufactureYear: ManufactureYear,
       });
 
-      alert("Car added successfully!");
+      alert("Ads added successfully!");
+      setIsOpen(false);
+      setRefresh(!refresh);
       // Reset all fields
       // setName("");
       // setImageUrls(Array(6).fill("")); // Reset all image URLs
       // setImageFiles(Array(6).fill(null)); // Reset all image files
       // setLocation("");
-      // setPrice("");
+      // setPhone("");
       // setLink("");
       // setDescription("");
       setTimeAgo(new Date()); // Reset time to current date
@@ -645,8 +580,73 @@ const MAGAZINESCOMP = () => {
     }
   };
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [existingImageId, setExistingImageId] = useState<string | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+  const handleUpload = async () => {
+    if (!selectedImage) {
+      MySwal.fire({
+        title: "Error!",
+        text: "Please select an image first.",
+        icon: "error",
+        timer: 2000,
+      });
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", selectedImage);
+    formData.append("upload_preset", "dlfdvlmse"); // Replace with your actual preset
+    formData.append("cloud_name", "dlfdvlmse"); // Replace with your actual cloud name
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dlfdvlmse/image/upload", // Your Cloudinary URL
+        formData
+      );
+      const imageUrl = response.data.secure_url;
+      console.log("Uploaded Image URL:", imageUrl);
+      setimage(imageUrl);
+      // Save or update image URL in Firestore
+      const bannerImgRef = doc(
+        db,
+        "Bannermainimg",
+        existingImageId || "defaultBannerImg"
+      );
+      //   await setDoc(bannerImgRef, { imageUrl, createdAt: new Date() });
+      //   setExistingImageId("defaultBannerImg");
+
+      MySwal.fire({
+        title: "Added!",
+        text: "Your listing has been added.",
+        icon: "success",
+        timer: 1000,
+      });
+    } catch (error) {
+      console.error("Upload failed:", error);
+      MySwal.fire({
+        title: "Error!",
+        text: "Failed to upload image.",
+        icon: "success",
+        timer: 1000,
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
   return (
     <>
+      {/* Add New Button */}
       <button
         onClick={() => {
           setIsOpen(true);
@@ -779,14 +779,12 @@ const MAGAZINESCOMP = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Whatsapp
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Title
               </th>
-              <th scope="col" className="px-6 py-3">
-                Price
-              </th>
+
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
@@ -817,17 +815,16 @@ const MAGAZINESCOMP = () => {
                 >
                   <img
                     className="w-10 h-10 rounded-full"
-                    src={ad.galleryImages[0]}
-                    alt={ad.title}
+                    src={ad.image}
+                    alt={ad.Title}
                   />
                   <div className="ps-3">
-                    <div className="text-base font-semibold">{ad.title}</div>
+                    <div className="text-base font-semibold">{ad.Title}</div>
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
-                <td className="px-6 py-4">{ad.price}</td>
+                <td className="px-6 py-4">{ad.whatsapp}</td>
+                <td className="px-6 py-4">{ad.Title}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button
@@ -851,16 +848,17 @@ const MAGAZINESCOMP = () => {
           </tbody>
         </table>
       </div>
+
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "8%" }}
-        >
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto">
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "50%" }}
+            style={{ marginTop: "4%" }}
           >
-            <div className="relative w-full max-w-lg">
+            <div
+              className="relative w-full max-w-lg"
+              style={{ marginTop: "0%" }}
+            >
               <button
                 onClick={closeModal}
                 className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
@@ -869,7 +867,7 @@ const MAGAZINESCOMP = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New health Care
+                  Add a New Car Listing
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}
@@ -890,342 +888,51 @@ const MAGAZINESCOMP = () => {
                     />
                   </div>
 
-                  {/* City Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      City
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      value={selectedCity}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Select City
-                      </option>
-                      <option value="America">America</option>
-                      <option value="Bogotá">Bogotá</option>
-                      <option value="Dubai">Dubai</option>
-                      <option value="Tokyo">Tokyo</option>
-                      <option value="Paris">Paris</option>
-                    </select>
-                  </div>
-
-                  {/* Location Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      States
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedStates(e.target.value)}
-                      value={selectedStates}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="">Select State</option>
-                      <option value="California">California</option>
-                      <option value="Texas">Texas</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinois">Illinois</option>
-                    </select>
-                  </div>
-
-                  {/* Car Brand Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Category
-                    </label>
-
-                    <select
-                      onChange={(e) => setCategory(e.target.value)}
-                      value={Category}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Select Category
-                      </option>
-                      <option value="Nature & Wildlife">
-                        Nature & Wildlife
-                      </option>
-                      <option value="History & Culture">
-                        History & Culture
-                      </option>
-                      <option value="Science & Technology">
-                        Science & Technology
-                      </option>
-                      <option value="Travel & Adventure">
-                        Travel & Adventure
-                      </option>
-                    </select>
-                  </div>
-
                   {/* Price */}
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 text-sm font-bold mb-2"
                       htmlFor="formPrice"
                     >
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter price"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Subscription Type
-                    </label>
-                    <select
-                      onChange={(e) => setSubscriptionType(e.target.value)}
-                      value={SubscriptionType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Subscription Type
-                      </option>
-                      <option value="Digital">Digital</option>
-                      <option value="Print">Print</option>
-                      <option value="Combo">Combo</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Issue Type
-                    </label>
-                    <select
-                      onChange={(e) => setIssueType(e.target.value)}
-                      value={IssueType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Issue Type
-                      </option>
-                      <option value="Special Editions">Special Editions</option>
-                      <option value="Back Issues">Back Issues</option>
-                      <option value="Current Issue">Current Issue</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Language
-                    </label>
-                    <select
-                      onChange={(e) => setLanguage(e.target.value)}
-                      value={Language}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Language
-                      </option>
-                      <option value="English">English</option>
-                      <option value="Spanish">Spanish</option>
-                      <option value="French">French</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Age Group
-                    </label>
-                    <select
-                      onChange={(e) => setAgeGroup(e.target.value)}
-                      value={AgeGroup}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Age Group
-                      </option>
-                      <option value="Kids">Kids</option>
-                      <option value="Adults">Adults</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Seller Type
-                    </label>
-
-                    <select
-                      onChange={(e) => setSellerType(e.target.value)}
-                      value={SellerType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Seller Type{" "}
-                      </option>
-                      <option value="Brand Seller">Brand Seller</option>
-                      <option value="Individuals">Individuals</option>
-                      <option value="Retailer">Retailer</option>
-                      <option value="Marketplace">Marketplace</option>
-                    </select>
-                  </div>
-
-                  {/* Ad Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Ad Type
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedAdType(e.target.value)}
-                      value={selectedAdType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Ad Type
-                      </option>
-                      <option value="Featured Ad">Featured Ad</option>
-                    </select>
-                  </div>
-
-                  {/* Picture Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Picture Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedPictureAvailability(e.target.value)
-                      }
-                      value={selectedPictureAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Picture Availability
-                      </option>
-                      <option value="With Pictures">With Pictures</option>
-                      <option value="Without Pictures">Without Pictures</option>
-                    </select>
-                  </div>
-
-                  {/* Video Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Video Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedVideoAvailability(e.target.value)
-                      }
-                      value={selectedVideoAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Video Availability
-                      </option>
-                      <option value="With Video">With Video</option>
-                      <option value="Without Video">Without Video</option>
-                    </select>
-                  </div>
-
-                  {/* Image Uploads */}
-                  {[...Array(6)].map((_, index) => (
-                    <div className="mb-4" key={index}>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
-                        index + 1
-                      }`}</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange(index)}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      />
-                    </div>
-                  ))}
-
-                  {/* Location */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Link */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Link
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter link"
-                      value={link}
-                      onChange={(e) => setLink(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Time Ago */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Time Ago (Date Posted)
-                    </label>
-                    <DatePicker
-                      selected={timeAgo}
-                      onChange={(date) => setTimeAgo(date)} // Works because state allows null
-                      dateFormat="MMMM d, yyyy"
-                      showYearDropdown
-                      scrollableYearDropdown
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      required
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
                       Phone
                     </label>
                     <input
-                      type="text"
-                      placeholder="Enter Phone Number"
-                      value={PhoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* WhatsApp */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      WhatsApp
-                    </label>
-                    <input
                       type="number"
-                      placeholder="Enter WhatsApp number"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
+                      placeholder="Enter Phone"
+                      value={Phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
 
+                  <div className="p-4 border rounded-lg shadow-md bg-white w-96 mx-auto text-center">
+                    <h2 className="text-lg font-semibold mb-4">
+                      Upload main add banner for Home Screen
+                    </h2>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="mb-4"
+                    />
+                    {preview && (
+                      <div className="mb-4">
+                        <img
+                          src={preview}
+                          alt="Preview"
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+                    <button
+                      onClick={handleUpload}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
+                      disabled={uploading}
+                    >
+                      {uploading ? "Uploading..." : "Upload Image"}
+                    </button>
+                  </div>
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -1235,6 +942,7 @@ const MAGAZINESCOMP = () => {
                   </button>
                 </form>
               </div>
+              {/* </div> */}
             </div>
           </div>
         </div>
@@ -1243,4 +951,4 @@ const MAGAZINESCOMP = () => {
   );
 };
 
-export default MAGAZINESCOMP;
+export default CommercialAdscom;

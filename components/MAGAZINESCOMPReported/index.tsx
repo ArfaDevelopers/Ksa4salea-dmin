@@ -523,12 +523,12 @@ const MAGAZINESCOMPReported = () => {
   const handleImageUpload = async (file: any, index: any) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "duvddbfbf");
-    formData.append("cloud_name", "duvddbfbf");
+    formData.append("upload_preset", "dlfdvlmse");
+    formData.append("cloud_name", "dlfdvlmse");
 
     try {
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/duvddbfbf/image/upload",
+        "https://api.cloudinary.com/v1_1/dlfdvlmse/image/upload",
         formData
       );
       const newImageUrls = [...imageUrls];
