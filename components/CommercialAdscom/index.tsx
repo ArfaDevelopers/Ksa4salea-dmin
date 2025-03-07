@@ -60,7 +60,7 @@ type Ad = {
   registeredCity: string;
   sellerType: string;
   type: string;
-  whatsapp: string;
+  phone: string;
   AdType: any;
   FuelType: any;
   galleryImages: any;
@@ -74,7 +74,6 @@ const CommercialAdscom = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [Phone, setPhone] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
 
   const [link, setLink] = useState("");
@@ -91,7 +90,7 @@ const CommercialAdscom = () => {
   const [model, setModel] = useState("2022");
   const [DrivenKm, setDrivenKm] = useState("");
 
-  const [whatsapp, setWhatsapp] = useState("03189391781");
+  const [phone, setphone] = useState("03189391781");
   const [type, setType] = useState("Sale");
   const [selectedCity, setSelectedCity] = useState("");
   const [Registeredin, setRegisteredin] = useState("");
@@ -167,7 +166,7 @@ const CommercialAdscom = () => {
             registeredCity: data.registeredCity || "",
             sellerType: data.sellerType || "",
             type: data.type || "",
-            whatsapp: data.whatsapp || "",
+            phone: data.phone || "",
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || {},
@@ -239,7 +238,7 @@ const CommercialAdscom = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPhone(adData.price);
+        setphone(adData.price);
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -279,7 +278,7 @@ const CommercialAdscom = () => {
           registeredCity: adData.registeredCity || "registeredCity",
           sellerType: adData.sellerType || "sellerType",
           type: adData.type || "type",
-          whatsapp: adData.whatsapp || "whatsapp",
+          phone: adData.phone || "phone",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
@@ -299,7 +298,7 @@ const CommercialAdscom = () => {
         setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPhone(selectedAd.price);
+        setphone(selectedAd.price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -324,7 +323,7 @@ const CommercialAdscom = () => {
       } else {
         console.error("No such document!");
       }
-      setPhone;
+      setphone;
     } catch (error) {
       console.error("Error fetching ad by ID:", error);
     }
@@ -351,7 +350,7 @@ const CommercialAdscom = () => {
     setPhoneNumber("");
     setPurpose("");
     setType("");
-    setPhone("");
+    setphone("");
     setLocation("");
     setName("");
     setSelectedAd(null); // Assuming it's an object or string
@@ -548,7 +547,7 @@ const CommercialAdscom = () => {
       const docRef = await addDoc(carsCollection, {
         Title: name,
         Location: location,
-        Phone: Phone,
+        phone: phone,
         Link: link,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
         image: image,
@@ -572,7 +571,7 @@ const CommercialAdscom = () => {
       //   setCondition("");
       //   setPurpose("");
       //   setModel("");
-      //   setWhatsapp("");
+      //   setphone("");
       //   setType("Sale");
     } catch (error) {
       console.error("Error adding car: ", error);
@@ -779,7 +778,7 @@ const CommercialAdscom = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Whatsapp
+                phone
               </th>
               <th scope="col" className="px-6 py-3">
                 Title
@@ -823,7 +822,7 @@ const CommercialAdscom = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.whatsapp}</td>
+                <td className="px-6 py-4">{ad.phone}</td>
                 <td className="px-6 py-4">{ad.Title}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
@@ -899,8 +898,8 @@ const CommercialAdscom = () => {
                     <input
                       type="number"
                       placeholder="Enter Phone"
-                      value={Phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      value={phone}
+                      onChange={(e) => setphone(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
