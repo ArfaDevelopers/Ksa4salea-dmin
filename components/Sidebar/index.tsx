@@ -26,6 +26,7 @@ import { GoReport } from "react-icons/go";
 import { FaPersonDressBurst } from "react-icons/fa6";
 import { FaBuysellads } from "react-icons/fa6";
 import { SiWoocommerce } from "react-icons/si";
+import { FaRoadSpikes } from "react-icons/fa6";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -99,6 +100,15 @@ const menuGroups = [
         ),
         label: "Banner Image",
         route: "/Bannerimg",
+      },
+      {
+        icon: (
+          <FaRoadSpikes
+            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          />
+        ),
+        label: "Hero Banner",
+        route: "/HeroBanner",
       },
       {
         icon: (
