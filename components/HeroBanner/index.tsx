@@ -12,6 +12,7 @@ const HeroBanner: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [existingImageId, setExistingImageId] = useState<string | null>(null);
+  const [Errmsg, setErrmsg] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchExistingImage = async () => {
@@ -28,9 +29,28 @@ const HeroBanner: React.FC = () => {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
-      setSelectedImage(file);
-      setPreview(URL.createObjectURL(file));
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        if (img.width === 1000 && img.height === 424) {
+          setSelectedImage(file);
+          setPreview(img.src);
+          setErrmsg("");
+        } else {
+          MySwal.fire({
+            title: "Error!",
+            text: "Please upload an image of size 1000x424 pixels.",
+            icon: "error",
+            timer: 2000,
+          });
+          setErrmsg("Please upload an image of size 1000x424 pixels.");
+          // alert("Please upload an image of size 1000x424 pixels.");
+          event.target.value = ""; // Reset the input field
+        }
+      };
     }
   };
 
@@ -112,6 +132,7 @@ const HeroBanner: React.FC = () => {
       >
         {uploading ? "Uploading..." : "Upload Ads"}
       </button>
+      <p style={{ color: "red" }}>{Errmsg}</p>
     </div>
   );
 };
