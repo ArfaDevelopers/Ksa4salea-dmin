@@ -11,6 +11,8 @@ import { FaClipboardList } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
 import { FaSignal, FaCar } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
+import { GiImbricatedArrows } from "react-icons/gi";
+
 import { MdElectricBike } from "react-icons/md";
 import { MdHealthAndSafety } from "react-icons/md";
 import { FcElectronics } from "react-icons/fc";
@@ -430,6 +432,31 @@ const menuGroups = [
           { label: "Electronic", route: "/Electronic" },
           { label: "Healthcare", route: "/Healthcare" },
           { label: "Games & Sport", route: "/GamesSport" },
+        ],
+      },
+      {
+        icon: (
+          <GiImbricatedArrows
+            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
+          />
+        ),
+        label: "Our Category",
+        route: "#",
+        children: [
+          // { label: "Ads", route: "/Ads" },
+          { label: "Automotive", route: "/OurCategory" },
+          { label: "Electronics", route: "/OurCategoryElectronics" },
+          { label: "FashionStyle", route: "/OurCategoryFashionStyle" },
+          { label: "Healthcare", route: "/OurCategoryHealthCare" },
+          { label: "JobBoard", route: "/OurCategoryJobBoard" },
+          { label: "Real Estate", route: "/OurCategoryRealEstate" },
+          { label: "Travel", route: "/OurCategoryTravel" },
+
+          { label: "Games & Sport", route: "/OurCategorySportGames" },
+          { label: "Pet & Animals", route: "/OurCategoryPetAnimals" },
+          { label: "House Hold", route: "/OurCategoryHouseHold" },
+          { label: "Education", route: "/OurCategoryEducation" },
+          { label: "MAGAZINES", route: "/OurCategoryMAGAZINES" },
         ],
       },
     ],

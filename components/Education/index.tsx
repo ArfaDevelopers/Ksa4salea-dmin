@@ -799,7 +799,7 @@ const Education = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "35%" }}
+            style={{ marginTop: "44%" }}
           >
             <div className="relative w-full max-w-lg">
               <button

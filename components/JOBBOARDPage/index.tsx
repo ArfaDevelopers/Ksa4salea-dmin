@@ -834,7 +834,7 @@ const JOBBOARDPage = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "35%" }}
+            style={{ marginTop: "54%" }}
           >
             <div className="relative w-full max-w-lg">
               <button

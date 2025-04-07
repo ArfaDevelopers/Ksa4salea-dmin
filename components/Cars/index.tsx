@@ -825,7 +825,7 @@ const Cars = () => {
           >
             <div
               className="relative w-full max-w-lg"
-              style={{ marginTop: "72%" }}
+              style={{ marginTop: "22%" }}
             >
               <button
                 onClick={closeModal}
