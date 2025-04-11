@@ -241,12 +241,12 @@ const GamesSport = () => {
   const handleImageUpload = async (file: any): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "dlfdvlmse");
-    formData.append("cloud_name", "dlfdvlmse");
+    formData.append("upload_preset", "ml_default");
+    formData.append("cloud_name", "dv26wjoay");
 
     try {
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dlfdvlmse/image/upload",
+        "https://api.cloudinary.com/v1_1/dv26wjoay/image/upload",
         formData
       );
       setImg(response.data.secure_url);

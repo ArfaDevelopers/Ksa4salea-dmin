@@ -85,7 +85,7 @@ const ECommerce: React.FC = () => {
           console.log("Users count:", counts.users);
 
           setCounts(counts);
-          setTotalProduct(total.toString()); // Make sure totalProduct is always a string
+          setTotalProduct(total); // Make sure totalProduct is always a string
 
           console.log(typeof totalProduct, "totalProduct____________________"); // Logs the type of totalProduct
           setUserCount(counts.users.toString());

@@ -60,8 +60,8 @@ const Login = () => {
         }
       } else {
         MySwal.fire({
-          title: "User Not Found",
-          text: "User data not found as admin.",
+          title: "User Not Admin",
+          text: "User not found as admin.",
           icon: "error",
           confirmButtonText: "OK",
         });

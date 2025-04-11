@@ -68,12 +68,12 @@ const HeroBanner: React.FC = () => {
     setUploading(true);
     const formData = new FormData();
     formData.append("file", selectedImage);
-    formData.append("upload_preset", "dlfdvlmse"); // Replace with your actual preset
-    formData.append("cloud_name", "dlfdvlmse"); // Replace with your actual cloud name
+    formData.append("upload_preset", "ml_default"); // Replace with your actual preset
+    formData.append("cloud_name", "dv26wjoay"); // Replace with your actual cloud name
 
     try {
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dlfdvlmse/image/upload", // Your Cloudinary URL
+        "https://api.cloudinary.com/v1_1/dv26wjoay/image/upload", // Your Cloudinary URL
         formData
       );
       const imageUrl = response.data.secure_url;
