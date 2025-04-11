@@ -1,11 +1,24 @@
 "use client";
+import React, { useEffect, useState } from "react";
+
 import dynamic from "next/dynamic";
-import React from "react";
 import ChartOne from "../Charts/ChartOne";
 import ChartTwo from "../Charts/ChartTwo";
 import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
 import CardDataStats from "../CardDataStats";
+import { v4 as uuidv4 } from "uuid"; // For unique visitor tracking
+
+import axios from "axios";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  getFirestore,
+} from "firebase/firestore";
+import { db } from "../Firebase/FirebaseConfig";
 
 const MapOne = dynamic(() => import("@/components/Maps/MapOne"), {
   ssr: false,
@@ -16,10 +29,86 @@ const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
 });
 
 const ECommerce: React.FC = () => {
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [totalProduct, setTotalProduct] = useState(0); // Initialize as a number, not a string
+  console.log(typeof totalProduct, "totalProduct____________________");
+  console.log(totalProduct, "totalProduct____________________1");
+
+  const [userCount, setUserCount] = useState("0");
+  const [totalVisitors, setTotalVisitors] = useState(0);
+  console.log(totalVisitors, "userCount____");
+
+  const [visitCount, setVisitCount] = useState(0);
+  useEffect(() => {
+    const trackVisit = async () => {
+      const visitorId = localStorage.getItem("visitorId") || uuidv4();
+      localStorage.setItem("visitorId", visitorId);
+
+      const docRef = doc(db, "WebsiteStats", "views");
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        if (!data.visitors?.includes(visitorId)) {
+          await updateDoc(docRef, {
+            visitors: arrayUnion(visitorId),
+          });
+        }
+        setTotalVisitors(data.visitors?.length || 0);
+      } else {
+        await setDoc(docRef, {
+          visitors: [visitorId],
+        });
+        setTotalVisitors(1);
+      }
+    };
+
+    trackVisit();
+  }, []);
+  useEffect(() => {
+    const fetchCollectionCounts = async () => {
+      try {
+        const response = await axios.get(
+          "https://ksaforsaleapis.vercel.app/api/collection-counts"
+        );
+
+        if (response.data.success) {
+          const counts: Record<string, number> = response.data.data;
+
+          const total = Object.values(counts).reduce(
+            (sum, val) => sum + val,
+            0
+          );
+
+          console.log("Collection counts:", counts);
+          console.log("Users count:", counts.users);
+
+          setCounts(counts);
+          setTotalProduct(total.toString()); // Make sure totalProduct is always a string
+
+          console.log(typeof totalProduct, "totalProduct____________________"); // Logs the type of totalProduct
+          setUserCount(counts.users.toString());
+        } else {
+          console.error("API success false:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching collection counts:", error);
+      }
+    };
+
+    fetchCollectionCounts();
+  }, []);
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats
+          title="Total views"
+          total={totalVisitors.toString()}
+          rate=""
+          levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -38,7 +127,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Total Profit" total="$45,2K" rate="" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -61,7 +150,12 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats
+          title="Total Product"
+          total={totalProduct.toString()} // Convert the number to string here if required
+          rate=""
+          levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -80,7 +174,12 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats
+          title="Total Users"
+          total={userCount.toString()}
+          rate=""
+          levelDown
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
