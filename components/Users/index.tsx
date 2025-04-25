@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../Firebase/FirebaseConfig";
+import { FiSearch } from "react-icons/fi"; // Importing Search Icon
+
 import {
   collection,
   getDocs,
@@ -14,8 +16,6 @@ import SignupModal from "./SignupModal";
 import EditUserModal from "./EditUserModal";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import { FiSearch } from "react-icons/fi"; // Importing Search Icon
-
 interface User {
   id: string;
   isAdmin?: string; // optional because not all users have it
@@ -31,7 +31,7 @@ interface User {
   email: string;
 }
 
-const Profile = () => {
+const Users = () => {
   const MySwal = withReactContent(Swal);
 
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
@@ -96,8 +96,8 @@ const Profile = () => {
 
       console.log(usersData, "usersData");
 
-      const newData = usersData.filter((user) => user?.isAdmin === "Admin");
-      setUsers(newData);
+      // const newData = usersData.filter((user) => user?.isAdmin === "Admin");
+      setUsers(usersData);
     };
 
     fetchUsers();
@@ -219,4 +219,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Users;

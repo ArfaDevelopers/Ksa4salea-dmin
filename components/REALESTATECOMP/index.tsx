@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 
 // For date picker
@@ -24,6 +25,7 @@ import axios from "axios";
 // Register the English locale
 registerLocale("en-US", enUS);
 type Ad = {
+  isActive: boolean;
   id: any; // Change from string to number
   link: string;
   timeAgo: string;
@@ -60,6 +62,8 @@ type Ad = {
   sellerType: string;
   type: string;
   whatsapp: string;
+  FeaturedAds: string;
+
   AdType: any;
   FuelType: any;
   galleryImages: any;
@@ -141,7 +145,54 @@ const REALESTATECOMP = () => {
   const [selectedAdType, setSelectedAdType] = useState("");
   const [loading, setLoading] = useState(true);
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
+  const [selectedOption, setSelectedOption] = useState("All");
+  console.log("isFeatured______", selectedOption);
+  const [isActive, setisActive] = useState(false); // ✅ boolean, not string
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
 
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "REALESTATECOMP", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
   const closeModal = () => setIsOpen(false);
   useEffect(() => {
     const fetchAds = async () => {
@@ -190,15 +241,26 @@ const REALESTATECOMP = () => {
             sellerType: data.sellerType || "",
             type: data.type || "",
             whatsapp: data.whatsapp || "",
+            FeaturedAds: data.FeaturedAds || "",
+
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+            isActive: data.isActive || "",
           };
         });
 
         console.log(adsList, "adsList___________adsList");
 
-        setAds(adsList); // Set the state with the ads data
+        console.log(adsList, "adsList___________adsList");
+        if (selectedOption === "All") {
+          setAds(adsList); // Set the state with the ads data
+        } else {
+          var newad = adsList.filter(
+            (val) => val.FeaturedAds === selectedOption
+          );
+          setAds(newad); // Set the state with the ads data
+        }
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);
@@ -207,7 +269,7 @@ const REALESTATECOMP = () => {
     };
 
     fetchAds();
-  }, [refresh]);
+  }, [refresh, selectedOption, activeCheckboxes]);
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -285,6 +347,9 @@ const REALESTATECOMP = () => {
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.FuelType || "galleryImages",
+          isActive: adData.isActive || "isActive",
+
+          FeaturedAds: "",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
@@ -633,6 +698,39 @@ const REALESTATECOMP = () => {
         Add New
       </button>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="flex space-x-4 items-center">
+          <span className="text-gray-700 font-medium">Filter:</span>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "All"}
+              onChange={() => handleCheckboxChange("All")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>All</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Featured Ads"}
+              onChange={() => handleCheckboxChange("Paid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Paid</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Not Featured Ads"}
+              onChange={() => handleCheckboxChange("Unpaid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Unpaid</span>
+          </label>
+        </div>
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div>
             <button
@@ -756,7 +854,7 @@ const REALESTATECOMP = () => {
                 Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -800,7 +898,17 @@ const REALESTATECOMP = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
+                <td className="px-6 py-4">
+                  {" "}
+                  <input
+                    type="checkbox"
+                    checked={ad.isActive}
+                    onChange={() => {
+                      handleToggle(ad.id); // Toggle UI state
+                      handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                    }}
+                  />
+                </td>{" "}
                 <td className="px-6 py-4">{ad.price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
@@ -843,7 +951,7 @@ const REALESTATECOMP = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New health Care
+                  Add a New Real Estate
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}

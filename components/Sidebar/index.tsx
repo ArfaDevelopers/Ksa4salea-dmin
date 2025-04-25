@@ -30,6 +30,7 @@ import { FaBuysellads } from "react-icons/fa6";
 import { SiWoocommerce } from "react-icons/si";
 import { FaRoadSpikes } from "react-icons/fa6";
 import { TbSlideshow } from "react-icons/tb";
+import { PiUserGearFill } from "react-icons/pi";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -73,6 +74,7 @@ const menuGroups = [
       },
     ],
   },
+
   {
     name: "LISTING",
     menuItems: [
@@ -98,73 +100,91 @@ const menuGroups = [
       {
         icon: (
           <FaBuysellads
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
           />
         ),
-        label: "Banner Image",
-        route: "/Bannerimg",
+        label: "Ads",
+        route: "#",
+        children: [
+          { label: "Popup Banner", route: "/Bannermain" },
+          { label: "Slider Images", route: "/SliderImage" },
+
+          { label: "Banner Image", route: "/Bannerimg" },
+          { label: "Hero Banner", route: "/HeroBanner" },
+          { label: "Commercial Ads", route: "/CommercialAdscom" },
+          // { label: "Games & Sport", route: "/GamesSport" },
+        ],
       },
-      {
-        icon: (
-          <TbSlideshow
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Slider Image",
-        route: "/SliderImage",
-      },
-      {
-        icon: (
-          <FaRoadSpikes
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Hero Banner",
-        route: "/HeroBanner",
-      },
-      {
-        icon: (
-          <SiWoocommerce
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Commercial Ads",
-        route: "/CommercialAdscom",
-      },
-      {
-        icon: (
-          <FaAd
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Main Banner",
-        route: "/Bannermain",
-      },
+      // {
+      //   icon: (
+      //     <FaBuysellads
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Banner Image",
+      //   route: "/Bannerimg",
+      // },
+      // {
+      //   icon: (
+      //     <TbSlideshow
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Slider Image",
+      //   route: "/SliderImage",
+      // },
+      // {
+      //   icon: (
+      //     <FaRoadSpikes
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Hero Banner",
+      //   route: "/HeroBanner",
+      // },
+      // {
+      //   icon: (
+      //     <SiWoocommerce
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Commercial Ads",
+      //   route: "/CommercialAdscom",
+      // },
+      // {
+      //   icon: (
+      //     <FaAd
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Popup Banner",
+      //   route: "/Bannermain",
+      // },
       {
         icon: (
           <FaCar
             style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
           />
         ),
-        label: "Cars",
+        label: "Automotive",
         route: "/Cars",
       },
-      {
-        icon: (
-          <MdElectricBike
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Bikes",
-        route: "/Bikes",
-      },
+      // {
+      //   icon: (
+      //     <MdElectricBike
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Bikes",
+      //   route: "/Bikes",
+      // },
       {
         icon: (
           <FcElectronics
             style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
           />
         ),
-        label: "Electronic",
+        label: "Electronics",
         route: "/ElectronicComp",
       },
       {
@@ -173,7 +193,7 @@ const menuGroups = [
             style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
           />
         ),
-        label: "HealthCare",
+        label: "Home & Furnituer",
         route: "/HealthCareComp",
       },
       {
@@ -200,7 +220,7 @@ const menuGroups = [
             style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
           />
         ),
-        label: "Education",
+        label: "Other",
         route: "/Education",
       },
       {
@@ -218,7 +238,7 @@ const menuGroups = [
             style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
           />
         ),
-        label: "Travel",
+        label: "Services",
         route: "/TRAVEL",
       },
       {
@@ -239,15 +259,15 @@ const menuGroups = [
         label: "Pet & Animal",
         route: "/PETANIMALCOMP",
       },
-      {
-        icon: (
-          <DiSmashingMagazine
-            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
-          />
-        ),
-        label: "Magazines",
-        route: "/MAGAZINESCOMP",
-      },
+      // {
+      //   icon: (
+      //     <DiSmashingMagazine
+      //       style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+      //     />
+      //   ),
+      //   label: "Magazines",
+      //   route: "/MAGAZINESCOMP",
+      // },
       {
         icon: (
           <GoReport
@@ -296,8 +316,17 @@ const menuGroups = [
             />
           </svg>
         ),
-        label: "Users",
+        label: "Admins",
         route: "/profile",
+      },
+      {
+        icon: (
+          <PiUserGearFill
+            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+          />
+        ),
+        label: "Users",
+        route: "/Users",
       },
       // {
       //   icon: (

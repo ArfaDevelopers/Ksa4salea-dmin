@@ -60,6 +60,8 @@ type Ad = {
   sellerType: string;
   type: string;
   whatsapp: string;
+  FeaturedAds: string;
+
   AdType: any;
   FuelType: any;
   galleryImages: any;
@@ -142,6 +144,21 @@ const TRAVEL = () => {
   const [refresh, setRefresh] = useState(false);
 
   const closeModal = () => setIsOpen(false);
+  const [selectedOption, setSelectedOption] = useState("All");
+  console.log("isFeatured______", selectedOption);
+
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
   useEffect(() => {
     const fetchAds = async () => {
       try {
@@ -189,6 +206,8 @@ const TRAVEL = () => {
             sellerType: data.sellerType || "",
             type: data.type || "",
             whatsapp: data.whatsapp || "",
+            FeaturedAds: data.FeaturedAds || "",
+
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
@@ -197,7 +216,15 @@ const TRAVEL = () => {
 
         console.log(adsList, "adsList___________adsList");
 
-        setAds(adsList); // Set the state with the ads data
+        console.log(adsList, "adsList___________adsList");
+        if (selectedOption === "All") {
+          setAds(adsList); // Set the state with the ads data
+        } else {
+          var newad = adsList.filter(
+            (val) => val.FeaturedAds === selectedOption
+          );
+          setAds(newad); // Set the state with the ads data
+        }
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);
@@ -206,7 +233,7 @@ const TRAVEL = () => {
     };
 
     fetchAds();
-  }, [refresh]);
+  }, [refresh, selectedOption]);
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -284,6 +311,7 @@ const TRAVEL = () => {
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.FuelType || "galleryImages",
+          FeaturedAds: "",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
@@ -630,6 +658,39 @@ const TRAVEL = () => {
         Add New
       </button>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="flex space-x-4 items-center">
+          <span className="text-gray-700 font-medium">Filter:</span>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "All"}
+              onChange={() => handleCheckboxChange("All")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>All</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Featured Ads"}
+              onChange={() => handleCheckboxChange("Paid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Paid</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Not Featured Ads"}
+              onChange={() => handleCheckboxChange("Unpaid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Unpaid</span>
+          </label>
+        </div>
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div>
             <button
@@ -840,7 +901,7 @@ const TRAVEL = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New health Care
+                  Add a New Travel
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}

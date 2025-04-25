@@ -8,6 +8,7 @@ import {
   doc,
   deleteDoc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 // For date picker
@@ -26,6 +27,8 @@ registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
+  isActive: boolean; // <- not string
+
   timeAgo: string;
   title: string;
   description: string;
@@ -57,9 +60,12 @@ type Ad = {
   model: string;
   purpose: string;
   registeredCity: string;
+
   sellerType: string;
   type: string;
   whatsapp: string;
+  FeaturedAds: string;
+
   AdType: any;
   FuelType: any;
   galleryImages: any;
@@ -123,7 +129,56 @@ const ElectronicComp = () => {
   const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [isOpen, setIsOpen] = useState(false);
+
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
+  const [selectedOption, setSelectedOption] = useState("All");
+  console.log("isFeatured______", selectedOption);
+  const [isActive, setisActive] = useState(false); // ✅ boolean, not string
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
+
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "ELECTRONICS", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
+
   const resetForm = () => {
     setDescription("");
     setLink("");
@@ -199,6 +254,9 @@ const ElectronicComp = () => {
             sellerType: data.sellerType || "",
             type: data.type || "",
             whatsapp: data.whatsapp || "",
+            FeaturedAds: data.FeaturedAds || "",
+            isActive: data.isActive || "",
+
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
@@ -207,7 +265,15 @@ const ElectronicComp = () => {
 
         console.log(adsList, "adsList___________adsList");
 
-        setAds(adsList); // Set the state with the ads data
+        console.log(adsList, "adsList___________adsList");
+        if (selectedOption === "All") {
+          setAds(adsList); // Set the state with the ads data
+        } else {
+          var newad = adsList.filter(
+            (val) => val.FeaturedAds === selectedOption
+          );
+          setAds(newad); // Set the state with the ads data
+        }
         setLoading(false); // Stop loading when data is fetched
       } catch (error) {
         console.error("Error fetching ads:", error);
@@ -287,8 +353,11 @@ const ElectronicComp = () => {
           type: adData.type || "type",
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
+          isActive: adData.isActive || "AdType",
+
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
+          FeaturedAds: "",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
@@ -373,11 +442,20 @@ const ElectronicComp = () => {
       }
     });
   };
-  const filteredAds = ads.filter(
-    (ad) =>
-      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
-      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
-  );
+  const filteredAds = ads.filter((ad) => {
+    const matchesSearch =
+      ad.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ad.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFeatured =
+      selectedOption === "All" ||
+      (selectedOption === "Featured Ads" &&
+        ad.FeaturedAds === "Featured Ads") ||
+      (selectedOption === "Not Featured Ads" &&
+        ad.FeaturedAds !== "Featured Ads");
+
+    return matchesSearch && matchesFeatured;
+  });
   const handleAdTypeChange = (event: any) => {
     const adType = event.target.value;
     setSelectedAdType(adType);
@@ -603,106 +681,38 @@ const ElectronicComp = () => {
         Add New
       </button>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
-          <div>
-            <button
-              id="dropdownActionButton"
-              data-dropdown-toggle="dropdownAction"
-              className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-              type="button"
-            >
-              <span className="sr-only">Action button</span>
-              Action
-              <svg
-                className="w-2.5 h-2.5 ms-2.5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
-            </button>
-            {/* Dropdown menu */}
-            <div
-              id="dropdownAction"
-              className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-            >
-              <ul
-                className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                aria-labelledby="dropdownActionButton"
-              >
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    Reward
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    Promote
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    Activate account
-                  </a>
-                </li>
-              </ul>
-              <div className="py-1">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Delete User
-                </a>
-              </div>
-            </div>
-          </div>
-          <label htmlFor="table-search" className="sr-only">
-            Search
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </div>
+        <div className="flex space-x-4 items-center">
+          <span className="text-gray-700 font-medium">Filter:</span>
+
+          <label className="inline-flex items-center space-x-2">
             <input
-              type="text"
-              id="table-search-users"
-              className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
-              value={searchTerm} // Bind input value to state
-              onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
+              type="checkbox"
+              checked={selectedOption === "All"}
+              onChange={() => handleCheckboxChange("All")}
+              className="form-checkbox text-blue-600"
             />
-          </div>
+            <span>All</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Featured Ads"}
+              onChange={() => handleCheckboxChange("Paid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Paid</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Not Featured Ads"}
+              onChange={() => handleCheckboxChange("Unpaid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Unpaid</span>
+          </label>
         </div>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -726,7 +736,7 @@ const ElectronicComp = () => {
                 Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -770,7 +780,17 @@ const ElectronicComp = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
+                <td className="px-6 py-4">
+                  {" "}
+                  <input
+                    type="checkbox"
+                    checked={ad.isActive}
+                    onChange={() => {
+                      handleToggle(ad.id); // Toggle UI state
+                      handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                    }}
+                  />
+                </td>{" "}
                 <td className="px-6 py-4">{ad.price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
