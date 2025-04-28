@@ -8,6 +8,7 @@ import {
   doc,
   deleteDoc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { MdEdit } from "react-icons/md";
 import { MdRemoveRedEye } from "react-icons/md";
@@ -37,6 +38,8 @@ import MAGAZINESCOMPReported from "../MAGAZINESCOMPReported";
 registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
+  isActive: boolean;
+
   link: string;
   timeAgo: string;
   title: string;
@@ -126,12 +129,56 @@ const Reported = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
+  const [selectedOption, setSelectedOption] = useState("All");
 
   const closeModal = () => setIsOpen(false);
   const [selectedAdType, setSelectedAdType] = useState("");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<DocumentData | null>(null);
-
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "Cars", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
   const handleRevertClick = async (id: string) => {
     try {
       const adsCollection = collection(db, "Cars");
@@ -205,6 +252,7 @@ const Reported = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+            isActive: data.isActive || "",
 
             reportTypes: data.reportTypes || [], // Ensure reportTypes is included
           };
@@ -347,6 +395,7 @@ const Reported = () => {
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
+          isActive: adData.isActive || "isActive",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
@@ -674,7 +723,7 @@ const Reported = () => {
               Sports and Games{" "}
             </button>
           </li>
-          <li className="me-2">
+          {/* <li className="me-2">
             <button
               onClick={() => setActiveTab(2)}
               className={`inline-block px-4 py-3 rounded-lg ${
@@ -685,7 +734,7 @@ const Reported = () => {
             >
               Bikes{" "}
             </button>
-          </li>
+          </li> */}
           <li className="me-2">
             <button
               onClick={() => setActiveTab(3)}
@@ -731,7 +780,7 @@ const Reported = () => {
                   : "hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
               }`}
             >
-              Education{" "}
+              Others{" "}
             </button>
           </li>
           <li className="me-2">
@@ -770,7 +819,7 @@ const Reported = () => {
               Pet & Animal{" "}
             </button>
           </li>
-          <li className="me-2">
+          {/* <li className="me-2">
             <button
               onClick={() => setActiveTab(10)}
               className={`inline-block px-4 py-3 rounded-lg ${
@@ -781,7 +830,7 @@ const Reported = () => {
             >
               Magazines{" "}
             </button>
-          </li>
+          </li> */}
         </ul>
         <div className="p-4 mt-2 border rounded-lg bg-gray-100 dark:bg-gray-800">
           {activeTab === 0 && (
@@ -925,7 +974,7 @@ const Reported = () => {
                         Description
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        Location
+                        Status
                       </th>
                       <th scope="col" className="px-6 py-3">
                         Price
@@ -971,7 +1020,20 @@ const Reported = () => {
                           </div>
                         </th>
                         <td className="px-6 py-4">{ad.description}</td>
-                        <td className="px-6 py-4">{ad.location}</td>
+                        <td className="px-6 py-4">
+                          {" "}
+                          <input
+                            type="checkbox"
+                            checked={ad.isActive}
+                            onChange={() => {
+                              handleToggle(ad.id); // Toggle UI state
+                              handleFirebaseToggle(
+                                ad.id,
+                                !!activeCheckboxes[ad.id]
+                              ); // Update Firestore
+                            }}
+                          />
+                        </td>{" "}
                         <td className="px-6 py-4">{ad.Price}</td>
                         <td className="px-6 py-4">
                           {/* Delete Button */}

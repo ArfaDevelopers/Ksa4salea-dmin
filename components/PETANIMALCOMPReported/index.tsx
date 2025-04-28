@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { MdRemoveRedEye } from "react-icons/md";
 import { DocumentData } from "firebase/firestore";
@@ -24,6 +25,7 @@ import axios from "axios";
 type Ad = {
   id: any; // Change from string to number
   link: string;
+  isActive: boolean;
   timeAgo: string;
   title: string;
   description: string;
@@ -155,7 +157,52 @@ const PETANIMALCOMPReported = () => {
   const closeModal = () => setIsOpen(false);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<DocumentData | null>(null);
+  const [selectedOption, setSelectedOption] = useState("All");
 
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "PETANIMALCOMP", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
   const handleRevertClick = async (id: string) => {
     try {
       const adsCollection = collection(db, "PETANIMALCOMP");
@@ -229,6 +276,8 @@ const PETANIMALCOMPReported = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+            isActive: data.isActive || "",
+
             reportTypes: data.reportTypes || [], // Ensure reportTypes is included
           };
         });
@@ -335,7 +384,9 @@ const PETANIMALCOMPReported = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
-          galleryImages: adData.FuelType || "galleryImages",
+          galleryImages: adData.galleryImages || "galleryImages",
+          isActive: adData.isActive || "isActive",
+
           reportTypes: adData.reportTypes || "reportTypes",
         };
         setDescription(selectedAd.description);
@@ -816,7 +867,7 @@ const PETANIMALCOMPReported = () => {
                 Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -861,7 +912,17 @@ const PETANIMALCOMPReported = () => {
                     </div>
                   </th>
                   <td className="px-6 py-4">{ad.description}</td>
-                  <td className="px-6 py-4">{ad.location}</td>
+                  <td className="px-6 py-4">
+                    {" "}
+                    <input
+                      type="checkbox"
+                      checked={ad.isActive}
+                      onChange={() => {
+                        handleToggle(ad.id); // Toggle UI state
+                        handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                      }}
+                    />
+                  </td>{" "}
                   <td className="px-6 py-4">{ad.Price}</td>
                   <td className="px-6 py-4">
                     {/* Delete Button */}

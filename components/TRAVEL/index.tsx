@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { Country, State, City, ICity } from "country-state-city";
 
@@ -28,6 +29,8 @@ registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
+  isActive: boolean;
+
   timeAgo: string;
   title: string;
   description: string;
@@ -287,7 +290,9 @@ const TRAVEL = () => {
   const [loading, setLoading] = useState(true);
   const [ads, setAds] = useState<Ad[]>([]);
   const [refresh, setRefresh] = useState(false);
-
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
   const closeModal = () => setIsOpen(false);
   const [selectedOption, setSelectedOption] = useState("All");
   console.log("isFeatured______", selectedOption);
@@ -1889,6 +1894,35 @@ const TRAVEL = () => {
 
     { value: "Agricultural Equipment", label: "Agricultural Equipment" },
   ];
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "REALESTATECOMP", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
   const handleCheckboxChange = (option: string) => {
     if (option === "Paid") {
       setSelectedOption("Featured Ads");
@@ -1901,6 +1935,7 @@ const TRAVEL = () => {
       console.log("Filtering: All Ads");
     }
   };
+
   useEffect(() => {
     const fetchAds = async () => {
       try {
@@ -1949,6 +1984,7 @@ const TRAVEL = () => {
             type: data.type || "",
             whatsapp: data.whatsapp || "",
             FeaturedAds: data.FeaturedAds || "",
+            isActive: data.isActive || "",
 
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
@@ -2053,6 +2089,8 @@ const TRAVEL = () => {
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.FuelType || "galleryImages",
+          isActive: adData.isActive || "isActive",
+
           FeaturedAds: "",
         };
         setDescription(selectedAd.description);
@@ -2558,7 +2596,7 @@ const TRAVEL = () => {
                 Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -2602,7 +2640,17 @@ const TRAVEL = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
+                <td className="px-6 py-4">
+                  {" "}
+                  <input
+                    type="checkbox"
+                    checked={ad.isActive}
+                    onChange={() => {
+                      handleToggle(ad.id); // Toggle UI state
+                      handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                    }}
+                  />
+                </td>{" "}
                 <td className="px-6 py-4">{ad.price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}

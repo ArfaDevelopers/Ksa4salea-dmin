@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { MdRemoveRedEye } from "react-icons/md";
 import { DocumentData } from "firebase/firestore";
@@ -28,6 +29,7 @@ type Ad = {
   id: any; // Change from string to number
   link: string;
   timeAgo: string;
+  isActive: boolean;
   title: string;
   description: string;
   location: string;
@@ -211,7 +213,51 @@ const EducationReported = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<DocumentData | null>(null);
-
+  const [selectedOption, setSelectedOption] = useState("All");
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "Education", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
   const handleRevertClick = async (id: string) => {
     try {
       const adsCollection = collection(db, "Education");
@@ -312,6 +358,7 @@ const EducationReported = () => {
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
             reportTypes: data.reportTypes || "",
+            isActive: data.isActive || "",
           };
         });
         const filteredAds = adsList.filter((ad) => {
@@ -416,6 +463,7 @@ const EducationReported = () => {
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
           reportTypes: adData.reportTypes || "reportTypes",
+          isActive: adData.isActive || "isActive",
         };
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
@@ -808,7 +856,17 @@ const EducationReported = () => {
                     </div>
                   </th>
                   <td className="px-6 py-4">{ad.description}</td>
-                  <td className="px-6 py-4">{ad.location}</td>
+                  <td className="px-6 py-4">
+                    {" "}
+                    <input
+                      type="checkbox"
+                      checked={ad.isActive}
+                      onChange={() => {
+                        handleToggle(ad.id); // Toggle UI state
+                        handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                      }}
+                    />
+                  </td>{" "}
                   <td className="px-6 py-4">{ad.Price}</td>
                   <td className="px-6 py-4">
                     {/* Delete Button */}

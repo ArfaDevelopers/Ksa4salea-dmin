@@ -23,17 +23,19 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FiTrash } from "react-icons/fi";
 type Ad = {
-  id: any; // Change from string to number
+  id: any;
   link: string;
   timeAgo: string;
+  isActive: boolean; // <-- it's here
   title: string;
   description: string;
   location: string;
   img: string;
   Price: string;
-  galleryImages: string;
+  galleryImages: string[];
   reportTypes: any;
 };
+
 const SPORTSGAMESReported = () => {
   const MySwal = withReactContent(Swal);
 
@@ -59,7 +61,51 @@ const SPORTSGAMESReported = () => {
   console.log("Updating listing with imageFile:", imageFile);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<DocumentData | null>(null);
-
+  const [selectedOption, setSelectedOption] = useState("All");
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "SPORTSGAMESComp", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
   const handleRevertClick = async (id: string) => {
     try {
       const adsCollection = collection(db, "SPORTSGAMESComp");
@@ -154,25 +200,24 @@ const SPORTSGAMESReported = () => {
       if (selectedAd) {
         await handleUpdate(selectedAd.id);
       } else if (selectedAd == null) {
-        // Handle image upload logic (if applicable)
-        const imageData = await handleImageUpload(imageFile); // Ensure handleImageUpload has a proper return type
+        const imageData = await handleImageUpload(imageFile);
 
-        const newAd = {
+        const newAd: Ad = {
           id: Date.now(),
           title,
           description,
           location,
           Price,
-
           link,
-          img: imageData.url || "", // Safely access 'url' here
+          img: imageData.url || "",
           timeAgo: timeAgo ? timeAgo.toLocaleDateString() : "",
-          heathcaretype,
-          galleryImages: "",
-          reportTypes: "", // Add this property with a default value, e.g., an empty string
-          // Add this property with a default value, e.g., an empty string
+          isActive: true, // 👈 important addition
+          galleryImages: [],
+          reportTypes: "",
         };
+
         setAds([...ads, newAd]);
+
         const adCollectionRef = collection(db, "SPORTSGAMESComp");
         await addDoc(adCollectionRef, {
           img: newAd.img,
@@ -180,10 +225,10 @@ const SPORTSGAMESReported = () => {
           description: newAd.description,
           location: newAd.location,
           Price: newAd.Price,
-          type: newAd.heathcaretype, // Correcting key naming
           link: newAd.link,
-          timeAgo: newAd.timeAgo, // Store as a string
+          timeAgo: newAd.timeAgo,
         });
+
         MySwal.fire({
           title: "Added Item!",
           text: "Listing added successfully!",
@@ -191,12 +236,11 @@ const SPORTSGAMESReported = () => {
           timer: 1000,
         });
       }
+
       closeModal();
       setRefresh(!refresh);
-
       resetForm();
     } catch (error) {
-      // console.error("Error adding/updating listing:", error.message);
       alert("Error adding/updating listing.");
     }
   };
@@ -225,6 +269,8 @@ const SPORTSGAMESReported = () => {
           img: adData.img || "",
           Price: adData.Price || "0",
           galleryImages: adData.galleryImages || "",
+          isActive: adData.isActive ?? true, // ✅ Added missing property
+
           reportTypes: adData.reportTypes || "",
         };
 
@@ -253,6 +299,7 @@ const SPORTSGAMESReported = () => {
           Price: doc.data().Price || "", // Provide fallback if data is missing
           galleryImages: doc.data().galleryImages || "", // Provide fallback if data is missing
           reportTypes: doc.data().reportTypes || "", // Provide fallback if data is missing
+          isActive: doc.data().isActive ?? true, // ✅ ADD isActive here (default true)
         }));
         const filteredAds = adsList.filter((ad) => {
           // Ensure reportTypes is an array
@@ -544,7 +591,17 @@ const SPORTSGAMESReported = () => {
                     </div>
                   </th>
                   <td className="px-6 py-4">{ad.description}</td>
-                  <td className="px-6 py-4">{ad.location}</td>
+                  <td className="px-6 py-4">
+                    {" "}
+                    <input
+                      type="checkbox"
+                      checked={ad.isActive}
+                      onChange={() => {
+                        handleToggle(ad.id); // Toggle UI state
+                        handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                      }}
+                    />
+                  </td>{" "}
                   <td className="px-6 py-4">{ad.Price}</td>
                   <td className="px-6 py-4">
                     {/* Delete Button */}
