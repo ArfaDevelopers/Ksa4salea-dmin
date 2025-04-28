@@ -19,6 +19,7 @@ import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
+import Select from "react-select";
 
 // Cloudinary upload
 import axios from "axios";
@@ -72,7 +73,144 @@ type Ad = {
 };
 const FashionStyle = () => {
   const MySwal = withReactContent(Swal);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: "",
+    kmDriven: "",
+    Transmission: "",
+    Emirates: "",
+    Registeredin: "",
+    TrustedCars: "",
+    EngineType: "",
+    EngineCapacity: "",
+    ManufactureYear: "",
+    Assembly: "",
+    BodyType: "",
+    Type: "",
+    BuildingType: "",
+    Accessibility: "",
+    Checkin: "",
+    RoomType: "",
+    ShoeCategory: "",
+    Breed: "",
+    NoiseLevel: "",
+    Capacity: "",
+    PowerSource: "",
+    BagType: "",
+    SubCategory: "",
+    NestedSubCategory: "",
 
+    Bedroom: "",
+
+    Age: "",
+    Temperament: "",
+    HealthStatus: "",
+    TrainingLevel: "",
+    DietaryPreferences: "",
+    MAGAZINESCategory: "",
+    IssueType: "",
+    AgeGroup: "",
+
+    SubscriptionType: "",
+
+    ColorOptions: "",
+
+    Availability: "",
+
+    NumberofDoors: "",
+    SeatingCapacity: "",
+    ModelCategory: "",
+    MeasurementRange: "",
+    BatteryType: "",
+    Compatibility: "",
+    StorageCapacity: "",
+    MeasurementUnits: "",
+    SpeedofMeasurement: "",
+    JobTitle: "",
+    JobType: "",
+    Language: "",
+    Duration: "",
+    PropertyType: "",
+    Amenities: "",
+    PropertyFeatures: "",
+
+    SkillLevel: "",
+    ContentType: "",
+
+    SubjectCategories: "",
+
+    Company: "",
+    JobDescription: "",
+
+    RequiredSkills: "",
+
+    EmploymentType: "",
+    ExperienceLevel: "",
+
+    Accuracy: "",
+    Industry: "",
+
+    CuffSize: "",
+    DisplayType: "",
+
+    SellerType: "",
+    PictureAvailability: "",
+    VideoAvailability: "",
+    BatteryLife: "",
+    DisplayQuality: "",
+    Connectivity: "",
+    SpecialFeatures: "",
+    Features: "",
+    Season: "",
+    ExteriorColor: "",
+    Purpose: "",
+    Price: "",
+
+    Gender: "",
+    Size: "",
+    Fit: "",
+    Material: "",
+    StyleDesign: "",
+    ClosureType: "",
+    CollarType: "",
+    WashType: "",
+
+    SleeveLength: "",
+
+    FeaturedAds: "",
+    States: "",
+    District: "",
+    ScreenSize: "",
+    Color: "",
+    OperatingSystem: "",
+    Processor: "",
+    RAM: "",
+    StorageType: "",
+    Storagecapacity: "",
+    GraphicsCard: "",
+
+    // Make: "",
+    tagline: "",
+    City: "",
+
+    priceRange: "",
+    priceFrom: "65",
+    priceTo: "120",
+    selectedFeature: "",
+    location: "",
+    address: "8697-8747 Stirling Rd, Florida",
+    mapAddress: "8697-8747 Stirling Rd, Florida",
+    latitude: "26.045197767574102",
+    longitude: "-80.26095677163161",
+    Email: "",
+    Website: "",
+    Phone: "",
+    facebook: "http://facebook.com",
+    twitter: "http://twitter.com",
+    googlePlus: "http://google.com",
+    instagram: "http://instagram.com",
+  });
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
@@ -154,7 +292,1603 @@ const FashionStyle = () => {
   const [activeCheckboxes, setActiveCheckboxes] = useState<{
     [key: number]: boolean;
   }>({});
+  const [subcategories, setSubcategories] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [Category, setCategory] = useState<{
+    category: string;
+    SubCategory: string;
+  }>({
+    category: "",
+    SubCategory: "",
+  });
+  const [Category1, setCategory1] = useState(""); // Store a single URL, initially null
+  const [nestedSubCategory, setNestedSubCategory] = useState<{
+    NestedSubCategory?: string;
+  }>({});
 
+  const subcategoriesMapping = {
+    categories: [
+      {
+        name: "Automotive",
+        subcategories: [
+          {
+            name: "Cars For Sale",
+            subcategories: [
+              { name: "Sedan" },
+              { name: "SUV" },
+              { name: "Coupe" },
+              { name: "Convertible" },
+              { name: "Truck" },
+              { name: "Electric" },
+            ],
+          },
+          {
+            name: "Car Rental",
+            subcategories: [
+              { name: "Sedan" },
+              { name: "SUV" },
+              { name: "Coupe" },
+              { name: "Convertible" },
+              { name: "Truck" },
+              { name: "Electric" },
+            ],
+          },
+          {
+            name: "Plates Number",
+            subcategories: [
+              { name: "Sedan" },
+              { name: "SUV" },
+              { name: "Coupe" },
+              { name: "Convertible" },
+              { name: "Truck" },
+              { name: "Electric" },
+            ],
+          },
+          {
+            name: "Wheels & Rims",
+            subcategories: [
+              { name: "Sedan" },
+              { name: "SUV" },
+              { name: "Coupe" },
+              { name: "Convertible" },
+              { name: "Truck" },
+              { name: "Electric" },
+            ],
+          },
+          {
+            name: "Spare Parts",
+            subcategories: [
+              { name: "Sedan" },
+              { name: "SUV" },
+              { name: "Coupe" },
+              { name: "Convertible" },
+              { name: "Truck" },
+              { name: "Electric" },
+            ],
+          },
+          {
+            name: "Motorcycles",
+            subcategories: [
+              { name: "Sport" },
+              { name: "Cruiser" },
+              { name: "Off-road" },
+            ],
+          },
+          {
+            name: "Trucks & Heavy Machinery",
+            subcategories: [
+              { name: "Sport" },
+              { name: "Cruiser" },
+              { name: "Off-road" },
+            ],
+          },
+
+          {
+            name: "Accessories",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Tshaleeh",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Boats & Jet Ski",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Classic Cars",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Salvage Cars",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Mortgaged Cars",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Recovery",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Food Truck",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Caravans",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Reports",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+          {
+            name: "Car Cleaning",
+            subcategories: [
+              { name: "Engine Components" },
+              { name: "Brakes" },
+              { name: "Tires & Wheels" },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Electronics",
+        subcategories: [
+          {
+            name: "Mobile Phones",
+            subcategories: [
+              { name: "Smartphones" },
+              { name: "Feature Phones" },
+            ],
+          },
+
+          {
+            name: "Tablet Devices",
+            subcategories: [
+              { name: "Laptops" },
+              { name: "Desktops" },
+              { name: "Accessories" },
+            ],
+          },
+
+          {
+            name: "Computers & Laptops",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Video Games",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Television & Audio System",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Accounts & Subscriptions",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Computers & Laptops",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Special Number",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Home & Kitchen Appliance",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+
+          {
+            name: "Motors & Generators",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Cameras",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Networking Devices",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Screens & Projectors",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Printer & Scanner",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+          {
+            name: "Computer Accessories",
+            subcategories: [
+              { name: "Televisions" },
+              { name: "Speakers" },
+              { name: "Home Theater" },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Fashion Style",
+        subcategories: [
+          {
+            name: "Watches",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Land" },
+              { name: "Villas" },
+            ],
+          },
+          {
+            name: "Perfumes & Incense",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Commercial Spaces" },
+            ],
+          },
+          {
+            name: "Sports Equipment",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Men's Fashion",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Women's Fashion",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Children's Clothing & Accessories",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Sleepwear",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Gifts",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Luggage",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Health & Beauty",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Others",
+            subcategories: [{ name: "Miscellaneous", subcategories: [] }],
+          },
+        ],
+      },
+      {
+        name: "Home & Furnituer",
+        subcategories: [
+          {
+            name: "Outdoor Furniture",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Land" },
+              { name: "Villas" },
+            ],
+          },
+          {
+            name: "Majlis & Sofas",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Commercial Spaces" },
+            ],
+          },
+          {
+            name: "Cabinets & Wardrobes",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Beds & Mattresses",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Tables & Chairs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Kitchens",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Sleepwear",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Bathrooms",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Carpets",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Curtains",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Decoration & Accessories",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Lighting",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Decoration & Accessories",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Lighting",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Household Items",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Garden - Plants",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Office Furniture",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Doors - Windows - Aluminium",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Tiles & Flooring",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Others",
+            subcategories: [{ name: "Miscellaneous", subcategories: [] }],
+          },
+        ],
+      },
+      {
+        name: "Job Board",
+        subcategories: [
+          {
+            name: "Administrative Jobs",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Land" },
+              { name: "Villas" },
+            ],
+          },
+          {
+            name: "Fashion & Beauty Jobs",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Commercial Spaces" },
+            ],
+          },
+          {
+            name: "Security & Safety Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Teaching Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "IT & Design Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Agriculture & Farming Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Industrial Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Medical & Nursing Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Architecture & Construction Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Industrial Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Housekeeping Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Restaurant Jobs",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Others",
+            subcategories: [{ name: "Miscellaneous", subcategories: [] }],
+          },
+        ],
+      },
+      {
+        name: "Real Estate",
+        subcategories: [
+          {
+            name: "Apartments for Rent",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Land" },
+              { name: "Villas" },
+            ],
+          },
+          {
+            name: "Apartments for Sale",
+            subcategories: [
+              { name: "Houses" },
+              { name: "Apartments" },
+              { name: "Commercial Spaces" },
+            ],
+          },
+          {
+            name: "Building for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Building for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Camps for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Chalets for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Chalets for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Commercial Lands for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Compound for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Compound for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Farm for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Farms for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Floor for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Floors for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Hall for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Houses for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Houses for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Offices for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Rest Houses for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Rooms for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Shops for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Shops for Transfer",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Warehouse for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Villas for Sale",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+          {
+            name: "Villas for Rent",
+            subcategories: [
+              { name: "Office Spaces" },
+              { name: "Retail" },
+              { name: "Industrial" },
+            ],
+          },
+
+          {
+            name: "Camping",
+            subcategories: [
+              {
+                name: "Tents",
+                subcategories: [],
+              },
+              {
+                name: "Sleeping Bags",
+                subcategories: [],
+              },
+              {
+                name: "Outdoor Gear",
+                subcategories: [
+                  { name: "Backpacking" },
+                  { name: "Family Camping" },
+                ],
+              },
+            ],
+          },
+
+          {
+            name: "Others",
+            subcategories: [{ name: "Miscellaneous", subcategories: [] }],
+          },
+        ],
+      },
+      {
+        name: "Services",
+        subcategories: [
+          {
+            name: "Other Services",
+            subcategories: [{ name: "Cleaning" }, { name: "Maintenance" }],
+          },
+          {
+            name: "Contracting Services",
+            subcategories: [{ name: "Repair" }, { name: "Detailing" }],
+          },
+          {
+            name: "Government Paperwork Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Delivery Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Furniture Moving Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Cleaning Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "International Shopping Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Legal Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Accounting & Financial Services",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+        ],
+      },
+      {
+        name: "Sports & Game",
+        subcategories: [
+          {
+            name: "Gaming Consoles",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+          {
+            name: "Video Games",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+          {
+            name: "Controllers",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+          {
+            name: "Gaming Accessories",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+          {
+            name: "Gift Cards",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+          {
+            name: "Accounts",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+          {
+            name: "Toys",
+            subcategories: [
+              { name: "Sports & Game" },
+              { name: "Sports & Game" },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Pet & Animals",
+        subcategories: [
+          {
+            name: "Sheep",
+            subcategories: [
+              { name: "Dogs" },
+              { name: "Cats" },
+              { name: "Birds" },
+              { name: "Fish" },
+            ],
+          },
+          {
+            name: "Goats",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Parrot",
+            subcategories: [],
+          },
+
+          {
+            name: "Dove/Pigeon",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Cats",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Chickens",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Camels",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Horses",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Dogs",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Cows",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Fish & Turtles",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Rabbits",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Ducks",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Squirrels",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Hamsters",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+          {
+            name: "Fur",
+            subcategories: [
+              { name: "Cattle" },
+              { name: "Sheep" },
+              { name: "Goats" },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Other",
+        subcategories: [
+          {
+            name: "Hunting & Trips",
+            subcategories: [{ name: "Cleaning" }, { name: "Maintenance" }],
+          },
+          {
+            name: "Gardening & Agriculture",
+            subcategories: [{ name: "Repair" }, { name: "Detailing" }],
+          },
+          {
+            name: "Parties & Events",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Travel & Tourism",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Roommate",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Lost & Found",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Education & Training",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Sports Training",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Stock & Forex Education",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Driving Lessons",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Private Tutoring",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+
+          {
+            name: "Training Courses",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Antiques & Collectibles",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Projects & Investments",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Books & Arts",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Programming & Design",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+
+          {
+            name: "Food & Beverages",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Gardening & Agriculture",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+          {
+            name: "Hunting & Trips",
+            subcategories: [{ name: "Tutoring" }, { name: "Coaching" }],
+          },
+        ],
+      },
+    ],
+  };
+
+  const categoryOptions = subcategoriesMapping.categories.map((category) => ({
+    value: category.name,
+    label: category.name,
+  }));
+  const handleCategoryChange = (selectedOption: any) => {
+    const selectedValue = selectedOption?.value || "";
+
+    // Update form data
+    setFormData((prev) => ({
+      ...prev,
+      category: selectedValue,
+      SubCategory: "", // Reset subcategory
+    }));
+
+    // Find the selected category from the mapping
+    const selectedCategory = subcategoriesMapping.categories.find(
+      (category) => category.name === selectedValue
+    );
+
+    if (selectedCategory && Array.isArray(selectedCategory.subcategories)) {
+      const mappedSubcategories = selectedCategory.subcategories.map((sub) => ({
+        value: sub.name,
+        label: sub.name,
+      }));
+      setSubcategories(mappedSubcategories);
+    } else {
+      setSubcategories([]);
+    }
+  };
+
+  const handleSubcategoryChange = (selectedOption: any) => {
+    const selectedValue = selectedOption ? selectedOption.value : "";
+    setFormData((prev) => ({ ...prev, SubCategory: selectedValue }));
+    setCategory((prev) => ({ ...prev, SubCategory: selectedValue }));
+  };
+  const SparePartsChange = (selectedOption: any) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      NestedSubCategory: selectedOption.value,
+    }));
+    setNestedSubCategory((prevData) => ({
+      ...prevData,
+      NestedSubCategory: selectedOption.value,
+    }));
+  };
+  const AccountsSubscriptions = [
+    { value: "Skincare", label: "Skincare" },
+    { value: "Hair Care", label: "Hair Care" },
+    { value: "Makeup", label: "Makeup" },
+    { value: "Other Beauty Products", label: "Other Beauty Products" },
+  ];
+
+  const HealthBeauty = [
+    { value: "PUBG", label: "PUBG" },
+    { value: "Fortnite", label: "Fortnite" },
+    { value: "FIFA", label: "FIFA" },
+    { value: "Clash of Clans", label: "Clash of Clans" },
+    { value: "Clash Royale", label: "Clash Royale" },
+    { value: "Instagram Accounts", label: "Instagram Accounts" },
+    { value: "Twitter Accounts", label: "Twitter Accounts" },
+    { value: "TikTok Accounts", label: "TikTok Accounts" },
+    { value: "Snapchat Accounts", label: "Snapchat Accounts" },
+    { value: "Facebook Accounts", label: "Facebook Accounts" },
+    { value: "YouTube Accounts", label: "YouTube Accounts" },
+    { value: "Other Accounts", label: "Other Accounts" },
+  ];
+  const FashionBeautyJobs = [
+    { value: "Tailor", label: "Tailor" },
+    { value: "Female Hairdresser", label: "Female Hairdresser" },
+    { value: "Fashion Designer", label: "Fashion Designer" },
+    { value: "Model", label: "Model" },
+    { value: "Makeup Artist", label: "Makeup Artist" },
+    { value: "Hair Stylist", label: "Hair Stylist" },
+    { value: "Other Beauty Jobs", label: "Other Beauty Jobs" },
+  ];
+  const ITDesignJobs = [
+    { value: "Other IT Jobs", label: "Other IT Jobs" },
+    {
+      value: "Network & Telecommunications Specialist",
+      label: "Network & Telecommunications Specialist",
+    },
+    { value: "Content Writer", label: "Content Writer" },
+    { value: "Programmer", label: "Programmer" },
+    { value: "Media Designer", label: "Media Designer" },
+  ];
+  const SecuritySafetyJobs = [
+    { value: "Security Guard", label: "Security Guard" },
+    { value: "Safety Technician", label: "Safety Technician" },
+  ];
+
+  const AgricultureFarmingJobs = [
+    { value: "Farm Worker", label: "Farm Worker" },
+    { value: "Other Agricultural Jobs", label: "Other Agricultural Jobs" },
+  ];
+  const AdministrativeJobs = [
+    { value: "Marketing & Sales", label: "Marketing & Sales" },
+    { value: "Customer Service", label: "Customer Service" },
+    { value: "Secretary", label: "Secretary" },
+    { value: "Tourism & Hospitality", label: "Tourism & Hospitality" },
+    { value: "Accountant", label: "Accountant" },
+    { value: "Delivery Representative", label: "Delivery Representative" },
+    { value: "Other Administrative Jobs", label: "Other Administrative Jobs" },
+    { value: "Public Relations & Media", label: "Public Relations & Media" },
+    { value: "Translator", label: "Translator" },
+    { value: "Lawyer & Legal Jobs", label: "Lawyer & Legal Jobs" },
+  ];
+  const ChildrenClothingAccessories = [
+    { value: "Baby Care Products", label: "Baby Care Products" },
+    { value: "Children's Accessories", label: "Children's Accessories" },
+    { value: "Toys for Kids", label: "Toys for Kids" },
+    { value: "Children's Cribs & Chairs", label: "Children's Cribs & Chairs" },
+    { value: "Children's Bags", label: "Children's Bags" },
+    { value: "Strollers", label: "Strollers" },
+    { value: "Car Seats for Kids", label: "Car Seats for Kids" },
+    { value: "Girls' Clothing", label: "Girls' Clothing" },
+    { value: "Boys' Clothing", label: "Boys' Clothing" },
+  ];
+  const WomenFashion = [
+    {
+      value: "Women's Accessories & Jewelry",
+      label: "Women's Accessories & Jewelry",
+    },
+    {
+      value: "Women's Blouses & T-Shirts",
+      label: "Women's Blouses & T-Shirts",
+    },
+    { value: "Women's Skirts & Trousers", label: "Women's Skirts & Trousers" },
+    { value: "Women's Jackets", label: "Women's Jackets" },
+    { value: "Kaftans", label: "Kaftans" },
+    { value: "Women's Bags", label: "Women's Bags" },
+    { value: "Abayas", label: "Abayas" },
+    { value: "Dresses", label: "Dresses" },
+    { value: "Lingerie", label: "Lingerie" },
+    { value: "Women's Sportswear", label: "Women's Sportswear" },
+  ];
+  const Watches = [
+    { value: "Other Watches", label: "Other Watches" },
+    { value: "Men's Watches", label: "Men's Watches" },
+    { value: "Women's Watches", label: "Women's Watches" },
+  ];
+
+  const PerfumesIncense = [
+    { value: "Other Perfumes", label: "Other Perfumes" },
+    { value: "Men's Perfumes", label: "Men's Perfumes" },
+    { value: "Women's Perfumes", label: "Women's Perfumes" },
+    { value: "Oud & Incense", label: "Oud & Incense" },
+  ];
+  const IndustrialJobs = [
+    { value: "Other Industrial Jobs", label: "Other Industrial Jobs" },
+    { value: "Car Mechanic", label: "Car Mechanic" },
+    { value: "Auto Electrician", label: "Auto Electrician" },
+    { value: "Bodywork Technician", label: "Bodywork Technician" },
+  ];
+  const MedicalNursingJobs = [
+    { value: "Pharmacist", label: "Pharmacist" },
+    { value: "Doctor", label: "Doctor" },
+    {
+      value: "Physical Therapy Technician",
+      label: "Physical Therapy Technician",
+    },
+    { value: "Massage Therapist", label: "Massage Therapist" },
+    { value: "Nurse", label: "Nurse" },
+    { value: "Other Medical Jobs", label: "Other Medical Jobs" },
+  ];
+  const SpecialNumber = [
+    { value: "STC", label: "STC" },
+    { value: "Mobily", label: "Mobily" },
+    { value: "Zain", label: "Zain" },
+  ];
+  const Goats = [
+    { value: "Local Goats", label: "Local Goats" },
+    { value: "Hure Sheep", label: "Hure Sheep" },
+    { value: "Romanian Sheep", label: "Romanian Sheep" },
+    { value: "Sawakni Sheep", label: "Sawakni Sheep" },
+    { value: "Najdi Sheep", label: "Najdi Sheep" },
+    { value: "Naemi Sheep", label: "Naemi Sheep" },
+    { value: "Rafidi Sheep", label: "Rafidi Sheep" },
+    { value: "Sheep Supplies", label: "Sheep Supplies" },
+    { value: "Sheep Products", label: "Sheep Products" },
+  ];
+  const Parrot = [
+    { value: "Amazoni Parrot", label: "Amazoni Parrot" },
+    { value: "Congo African Grey Parrot", label: "Congo African Grey Parrot" },
+    { value: "Cockatoo Parrot", label: "Cockatoo Parrot" },
+    { value: "Macaw Parrot", label: "Macaw Parrot" },
+    { value: "Pet Birds", label: "Pet Birds" },
+    { value: "Bird Supplies", label: "Bird Supplies" },
+  ];
+  const DovePigeon = [
+    { value: "Pakistani Pigeon", label: "Pakistani Pigeon" },
+    { value: "Turkish Pigeon", label: "Turkish Pigeon" },
+    { value: "Homers (Pigeons)", label: "Homers (Pigeons)" },
+    { value: "Sudanese Pigeon", label: "Sudanese Pigeon" },
+    { value: "Shami Pigeon", label: "Shami Pigeon" },
+    { value: "Sanaani Pigeon", label: "Sanaani Pigeon" },
+    { value: "French Pigeon", label: "French Pigeon" },
+    { value: "Egyptian Pigeon", label: "Egyptian Pigeon" },
+    { value: "Dutch Pigeon", label: "Dutch Pigeon" },
+    { value: "Qatifi Pigeon", label: "Qatifi Pigeon" },
+  ];
+  const Cats = [
+    { value: "Scottish Cats", label: "Scottish Cats" },
+    { value: "Persian Cats", label: "Persian Cats" },
+    { value: "Cats for Adoption", label: "Cats for Adoption" },
+    { value: "Himalayan Cats", label: "Himalayan Cats" },
+    { value: "Cat Supplies", label: "Cat Supplies" },
+  ];
+  const Chickens = [
+    { value: "Brahma Chickens", label: "Brahma Chickens" },
+    { value: "Local Chickens", label: "Local Chickens" },
+    { value: "Turkish Chickens", label: "Turkish Chickens" },
+    { value: "Persian Chickens", label: "Persian Chickens" },
+    { value: "French Chickens", label: "French Chickens" },
+
+    { value: "Fayoumi Chickens", label: "Fayoumi Chickens" },
+    { value: "Pakistani Chickens", label: "Pakistani Chickens" },
+    { value: "Poultry Supplies", label: "Poultry Supplies" },
+  ];
+  const Camels = [
+    { value: "Bakar Camels", label: "Bakar Camels" },
+    { value: "Stud Camels", label: "Stud Camels" },
+    { value: "Camel Stallions", label: "Camel Stallions" },
+    { value: "Female Camels", label: "Female Camels" },
+    { value: "Camel Supplies", label: "Camel Supplies" },
+  ];
+  const Horses = [
+    { value: "Popular Horses", label: "Popular Horses" },
+    { value: "Mixed Horses", label: "Mixed Horses" },
+    { value: "Wahho Horses", label: "Wahho Horses" },
+    { value: "English Horses", label: "English Horses" },
+    { value: "Horse Supplies", label: "Horse Supplies" },
+  ];
+  const Cows = [
+    { value: "German Cows", label: "German Cows" },
+    { value: "Local Cows", label: "Local Cows" },
+    { value: "Jersey Cows", label: "Jersey Cows" },
+    { value: "Swiss Cows", label: "Swiss Cows" },
+    { value: "Dutch Cows", label: "Dutch Cows" },
+    { value: "Dairy Products", label: "Dairy Products" },
+  ];
+  const Squirrels = [
+    { value: "Turtles", label: "Turtles" },
+    { value: "Sharshari Ducks", label: "Sharshari Ducks" },
+  ];
+  const Hamsters = [{ value: "Geese", label: "Geese" }];
+  const Ducks = [
+    { value: "Bikini Ducks", label: "Bikini Ducks" },
+    { value: "Sharshari Ducks", label: "Sharshari Ducks" },
+    { value: "Geese", label: "Geese" },
+    { value: "Fish", label: "Fish" },
+    { value: "Bikini Ducks", label: "Bikini Ducks" },
+  ];
+  const Dogs = [
+    { value: "Pitbull Dogs", label: "Pitbull Dogs" },
+    { value: "Pomeranian Dogs", label: "Pomeranian Dogs" },
+    { value: "Golden Retriever Dogs", label: "Golden Retriever Dogs" },
+    { value: "German Shepherd Dogs", label: "German Shepherd Dogs" },
+    { value: "Shih Tzu Dog", label: "Shih Tzu Dog" },
+    { value: "Chihuahua Dog", label: "Chihuahua Dog" },
+    { value: "Maltese Dog", label: "Maltese Dog" },
+    { value: "Husky Dog", label: "Husky Dog" },
+    { value: "Dog Supplies", label: "Dog Supplies" },
+  ];
+  const Sheep = [
+    { value: "Barbary Sheep", label: "Barbary Sheep" },
+    { value: "Hure Sheep", label: "Hure Sheep" },
+    { value: "Romanian Sheep", label: "Romanian Sheep" },
+    { value: "Sawakni Sheep", label: "Sawakni Sheep" },
+    { value: "Najdi Sheep", label: "Najdi Sheep" },
+    { value: "Naemi Sheep", label: "Naemi Sheep" },
+    { value: "Rafidi Sheep", label: "Rafidi Sheep" },
+    { value: "Sheep Supplies", label: "Sheep Supplies" },
+    { value: "Sheep Products", label: "Sheep Products" },
+  ];
+  const RestaurantJobs = [
+    { value: "Chef & Cook Instructor", label: "Chef & Cook Instructor" },
+    { value: "Waiter & Host", label: "Waiter & Host" },
+    { value: "Other Restaurant Jobs", label: "Other Restaurant Jobs" },
+  ];
+  const HousekeepingJobs = [
+    { value: "Private Driver", label: "Private Driver" },
+    { value: "Household Worker", label: "Household Worker" },
+    { value: "Domestic Worker", label: "Domestic Worker" },
+    { value: "Other Labor Jobs", label: "Other Labor Jobs" },
+  ];
+  const ArchitectureConstructionJobs = [
+    { value: "Building Painter", label: "Building Painter" },
+    { value: "AC Technician", label: "AC Technician" },
+    { value: "Decorator", label: "Decorator" },
+    { value: "Building Electrician", label: "Building Electrician" },
+    { value: "Tiler", label: "Tiler" },
+    { value: "Building Supervisor", label: "Building Supervisor" },
+    { value: "Building Contractor", label: "Building Contractor" },
+    { value: "Plasterer", label: "Plasterer" },
+    { value: "Carpenter", label: "Carpenter" },
+    { value: "Other Construction Jobs", label: "Other Construction Jobs" },
+  ];
+  const Cameras = [
+    { value: "Lenses", label: "Lenses" },
+    { value: "Drone", label: "Drone" },
+    { value: "Camera Accessories", label: "Camera Accessories" },
+  ];
+  const SportsEquipment = [
+    { value: "Eyeglasses", label: "Eyeglasses" },
+    { value: "Other Eyeglasses", label: "Other Eyeglasses" },
+    { value: "Men's Eyeglasses", label: "Men's Eyeglasses" },
+    {
+      value: "HeadsWomen's Eyeglassesets",
+      label: "HeadsWomen's Eyeglassesets",
+    },
+    { value: "Sports Equipment", label: "Sports Equipment" },
+  ];
+  const HomeKitchenAppliance = [
+    { value: "Stoves & Ovens", label: "Stoves & Ovens" },
+    { value: "Refrigerators & Coolers", label: "Refrigerators & Coolers" },
+    { value: "Mixers & Blenders", label: "Mixers & Blenders" },
+    { value: "Washing Machines", label: "Washing Machines" },
+    { value: "Kettles", label: "Kettles" },
+    { value: "Fryers", label: "Fryers" },
+    { value: "Coffee Machines", label: "Coffee Machines" },
+    { value: "Microwaves & Toasters", label: "Microwaves & Toasters" },
+    { value: "Vacuum Cleaners", label: "Vacuum Cleaners" },
+    { value: "Clothing Irons", label: "Clothing Irons" },
+    { value: "Air Conditioners", label: "Air Conditioners" },
+  ];
+  const MenFashion = [
+    { value: "Men's Shemaghs", label: "Men's Shemaghs" },
+    { value: "Men's Accessories", label: "Men's Accessories" },
+    { value: "Men's Clothing", label: "Men's Clothing" },
+    { value: "Men's Jackets", label: "Men's Jackets" },
+    { value: "Men's Bags", label: "Men's Bags" },
+    { value: "Men's Shirts & Trousers", label: "Men's Shirts & Trousers" },
+    { value: "Men's Sportswear", label: "Men's Sportswear" },
+  ];
+  const SpareParts = [
+    { value: "others", label: "Others" },
+    { value: "batteries", label: "Batteries" },
+    { value: "spareparts", label: "Spare Parts" },
+    { value: "mechanicalparts", label: "Mechanical Parts" },
+    { value: "bodyparts", label: "Body Parts" },
+  ];
+  const VideoGames = [
+    { value: "VR Glasses", label: "VR Glasses" },
+    { value: "PlayStation (PS) Devices", label: "PlayStation (PS) Devices" },
+    { value: "PlayStation (PS) Games", label: "PlayStation (PS) Games" },
+    { value: "Xbox Devices", label: "Xbox Devices" },
+    { value: "Xbox Games", label: "Xbox Games" },
+    { value: "Nintendo", label: "Nintendo" },
+  ];
+  const BoatsJetSki = [
+    { value: "Others", label: "Others" },
+    { value: "Jet-ski", label: "Jet-ski" },
+    { value: "Motorboats", label: "Motorboats" },
+  ];
+  const TabletDevices = [
+    { value: "iPad", label: "iPad" },
+    { value: "Galaxy Tab", label: "Galaxy Tab" },
+  ];
+  const MobilePhones = [
+    { value: "Smart Watches", label: "Smart Watches" },
+    { value: "Headsets", label: "Headsets" },
+    { value: "Chargers & Cables", label: "Chargers & Cables" },
+    { value: "Covers & Protectors", label: "Covers & Protectors" },
+  ];
+  const TrucksHeavyMachinery = [
+    { value: "Heavy Equipmen", label: "Heavy Equipmen" },
+    { value: "Excavator", label: "Excavator" },
+    { value: "Crusher", label: "Crusher" },
+    { value: "Bulldozer", label: "Bulldozer" },
+    { value: "Crane", label: "Crane" },
+    { value: "Recovery", label: "Recovery" },
+    { value: "Wheel Loader", label: "Wheel Loader" },
+    { value: "Dump Truck", label: "Dump Truck" },
+    { value: "Trucks", label: "Trucks" },
+    { value: "Crane", label: "Crane" },
+
+    { value: "Agricultural Equipment", label: "Agricultural Equipment" },
+  ];
   const handleToggle = (id: number) => {
     setActiveCheckboxes((prev) => {
       const newState = { ...prev, [id]: !prev[id] };
@@ -612,6 +2346,8 @@ const FashionStyle = () => {
         img5: imageUrls[4], // img5
         img6: imageUrls[5], // img6
         location: location,
+        category: Category1,
+
         price: price,
         Color: Color,
         Gender: Gender,
@@ -980,7 +2716,1015 @@ const FashionStyle = () => {
                       <option value="Paris">Paris</option>
                     </select>
                   </div>
+                  <div className="card w-100 w-md-50">
+                    <div className="form-group">
+                      <label className="col-form-label label-heading">
+                        Category
+                      </label>
+                      <div className="row category-listing">
+                        <Select
+                          options={categoryOptions}
+                          value={categoryOptions.find(
+                            (option) => option.value === formData.category
+                          )}
+                          onChange={handleCategoryChange}
+                          className="basic-single"
+                          classNamePrefix="select"
+                          placeholder="Select Category"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
+                  <div className="card w-100 w-md-50">
+                    <div className="form-group">
+                      <label className="col-form-label label-heading">
+                        Select SubCategory
+                      </label>
+                      <div className="row category-listing">
+                        <Select
+                          options={subcategories}
+                          value={subcategories.find(
+                            (option) => option.value === formData.SubCategory
+                          )}
+                          onChange={handleSubcategoryChange}
+                          className="basic-single"
+                          classNamePrefix="select"
+                          placeholder="Select Subcategory"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {Category.SubCategory === "Spare Parts" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SpareParts}
+                            value={SpareParts.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Trucks & Heavy Machinery" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={TrucksHeavyMachinery}
+                            value={TrucksHeavyMachinery.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Boats & Jet Ski" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={BoatsJetSki}
+                            value={BoatsJetSki.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Mobile Phones" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={MobilePhones}
+                            value={MobilePhones.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Tablet Devices" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={TabletDevices}
+                            value={TabletDevices.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Video Games" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={VideoGames}
+                            value={VideoGames.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Accounts & Subscriptions" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={AccountsSubscriptions}
+                            value={AccountsSubscriptions.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Special Number" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SpecialNumber}
+                            value={SpecialNumber.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Home & Kitchen Appliance" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={HomeKitchenAppliance}
+                            value={HomeKitchenAppliance.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Watches" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Watches}
+                            value={Watches.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Perfumes & Incense" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={PerfumesIncense}
+                            value={PerfumesIncense.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Cameras" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Cameras}
+                            value={Cameras.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Sports Equipment" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SportsEquipment}
+                            value={SportsEquipment.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Men's Fashion" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={MenFashion}
+                            value={MenFashion.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Women's Fashion" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={WomenFashion}
+                            value={WomenFashion.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory ===
+                  "Children's Clothing & Accessories" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={ChildrenClothingAccessories}
+                            value={ChildrenClothingAccessories.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Health & Beauty" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={HealthBeauty}
+                            value={HealthBeauty.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Administrative Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={AdministrativeJobs}
+                            value={AdministrativeJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Fashion & Beauty Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={FashionBeautyJobs}
+                            value={FashionBeautyJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Security & Safety Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SecuritySafetyJobs}
+                            value={SecuritySafetyJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "IT & Design Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={ITDesignJobs}
+                            value={ITDesignJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Agriculture & Farming Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={AgricultureFarmingJobs}
+                            value={AgricultureFarmingJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Industrial Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={IndustrialJobs}
+                            value={IndustrialJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Medical & Nursing Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={MedicalNursingJobs}
+                            value={MedicalNursingJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory ===
+                  "Architecture & Construction Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={ArchitectureConstructionJobs}
+                            value={ArchitectureConstructionJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Housekeeping Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={HousekeepingJobs}
+                            value={HousekeepingJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Restaurant Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={RestaurantJobs}
+                            value={RestaurantJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Sheep" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Sheep}
+                            value={Sheep.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Goats" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Goats}
+                            value={Goats.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Parrot" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Parrot}
+                            value={Parrot.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Dove/Pigeon" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={DovePigeon}
+                            value={DovePigeon.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Cats" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Cats}
+                            value={Cats.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Chickens" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Chickens}
+                            value={Chickens.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Camels" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Camels}
+                            value={Camels.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Horses" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Horses}
+                            value={Horses.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Dogs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Dogs}
+                            value={Dogs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Cows" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Cows}
+                            value={Cows.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Hamsters" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Hamsters}
+                            value={Hamsters.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Squirrels" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Squirrels}
+                            value={Squirrels.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Ducks" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Ducks}
+                            value={Ducks.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                   {/* Location Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">

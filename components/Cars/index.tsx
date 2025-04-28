@@ -290,7 +290,9 @@ const Cars = () => {
     SubCategory: "",
   });
   const [Category1, setCategory1] = useState(""); // Store a single URL, initially null
-  const [NestedSubCategory, setNestedSubCategory] = useState(""); // Store a single URL, initially null
+  const [nestedSubCategory, setNestedSubCategory] = useState<{
+    NestedSubCategory?: string;
+  }>({});
 
   const subcategoriesMapping = {
     categories: [
@@ -1531,12 +1533,23 @@ const Cars = () => {
     setFormData((prev) => ({ ...prev, SubCategory: selectedValue }));
     setCategory((prev) => ({ ...prev, SubCategory: selectedValue }));
   };
+  const SparePartsChange = (selectedOption: any) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      NestedSubCategory: selectedOption.value,
+    }));
+    setNestedSubCategory((prevData) => ({
+      ...prevData,
+      NestedSubCategory: selectedOption.value,
+    }));
+  };
   const AccountsSubscriptions = [
     { value: "Skincare", label: "Skincare" },
     { value: "Hair Care", label: "Hair Care" },
     { value: "Makeup", label: "Makeup" },
     { value: "Other Beauty Products", label: "Other Beauty Products" },
   ];
+
   const HealthBeauty = [
     { value: "PUBG", label: "PUBG" },
     { value: "Fortnite", label: "Fortnite" },
@@ -2350,6 +2363,7 @@ const Cars = () => {
         Price: price,
         Link: link,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
+        category: Category1,
 
         Description: description,
         registeredCity: registeredCity,
@@ -2760,6 +2774,976 @@ const Cars = () => {
                       </div>
                     </div>
                   </div>
+
+                  {Category.SubCategory === "Spare Parts" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SpareParts}
+                            value={SpareParts.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Trucks & Heavy Machinery" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={TrucksHeavyMachinery}
+                            value={TrucksHeavyMachinery.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Boats & Jet Ski" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={BoatsJetSki}
+                            value={BoatsJetSki.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Mobile Phones" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={MobilePhones}
+                            value={MobilePhones.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Tablet Devices" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={TabletDevices}
+                            value={TabletDevices.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Video Games" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={VideoGames}
+                            value={VideoGames.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Accounts & Subscriptions" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={AccountsSubscriptions}
+                            value={AccountsSubscriptions.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Special Number" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SpecialNumber}
+                            value={SpecialNumber.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Home & Kitchen Appliance" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={HomeKitchenAppliance}
+                            value={HomeKitchenAppliance.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Watches" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Watches}
+                            value={Watches.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Perfumes & Incense" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={PerfumesIncense}
+                            value={PerfumesIncense.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Cameras" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Cameras}
+                            value={Cameras.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Sports Equipment" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SportsEquipment}
+                            value={SportsEquipment.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Men's Fashion" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={MenFashion}
+                            value={MenFashion.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Women's Fashion" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={WomenFashion}
+                            value={WomenFashion.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory ===
+                  "Children's Clothing & Accessories" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={ChildrenClothingAccessories}
+                            value={ChildrenClothingAccessories.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Health & Beauty" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={HealthBeauty}
+                            value={HealthBeauty.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Administrative Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={AdministrativeJobs}
+                            value={AdministrativeJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Fashion & Beauty Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={FashionBeautyJobs}
+                            value={FashionBeautyJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Security & Safety Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={SecuritySafetyJobs}
+                            value={SecuritySafetyJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "IT & Design Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={ITDesignJobs}
+                            value={ITDesignJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Agriculture & Farming Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={AgricultureFarmingJobs}
+                            value={AgricultureFarmingJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Industrial Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={IndustrialJobs}
+                            value={IndustrialJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Medical & Nursing Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={MedicalNursingJobs}
+                            value={MedicalNursingJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory ===
+                  "Architecture & Construction Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={ArchitectureConstructionJobs}
+                            value={ArchitectureConstructionJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Housekeeping Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={HousekeepingJobs}
+                            value={HousekeepingJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Restaurant Jobs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={RestaurantJobs}
+                            value={RestaurantJobs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Sheep" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Sheep}
+                            value={Sheep.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Goats" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Goats}
+                            value={Goats.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Parrot" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Parrot}
+                            value={Parrot.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Dove/Pigeon" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={DovePigeon}
+                            value={DovePigeon.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Cats" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Cats}
+                            value={Cats.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Chickens" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Chickens}
+                            value={Chickens.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Camels" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Camels}
+                            value={Camels.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Horses" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Horses}
+                            value={Horses.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Dogs" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Dogs}
+                            value={Dogs.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {Category.SubCategory === "Cows" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Cows}
+                            value={Cows.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Hamsters" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Hamsters}
+                            value={Hamsters.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Squirrels" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Squirrels}
+                            value={Squirrels.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {Category.SubCategory === "Ducks" ? (
+                    <div className="card w-100 w-md-50">
+                      <div className="form-group">
+                        <label className="col-form-label label-heading">
+                          Select Nested SubCategory
+                        </label>
+                        <div className="row category-listing">
+                          <Select
+                            options={Ducks}
+                            value={Ducks.find(
+                              (option) =>
+                                option.value === formData.NestedSubCategory
+                            )}
+                            onChange={SparePartsChange}
+                            className="basic-single"
+                            classNamePrefix="select"
+                            placeholder="Select Subcategory"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                   {/* Location Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
