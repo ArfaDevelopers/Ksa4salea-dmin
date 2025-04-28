@@ -11,6 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import Select from "react-select";
+import { Country, State, City, ICity } from "country-state-city";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -70,6 +71,8 @@ type Ad = {
   FuelType: any;
   galleryImages: any;
 };
+const saudiCities = City.getCitiesOfCountry("SA"); // 'SA' = Saudi Arabia
+
 interface Subcategory {
   name: string;
 }
@@ -246,7 +249,13 @@ const Cars = () => {
 
   const [whatsapp, setWhatsapp] = useState("03189391781");
   const [type, setType] = useState("Sale");
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
+
+  useEffect(() => {
+    const saudiCities = City.getCitiesOfCountry("SA") || []; // fallback to empty array
+    setCities(saudiCities);
+  }, []);
   const [Registeredin, setRegisteredin] = useState("");
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
@@ -2364,7 +2373,7 @@ const Cars = () => {
         Link: link,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
         category: Category1,
-
+        NestedSubCategory: nestedSubCategory,
         Description: description,
         registeredCity: registeredCity,
         assembly: assembly,
@@ -2715,7 +2724,6 @@ const Cars = () => {
                     />
                   </div>
 
-                  {/* City Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       City
@@ -2728,11 +2736,11 @@ const Cars = () => {
                       <option disabled value="">
                         Select City
                       </option>
-                      <option value="New York">New York</option>
-                      <option value="Bogotá">Bogotá</option>
-                      <option value="Dubai">Dubai</option>
-                      <option value="Tokyo">Tokyo</option>
-                      <option value="Paris">Paris</option>
+                      {cities.map((city) => (
+                        <option key={city.name} value={city.name}>
+                          {city.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="card w-100 w-md-50">

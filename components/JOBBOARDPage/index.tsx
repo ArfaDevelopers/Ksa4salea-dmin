@@ -10,6 +10,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
+import { Country, State, City, ICity } from "country-state-city";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -229,7 +230,13 @@ const JOBBOARDPage = () => {
 
   const [whatsapp, setWhatsapp] = useState("03189391781");
   const [Type, setType] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
+
+  useEffect(() => {
+    const saudiCities = City.getCitiesOfCountry("SA") || []; // fallback to empty array
+    setCities(saudiCities);
+  }, []);
   const [Registeredin, setRegisteredin] = useState("");
   const [OperatingSystem, setOperatingSystem] = useState("");
   const [MeasurementRange, setMeasurementRange] = useState("");
@@ -2696,8 +2703,6 @@ const JOBBOARDPage = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
-                  {/* City Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       City
@@ -2710,11 +2715,11 @@ const JOBBOARDPage = () => {
                       <option disabled value="">
                         Select City
                       </option>
-                      <option value="America">America</option>
-                      <option value="Bogotá">Bogotá</option>
-                      <option value="Dubai">Dubai</option>
-                      <option value="Tokyo">Tokyo</option>
-                      <option value="Paris">Paris</option>
+                      {cities.map((city) => (
+                        <option key={city.name} value={city.name}>
+                          {city.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
