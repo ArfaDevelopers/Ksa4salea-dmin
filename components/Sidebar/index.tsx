@@ -12,6 +12,7 @@ import { MdCategory } from "react-icons/md";
 import { FaSignal, FaCar } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
 import { GiImbricatedArrows } from "react-icons/gi";
+import { AiFillProduct } from "react-icons/ai";
 
 import { MdElectricBike } from "react-icons/md";
 import { MdHealthAndSafety } from "react-icons/md";
@@ -103,15 +104,15 @@ const menuGroups = [
             style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
           />
         ),
-        label: "Ads",
+        label: "Banner Management",
         route: "#",
         children: [
           { label: "Popup Banner", route: "/Bannermain" },
           { label: "Slider Images", route: "/SliderImage" },
 
-          { label: "Banner Image", route: "/Bannerimg" },
-          { label: "Hero Banner", route: "/HeroBanner" },
-          { label: "Commercial Ads", route: "/CommercialAdscom" },
+          // { label: "Banner Image", route: "/Bannerimg" },
+          // { label: "Hero Banner", route: "/HeroBanner" },
+          // { label: "Commercial Ads", route: "/CommercialAdscom" },
           // { label: "Games & Sport", route: "/GamesSport" },
         ],
       },
@@ -160,15 +161,50 @@ const menuGroups = [
       //   label: "Popup Banner",
       //   route: "/Bannermain",
       // },
+
+      // {
+      //   icon: (
+      //     <FaAd
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Commercial Ads",
+      //   route: "/CommercialAdscom",
+      // },
       {
         icon: (
-          <FaCar
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+          <AiFillProduct
+            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
           />
         ),
-        label: "Automotive",
-        route: "/Cars",
+        label: "All Categories",
+        route: "#",
+        children: [
+          { label: "Automotive", route: "/Cars" },
+          // { label: "Slider Images", route: "/SliderImage" },
+
+          // { label: "Banner Image", route: "/Bannerimg" },
+          { label: "FashionStyle", route: "/FashionStyle" },
+          { label: "Electronics", route: "/ElectronicComp" },
+          { label: "Home & Furniture", route: "/HealthCareComp" },
+          { label: "Jobboard", route: "/JOBBOARD" },
+          { label: "Other", route: "/Education" },
+          { label: "Real Estate", route: "/REALESTATECOMP" },
+          { label: "Services", route: "/TRAVEL" },
+          { label: "Sports & Games", route: "/SPORTSGAMESCompPage" },
+          { label: "Pet & Animal", route: "/PETANIMALCOMP" },
+          { label: "Commercial Ads", route: "/CommercialAdscom" },
+        ],
       },
+      // {
+      //   icon: (
+      //     <FaCar
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Automotive",
+      //   route: "/Cars",
+      // },
       // {
       //   icon: (
       //     <MdElectricBike
@@ -178,87 +214,88 @@ const menuGroups = [
       //   label: "Bikes",
       //   route: "/Bikes",
       // },
-      {
-        icon: (
-          <FcElectronics
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Electronics",
-        route: "/ElectronicComp",
-      },
-      {
-        icon: (
-          <MdHealthAndSafety
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "Home & Furnituer",
-        route: "/HealthCareComp",
-      },
-      {
-        icon: (
-          <FaPersonDressBurst
-            style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
-          />
-        ),
-        label: "FashionStyle",
-        route: "/FashionStyle",
-      },
-      {
-        icon: (
-          <BsFillHddNetworkFill
-            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
-          />
-        ),
-        label: "Jobboard",
-        route: "/JOBBOARD",
-      },
-      {
-        icon: (
-          <MdCastForEducation
-            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
-          />
-        ),
-        label: "Other",
-        route: "/Education",
-      },
-      {
-        icon: (
-          <SiElectronbuilder
-            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
-          />
-        ),
-        label: "Real Estate ",
-        route: "/REALESTATECOMP",
-      },
-      {
-        icon: (
-          <FaRoute
-            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
-          />
-        ),
-        label: "Services",
-        route: "/TRAVEL",
-      },
-      {
-        icon: (
-          <MdOutlineSportsSoccer
-            style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
-          />
-        ),
-        label: "Sports & Games",
-        route: "/SPORTSGAMESCompPage",
-      },
-      {
-        icon: (
-          <GiAnimalHide
-            style={{ fontSize: "1em", height: "1rem", width: "1rem" }}
-          />
-        ),
-        label: "Pet & Animal",
-        route: "/PETANIMALCOMP",
-      },
+
+      // {
+      //   icon: (
+      //     <FcElectronics
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Electronics",
+      //   route: "/ElectronicComp",
+      // },
+      // {
+      //   icon: (
+      //     <MdHealthAndSafety
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "Home & Furnituer",
+      //   route: "/HealthCareComp",
+      // },
+      // {
+      //   icon: (
+      //     <FaPersonDressBurst
+      //       style={{ fontSize: "1em", height: "1.8rem", width: "1.4rem" }}
+      //     />
+      //   ),
+      //   label: "FashionStyle",
+      //   route: "/FashionStyle",
+      // },
+      // {
+      //   icon: (
+      //     <BsFillHddNetworkFill
+      //       style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+      //     />
+      //   ),
+      //   label: "Jobboard",
+      //   route: "/JOBBOARD",
+      // },
+      // {
+      //   icon: (
+      //     <MdCastForEducation
+      //       style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+      //     />
+      //   ),
+      //   label: "Other",
+      //   route: "/Education",
+      // },
+      // {
+      //   icon: (
+      //     <SiElectronbuilder
+      //       style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+      //     />
+      //   ),
+      //   label: "Real Estate ",
+      //   route: "/REALESTATECOMP",
+      // },
+      // {
+      //   icon: (
+      //     <FaRoute
+      //       style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+      //     />
+      //   ),
+      //   label: "Services",
+      //   route: "/TRAVEL",
+      // },
+      // {
+      //   icon: (
+      //     <MdOutlineSportsSoccer
+      //       style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
+      //     />
+      //   ),
+      //   label: "Sports & Games",
+      //   route: "/SPORTSGAMESCompPage",
+      // },
+      // {
+      //   icon: (
+      //     <GiAnimalHide
+      //       style={{ fontSize: "1em", height: "1rem", width: "1rem" }}
+      //     />
+      //   ),
+      //   label: "Pet & Animal",
+      //   route: "/PETANIMALCOMP",
+      // },
       // {
       //   icon: (
       //     <DiSmashingMagazine
@@ -325,7 +362,7 @@ const menuGroups = [
             style={{ fontSize: "1em", height: "1.2rem", width: "1.2rem" }}
           />
         ),
-        label: "Users",
+        label: "Users Profile",
         route: "/Users",
       },
       // {

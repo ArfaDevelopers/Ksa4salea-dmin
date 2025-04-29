@@ -1,16 +1,87 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
 import { useRouter } from "next/navigation";
-import { auth } from "@/components/Firebase/FirebaseConfig";
 import { signOut } from "firebase/auth";
 import { deleteCookie } from "cookies-next";
+import { auth, db } from "@/components/Firebase/FirebaseConfig";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import type { User } from "firebase/auth";
+
+interface UserProfile {
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  username: string;
+  bio: string;
+  photoURL: string;
+  isAdmin: string;
+}
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+    username: "",
+    isAdmin: "",
 
+    bio: "",
+    photoURL: "/images/user/user-03.png",
+  });
+  var named = currentUser?.email?.split("@")[0] || "";
+  console.log("currentUser_______5 part of email:", named);
+
+  console.log(currentUser, "currentUser_______");
+  console.log(userProfile, "currentUser_______2");
+
+  useEffect(() => {
+    // Listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setCurrentUser(user);
+      console.log(user, "currentUser_______1");
+
+      if (user) {
+        // Fetch user profile from Firestore
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data() as UserProfile;
+            setUserProfile({
+              fullName: userData.fullName || "",
+              phoneNumber: userData.phoneNumber || "",
+              isAdmin: userData.isAdmin || "",
+
+              email: userData.email || user.email || "",
+              username: userData.username || "",
+              bio: userData.bio || "",
+              photoURL:
+                userData.photoURL ||
+                user.photoURL ||
+                "/images/user/user-03.png",
+            });
+          } else {
+            // If no profile exists yet, initialize with auth data
+            setUserProfile({
+              ...userProfile,
+              email: user.email || "",
+              photoURL: user.photoURL || "/images/user/user-03.png",
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
   const handleLogout = async () => {
     await signOut(auth);
     deleteCookie("token");
@@ -25,9 +96,11 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {userProfile.fullName?.trim() ? userProfile.fullName : named}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          {userProfile.isAdmin && (
+            <span className="block text-xs">{userProfile.isAdmin}</span>
+          )}
         </span>
 
         <span className="h-12 w-12 rounded-full">

@@ -216,6 +216,8 @@ const ElectronicComp = () => {
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
+  const [SubCategory, setSubCategory] = useState("");
+  console.log(SubCategory, "selectedAd____________SubCategory");
   const [ManufactureYear, setManufactureYear] = useState("");
 
   const [link, setLink] = useState("");
@@ -1530,7 +1532,10 @@ const ElectronicComp = () => {
       setSubcategories([]);
     }
   };
-
+  console.log(
+    formData.SubCategory,
+    "selectedAd____________ formData.SubCategory"
+  );
   const handleSubcategoryChange = (selectedOption: any) => {
     const selectedValue = selectedOption ? selectedOption.value : "";
     setFormData((prev) => ({ ...prev, SubCategory: selectedValue }));
@@ -1720,6 +1725,14 @@ const ElectronicComp = () => {
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
         setPrice(adData.price);
+        setSubCategory(adData.SubCategory);
+
+        setFormData((prev) => ({
+          ...prev,
+          SubCategory: adData.SubCategory || "",
+          category: adData.category || "",
+          NestedSubCategory: adData.NestedSubCategory || "",
+        }));
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -1767,6 +1780,14 @@ const ElectronicComp = () => {
           galleryImages: adData.galleryImages || "galleryImages",
           FeaturedAds: "",
         };
+        const images = Array<string | null>(6).fill(null);
+        selectedAd.galleryImages.forEach((url: string, idx: number) => {
+          images[idx] = url;
+        });
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+        setImageUrls(images);
+        setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
@@ -2564,7 +2585,7 @@ const ElectronicComp = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "75%" }}
+            style={{ marginTop: "95%" }}
           >
             <div className="relative w-full max-w-lg">
               <button
@@ -2664,7 +2685,8 @@ const ElectronicComp = () => {
                         <Select
                           options={subcategories}
                           value={subcategories.find(
-                            (option) => option.value === formData.SubCategory
+                            (option) =>
+                              option.value === formData.SubCategory.trim()
                           )}
                           onChange={handleSubcategoryChange}
                           className="basic-single"
@@ -4078,8 +4100,6 @@ const ElectronicComp = () => {
                       <option value="Featured Ad">Featured Ad</option>
                     </select>
                   </div>
-
-                  {/* Image Uploads */}
                   {[...Array(6)].map((_, index) => (
                     <div className="mb-4" key={index}>
                       <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
@@ -4091,6 +4111,13 @@ const ElectronicComp = () => {
                         onChange={handleFileChange(index)}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
+                      {imageUrls[index] && (
+                        <img
+                          src={imageUrls[index]}
+                          alt={`Preview ${index + 1}`}
+                          className="mt-2 w-32 h-32 object-cover border rounded"
+                        />
+                      )}
                     </div>
                   ))}
 

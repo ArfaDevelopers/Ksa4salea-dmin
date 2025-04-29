@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
+import { formatDistanceToNow, parseISO, isValid } from "date-fns";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -32,6 +33,8 @@ type Ad = {
   timeAgo: string;
   title: string;
   description: string;
+  displayName: string;
+
   location: string;
   isActive: boolean; // <- not string
 
@@ -93,6 +96,8 @@ const Cars = () => {
     title: "",
     description: "",
     category: "",
+    displayName: "",
+
     kmDriven: "",
     Transmission: "",
     Emirates: "",
@@ -1932,6 +1937,7 @@ const Cars = () => {
       try {
         const adsCollection = collection(db, "Cars"); // Get reference to the 'Cars' collection
         const adsSnapshot = await getDocs(adsCollection); // Fetch the data
+        console.log(adsSnapshot.docs, "adsList___________adsListadsSnapshot");
 
         const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
           const data = doc.data() || {}; // Ensure data exists
@@ -1981,6 +1987,8 @@ const Cars = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || {},
+            userId: data.userId || {},
+            displayName: data.displayName || {},
           };
         });
 
@@ -2054,6 +2062,12 @@ const Cars = () => {
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
         setPrice(adData.price);
+        setFormData((prev) => ({
+          ...prev,
+          SubCategory: adData.SubCategory || "",
+          Category: adData.Category || "",
+          NestedSubCategory: adData.NestedSubCategory || "",
+        }));
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -2062,6 +2076,8 @@ const Cars = () => {
           timeAgo: adData.timeAgo || new Date().toISOString(),
           title: adData.title || "Untitled",
           description: adData.description || "No description",
+          displayName: adData.displayName || "No displayName",
+
           location: adData.location || "Unknown",
           img: adData.img || "",
           Price: adData.Price || "0",
@@ -2101,6 +2117,16 @@ const Cars = () => {
 
           FeaturedAds: "",
         };
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+
+        const images = Array<string | null>(6).fill(null);
+        selectedAd.galleryImages.forEach((url: string, idx: number) => {
+          images[idx] = url;
+        });
+
+        setImageUrls(images);
+        setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
@@ -2331,7 +2357,10 @@ const Cars = () => {
           id: doc.id,
           ...doc.data(),
         }));
-
+        // 👇 Log all userIds
+        // carsData.forEach((car) => {
+        //   console.log("carsData_________ ID:", car.userId);
+        // });
         console.log(carsData, "carsData_________");
       } catch (error) {
         console.error("Error getting cars:", error);
@@ -2346,6 +2375,8 @@ const Cars = () => {
       ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
       ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
   );
+  console.log(filteredAds, "carsData_________filteredAds");
+
   // Function to add a new car to Firestore
   const handleAddCar = async (e: any) => {
     e.preventDefault();
@@ -2375,6 +2406,8 @@ const Cars = () => {
         category: Category1,
         NestedSubCategory: nestedSubCategory,
         Description: description,
+        // displayName: displayName,
+
         registeredCity: registeredCity,
         assembly: assembly,
         LastUpdated: lastUpdated.toISOString(),
@@ -2598,7 +2631,11 @@ const Cars = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
@@ -2644,7 +2681,19 @@ const Cars = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td className="px-6 py-4">
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
                 <td className="px-6 py-4">
                   {" "}
                   <input
@@ -2693,7 +2742,7 @@ const Cars = () => {
           >
             <div
               className="relative w-full max-w-lg"
-              style={{ marginTop: "22%" }}
+              style={{ marginTop: "52%" }}
             >
               <button
                 onClick={closeModal}
@@ -4170,7 +4219,6 @@ const Cars = () => {
                     </select>
                   </div>
 
-                  {/* Image Uploads */}
                   {[...Array(6)].map((_, index) => (
                     <div className="mb-4" key={index}>
                       <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
@@ -4182,6 +4230,13 @@ const Cars = () => {
                         onChange={handleFileChange(index)}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
+                      {imageUrls[index] && (
+                        <img
+                          src={imageUrls[index]}
+                          alt={`Preview ${index + 1}`}
+                          className="mt-2 w-32 h-32 object-cover border rounded"
+                        />
+                      )}
                     </div>
                   ))}
 

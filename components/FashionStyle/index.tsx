@@ -2075,6 +2075,12 @@ const FashionStyle = () => {
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
         setPrice(adData.price);
+        setFormData((prev) => ({
+          ...prev,
+          SubCategory: adData.SubCategory || "",
+          category: adData.category || "",
+          NestedSubCategory: adData.NestedSubCategory || "",
+        }));
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -2122,6 +2128,15 @@ const FashionStyle = () => {
 
           FeaturedAds: "",
         };
+        const images = Array<string | null>(6).fill(null);
+        selectedAd.galleryImages.forEach((url: string, idx: number) => {
+          images[idx] = url;
+        });
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+
+        setImageUrls(images);
+        setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
@@ -2671,7 +2686,7 @@ const FashionStyle = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "75%" }}
+            style={{ marginTop: "89%" }}
           >
             <div className="relative w-full max-w-lg">
               <button
@@ -4155,7 +4170,6 @@ const FashionStyle = () => {
                     </select>
                   </div>
 
-                  {/* Image Uploads */}
                   {[...Array(6)].map((_, index) => (
                     <div className="mb-4" key={index}>
                       <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
@@ -4167,6 +4181,13 @@ const FashionStyle = () => {
                         onChange={handleFileChange(index)}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
+                      {imageUrls[index] && (
+                        <img
+                          src={imageUrls[index]}
+                          alt={`Preview ${index + 1}`}
+                          className="mt-2 w-32 h-32 object-cover border rounded"
+                        />
+                      )}
                     </div>
                   ))}
 

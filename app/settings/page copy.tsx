@@ -1,14 +1,29 @@
 "use client";
 
-import type React from "react";
-
 import { useEffect, useState } from "react";
 import { auth, db } from "@/components/Firebase/FirebaseConfig";
-import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
+import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import type { User } from "firebase/auth";
+import { User } from "firebase/auth";
+
+// Metadata is moved to a separate file for App Router
+// export const metadata: Metadata = {
+//   title: "Settings | User Profile",
+//   description: "User profile settings page",
+// };
 
 interface UserProfile {
   fullName: string;
@@ -17,7 +32,6 @@ interface UserProfile {
   username: string;
   bio: string;
   photoURL: string;
-  isAdmin: string;
 }
 
 const Settings = () => {
@@ -26,7 +40,6 @@ const Settings = () => {
     fullName: "",
     phoneNumber: "",
     email: "",
-    isAdmin: "Admin",
     username: "",
     bio: "",
     photoURL: "/images/user/user-03.png",
@@ -53,8 +66,6 @@ const Settings = () => {
               phoneNumber: userData.phoneNumber || "",
               email: userData.email || user.email || "",
               username: userData.username || "",
-              isAdmin: userData.isAdmin || "",
-
               bio: userData.bio || "",
               photoURL:
                 userData.photoURL ||
@@ -116,28 +127,18 @@ const Settings = () => {
   };
 
   const uploadPhoto = async (): Promise<string | null> => {
-    if (!photoFile) return null;
+    if (!photoFile || !currentUser) return null;
 
     try {
-      const formData = new FormData();
-      formData.append("file", photoFile);
-      formData.append("upload_preset", "ml_default");
-      formData.append("cloud_name", "dv26wjoay");
-
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/dv26wjoay/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
+      const storage = getStorage();
+      const storageRef = ref(
+        storage,
+        `user-photos/${currentUser.uid}/${Date.now()}-${photoFile.name}`
       );
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.secure_url;
+      await uploadBytes(storageRef, photoFile);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
     } catch (error) {
       console.error("Error uploading photo:", error);
       return null;
@@ -161,24 +162,23 @@ const Settings = () => {
         }
       }
 
-      // Reference to Firestore document
+      // Update user profile in Firestore
       const userDocRef = doc(db, "users", currentUser.uid);
       const userDoc = await getDoc(userDocRef);
 
-      const updatedProfile = {
-        ...userProfile,
-        photoURL,
-        isAdmin: "Admin", // <-- Add this line
-        updatedAt: new Date(),
-      };
-
       if (userDoc.exists()) {
-        await updateDoc(userDocRef, updatedProfile);
+        await updateDoc(userDocRef, {
+          ...userProfile,
+          photoURL,
+          updatedAt: new Date(),
+        });
       } else {
         // Create new user document if it doesn't exist
-        await setDoc(userDocRef, {
-          ...updatedProfile,
+        await updateDoc(userDocRef, {
+          ...userProfile,
+          photoURL,
           createdAt: new Date(),
+          updatedAt: new Date(),
         });
       }
 
@@ -195,11 +195,7 @@ const Settings = () => {
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert(
-        `Failed to update profile: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      alert("Failed to update profile. Please try again.");
     } finally {
       setLoading(false);
     }

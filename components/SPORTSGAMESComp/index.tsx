@@ -2050,6 +2050,12 @@ const SPORTSGAMESComp = () => {
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
         setPrice(adData.price);
+        setFormData((prev) => ({
+          ...prev,
+          SubCategory: adData.SubCategory || "",
+          category: adData.category || "",
+          NestedSubCategory: adData.NestedSubCategory || "",
+        }));
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -2092,11 +2098,23 @@ const SPORTSGAMESComp = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
-          galleryImages: adData.FuelType || "galleryImages",
+          galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
 
           FeaturedAds: "",
         };
+        const images = Array<string | null>(6).fill(null);
+
+        if (Array.isArray(selectedAd.galleryImages)) {
+          selectedAd.galleryImages.forEach((url: string, idx: number) => {
+            if (idx < 6) images[idx] = url;
+          });
+        }
+
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+        setImageUrls(images);
+        setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
@@ -2694,7 +2712,7 @@ const SPORTSGAMESComp = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "50%" }}
+            style={{ marginTop: "75%" }}
           >
             <div className="relative w-full max-w-lg">
               <button
@@ -4011,7 +4029,6 @@ const SPORTSGAMESComp = () => {
                     </select>
                   </div>
 
-                  {/* Image Uploads */}
                   {[...Array(6)].map((_, index) => (
                     <div className="mb-4" key={index}>
                       <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
@@ -4023,6 +4040,13 @@ const SPORTSGAMESComp = () => {
                         onChange={handleFileChange(index)}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
+                      {imageUrls[index] && (
+                        <img
+                          src={imageUrls[index]}
+                          alt={`Preview ${index + 1}`}
+                          className="mt-2 w-32 h-32 object-cover border rounded"
+                        />
+                      )}
                     </div>
                   ))}
 

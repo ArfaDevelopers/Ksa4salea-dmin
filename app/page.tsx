@@ -49,7 +49,7 @@ const Login = () => {
 
         if (userData?.isAdmin === "Admin") {
           setCookie("token", token);
-          router.push("/Cars");
+          router.push("/admin");
         } else {
           MySwal.fire({
             title: "Access Denied",

@@ -29,6 +29,9 @@ registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
+  userId: string;
+
+  isActive: boolean;
   timeAgo: string;
   title: string;
   description: string;
@@ -1902,7 +1905,7 @@ const JOBBOARDPage = () => {
     });
   };
   const handleFirebaseToggle = async (id: string, currentState: boolean) => {
-    const docRef = doc(db, "HEALTHCARE", id);
+    const docRef = doc(db, "JOBBOARD", id);
     try {
       await updateDoc(docRef, {
         isActive: !currentState,
@@ -2010,6 +2013,9 @@ const JOBBOARDPage = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+            userId: data.userId || "",
+
+            isActive: data.isActive || "",
           };
         });
 
@@ -2107,6 +2113,12 @@ const JOBBOARDPage = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
+        setFormData((prev) => ({
+          ...prev,
+          SubCategory: adData.SubCategory || "",
+          category: adData.category || "",
+          NestedSubCategory: adData.NestedSubCategory || "",
+        }));
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -2147,11 +2159,28 @@ const JOBBOARDPage = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
-          galleryImages: adData.FuelType || "galleryImages",
+          galleryImages: adData.galleryImages || "galleryImages",
           price: "",
           DrivenKm: undefined,
           FeaturedAds: "",
+          userId: "",
+          isActive: false,
         };
+
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+        const images = Array<string | null>(6).fill(null);
+
+        if (Array.isArray(selectedAd.galleryImages)) {
+          selectedAd.galleryImages.forEach((url: string, idx: number) => {
+            if (idx < 6) images[idx] = url;
+          });
+        }
+
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+        setImageUrls(images);
+        setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
@@ -2596,7 +2625,7 @@ const JOBBOARDPage = () => {
                 Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -2640,7 +2669,17 @@ const JOBBOARDPage = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">{ad.description}</td>
-                <td className="px-6 py-4">{ad.location}</td>
+                <td className="px-6 py-4">
+                  {" "}
+                  <input
+                    type="checkbox"
+                    checked={ad.isActive}
+                    onChange={() => {
+                      handleToggle(ad.id); // Toggle UI state
+                      handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
+                    }}
+                  />
+                </td>{" "}
                 <td className="px-6 py-4">{ad.price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
@@ -2672,7 +2711,7 @@ const JOBBOARDPage = () => {
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "54%" }}
+            style={{ marginTop: "68%" }}
           >
             <div className="relative w-full max-w-lg">
               <button
@@ -3992,7 +4031,6 @@ const JOBBOARDPage = () => {
                     />
                   </div>
 
-                  {/* Image Uploads */}
                   {[...Array(6)].map((_, index) => (
                     <div className="mb-4" key={index}>
                       <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
@@ -4004,6 +4042,13 @@ const JOBBOARDPage = () => {
                         onChange={handleFileChange(index)}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
+                      {imageUrls[index] && (
+                        <img
+                          src={imageUrls[index]}
+                          alt={`Preview ${index + 1}`}
+                          className="mt-2 w-32 h-32 object-cover border rounded"
+                        />
+                      )}
                     </div>
                   ))}
 
