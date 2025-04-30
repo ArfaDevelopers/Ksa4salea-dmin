@@ -8,6 +8,8 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { Country, State, City, ICity } from "country-state-city";
@@ -23,7 +25,7 @@ import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
 import Select from "react-select";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNow, isValid, format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 // Register the English locale
@@ -32,7 +34,8 @@ type Ad = {
   id: any; // Change from string to number
   link: string;
   isActive: boolean;
-
+  createdAt: any;
+  views: any;
   timeAgo: string;
   userId: string;
   displayName: string;
@@ -1951,75 +1954,94 @@ const TRAVEL = () => {
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const adsCollection = collection(db, "TRAVEL"); // Get reference to the 'Cars' collection
-        const adsSnapshot = await getDocs(adsCollection); // Fetch the data
+        const adsCollection = collection(db, "TRAVEL");
+        const adsSnapshot = await getDocs(adsCollection);
 
-        const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
-          const data = doc.data() || {}; // Ensure data exists
+        // Fetch views
+        const viewsDocRef = doc(db, "views", "travel");
+        const viewsDocSnap = await getDoc(viewsDocRef);
+        const productViews = viewsDocSnap.exists()
+          ? viewsDocSnap.data().products || {}
+          : {};
 
-          return {
-            id: doc.id,
-            link: data.link || "",
-            timeAgo: data.timeAgo || "",
-            title: data.title || "",
-            description: data.description || "",
-            location: data.location || "",
-            img: data.img || "",
-            Price: data.Price || "",
-            Assembly: data.Assembly || "",
-            BodyType: data.BodyType || "", // Fixed typo here
-            Color: data.Color || "",
-            DrivenKm: data.DrivenKm || "",
-            EngineCapacity: data.EngineCapacity || "",
-            City: data.City || "",
-            PictureAvailability: data.PictureAvailability || "",
-            EngineType: data.EngineType || "",
-            ManufactureYear: data.ManufactureYear || "",
-            ModalCategory: data.ModalCategory || "",
-            CoNumberOfDoorsor: data.NumberOfDoors || "", // Ensure correct property name
-            PhoneNumber: data.PhoneNumber || "",
-            Registeredin: data.Registeredin || "",
-            SeatingCapacity: data.SeatingCapacity || "",
-            SellerType: data.SellerType || "",
-            Transmission: data.Transmission || "",
-            TrustedCars: data.TrustedCars || "",
-            VideoAvailability: data.VideoAvailability || "",
-            assembly: data.assembly || "",
-            bodyType: data.bodyType || "",
-            condition: data.condition || "",
-            engineCapacity: data.engineCapacity || "",
-            isFeatured: data.isFeatured || "",
-            model: data.model || "",
-            purpose: data.purpose || "",
-            registeredCity: data.registeredCity || "",
-            sellerType: data.sellerType || "",
-            type: data.type || "",
-            whatsapp: data.whatsapp || "",
-            FeaturedAds: data.FeaturedAds || "",
-            isActive: data.isActive || "",
+        const updatedViews = { ...productViews }; // To later update back to Firestore
 
-            userId: data.userId || "",
-            displayName: data.displayName || "",
-            category: data.category || "",
+        const adsList: Ad[] = await Promise.all(
+          adsSnapshot.docs.map(async (docSnap) => {
+            const data = docSnap.data() || {};
+            const id = docSnap.id;
 
-            AdType: data.AdType || "",
-            FuelType: data.FuelType || "",
-            galleryImages: data.galleryImages || "",
-          };
-        });
+            // 🔼 Increment the view count in memory
+            updatedViews[id] = (updatedViews[id] || 0) + 1;
 
-        console.log(adsList, "adsList___________adsList");
+            return {
+              id: id,
+              link: data.link || "",
+              timeAgo: data.timeAgo || "",
+              title: data.title || "",
+              description: data.description || "",
+              location: data.location || "",
+              img: data.img || "",
+              Price: data.Price || "",
+              Assembly: data.Assembly || "",
+              BodyType: data.BodyType || "",
+              Color: data.Color || "",
+              DrivenKm: data.DrivenKm || "",
+              EngineCapacity: data.EngineCapacity || "",
+              City: data.City || "",
+              PictureAvailability: data.PictureAvailability || "",
+              EngineType: data.EngineType || "",
+              ManufactureYear: data.ManufactureYear || "",
+              ModalCategory: data.ModalCategory || "",
+              CoNumberOfDoorsor: data.NumberOfDoors || "",
+              PhoneNumber: data.PhoneNumber || "",
+              Registeredin: data.Registeredin || "",
+              SeatingCapacity: data.SeatingCapacity || "",
+              SellerType: data.SellerType || "",
+              Transmission: data.Transmission || "",
+              TrustedCars: data.TrustedCars || "",
+              VideoAvailability: data.VideoAvailability || "",
+              assembly: data.assembly || "",
+              bodyType: data.bodyType || "",
+              condition: data.condition || "",
+              engineCapacity: data.engineCapacity || "",
+              isFeatured: data.isFeatured || "",
+              model: data.model || "",
+              purpose: data.purpose || "",
+              registeredCity: data.registeredCity || "",
+              sellerType: data.sellerType || "",
+              type: data.type || "",
+              whatsapp: data.whatsapp || "",
+              isActive: data.isActive || "",
+              FeaturedAds: data.FeaturedAds || "",
+              AdType: data.AdType || "",
+              FuelType: data.FuelType || "",
+              galleryImages: data.galleryImages || {},
+              userId: data.userId || {},
+              category: data.category || {},
+              displayName: data.displayName || {},
+              createdAt: data.createdAt || {},
 
-        console.log(adsList, "adsList___________adsList");
+              views: updatedViews[id] || 0, // Show updated view count
+            };
+          })
+        );
+
+        // 🔥 Save updated views back to Firestore
+        await setDoc(viewsDocRef, { products: updatedViews }, { merge: true });
+
+        console.log(adsList, "adsList with views");
+
         if (selectedOption === "All") {
-          setAds(adsList); // Set the state with the ads data
+          setAds(adsList);
         } else {
-          var newad = adsList.filter(
+          const filteredAds = adsList.filter(
             (val) => val.FeaturedAds === selectedOption
           );
-          setAds(newad); // Set the state with the ads data
+          setAds(filteredAds);
         }
-        setLoading(false); // Stop loading when data is fetched
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching ads:", error);
         setLoading(false);
@@ -2027,7 +2049,87 @@ const TRAVEL = () => {
     };
 
     fetchAds();
-  }, [refresh, selectedOption]);
+  }, [refresh, selectedOption, activeCheckboxes]);
+  // useEffect(() => {
+  //   const fetchAds = async () => {
+  //     try {
+  //       const adsCollection = collection(db, "TRAVEL"); // Get reference to the 'Cars' collection
+  //       const adsSnapshot = await getDocs(adsCollection); // Fetch the data
+
+  //       const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
+  //         const data = doc.data() || {}; // Ensure data exists
+
+  //         return {
+  //           id: doc.id,
+  //           link: data.link || "",
+  //           timeAgo: data.timeAgo || "",
+  //           title: data.title || "",
+  //           description: data.description || "",
+  //           location: data.location || "",
+  //           img: data.img || "",
+  //           Price: data.Price || "",
+  //           Assembly: data.Assembly || "",
+  //           BodyType: data.BodyType || "", // Fixed typo here
+  //           Color: data.Color || "",
+  //           DrivenKm: data.DrivenKm || "",
+  //           EngineCapacity: data.EngineCapacity || "",
+  //           City: data.City || "",
+  //           PictureAvailability: data.PictureAvailability || "",
+  //           EngineType: data.EngineType || "",
+  //           ManufactureYear: data.ManufactureYear || "",
+  //           ModalCategory: data.ModalCategory || "",
+  //           CoNumberOfDoorsor: data.NumberOfDoors || "", // Ensure correct property name
+  //           PhoneNumber: data.PhoneNumber || "",
+  //           Registeredin: data.Registeredin || "",
+  //           SeatingCapacity: data.SeatingCapacity || "",
+  //           SellerType: data.SellerType || "",
+  //           Transmission: data.Transmission || "",
+  //           TrustedCars: data.TrustedCars || "",
+  //           VideoAvailability: data.VideoAvailability || "",
+  //           assembly: data.assembly || "",
+  //           bodyType: data.bodyType || "",
+  //           condition: data.condition || "",
+  //           engineCapacity: data.engineCapacity || "",
+  //           isFeatured: data.isFeatured || "",
+  //           model: data.model || "",
+  //           purpose: data.purpose || "",
+  //           registeredCity: data.registeredCity || "",
+  //           sellerType: data.sellerType || "",
+  //           type: data.type || "",
+  //           whatsapp: data.whatsapp || "",
+  //           FeaturedAds: data.FeaturedAds || "",
+  //           isActive: data.isActive || "",
+
+  //           userId: data.userId || "",
+  //           displayName: data.displayName || "",
+  //           category: data.category || "",
+
+  //           AdType: data.AdType || "",
+  //           FuelType: data.FuelType || "",
+  //           galleryImages: data.galleryImages || "",
+  //         };
+  //       });
+
+  //       console.log(adsList, "adsList___________adsList");
+
+  //       console.log(adsList, "adsList___________adsList");
+  //       if (selectedOption === "All") {
+  //         setAds(adsList); // Set the state with the ads data
+  //       } else {
+  //         var newad = adsList.filter(
+  //           (val) => val.FeaturedAds === selectedOption
+  //         );
+  //         setAds(newad); // Set the state with the ads data
+  //       }
+  //       setLoading(false); // Stop loading when data is fetched
+  //     } catch (error) {
+  //       console.error("Error fetching ads:", error);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchAds();
+  // }, [refresh, selectedOption]);
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -2117,6 +2219,8 @@ const TRAVEL = () => {
           category: adData.category || "category",
           displayName: adData.displayName || "displayName",
           FeaturedAds: adData.FeaturedAds || "FeaturedAds",
+          createdAt: adData.createdAt || "createdAt",
+          views: adData.views || "views",
         };
         const images = Array<string | null>(6).fill(null);
 
@@ -2627,24 +2731,31 @@ const TRAVEL = () => {
                 </div>
               </th>
               <th scope="col" className="px-6 py-3">
-                Title
+                Ad Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Payment
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Time
+                Paid / Unpaid
               </th>
 
               <th scope="col" className="px-6 py-3">
-                Name
+                Posted Date & Time
               </th>
               <th scope="col" className="px-6 py-3">
-                Status
+                Ad Live Link
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Ad Views
+              </th>
+              <th scope="col" className="px-6 py-3">
+                User Profile
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Ad Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
               </th>
+
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
@@ -2684,16 +2795,37 @@ const TRAVEL = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">
-                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : "Unpaid"}
                 </td>
 
                 <td className="px-6 py-4">
-                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
-                    ? formatDistanceToNow(new Date(ad.timeAgo), {
-                        addSuffix: true,
-                      })
-                    : "-"}
+                  {ad.createdAt &&
+                  ad.createdAt instanceof Timestamp &&
+                  isValid(ad.createdAt.toDate()) ? (
+                    <>
+                      {format(ad.createdAt.toDate(), "yyyy-MM-dd")}
+                      <br />
+                      {format(ad.createdAt.toDate(), "HH:mm:ss")}
+                    </>
+                  ) : (
+                    "-"
+                  )}
                 </td>
+
+                <td className="px-6 py-4">
+                  {/* {ad.FeaturedAds === "Featured Ads" && ( */}
+                  <a
+                    href={`http://168.231.80.24:3002/#/Dynamic_Route?id=${ad.id}&callingFrom=TravelComp`}
+                    target="_blank"
+                    rel="noopener noreferrer" // Recommended for security
+                    className="text-blue-600 underline cursor-pointer"
+                  >
+                    Live
+                  </a>
+                  {/* )} */}
+                </td>
+
+                <td className="px-6 py-4">{ad.views}</td>
                 <td
                   className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
                   onClick={() =>
