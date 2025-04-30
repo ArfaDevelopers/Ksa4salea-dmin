@@ -213,7 +213,7 @@ const SubCategories = () => {
                   type="text"
                   id="table-search-users"
                   className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Search for users"
+                  placeholder="Search..."
                 />
               </div>
             </div>
@@ -245,7 +245,7 @@ const SubCategories = () => {
                   <th scope="col" className="px-6 py-3">
                     Date
                   </th>
-                
+
                   <th scope="col" className="px-6 py-3">
                     Action
                   </th>
@@ -307,7 +307,7 @@ const SubCategories = () => {
                     <td className="px-6 py-4">{user.position}</td>
                     <td className="px-6 py-4">{user.subCategory}</td>
                     <td className="px-6 py-4">{user.date}</td>
-                  
+
                     <td className="px-6 py-4">
                       <a
                         href="#"

@@ -24,6 +24,8 @@ import Select from "react-select";
 
 // Cloudinary upload
 import axios from "axios";
+import { formatDistanceToNow, isValid } from "date-fns";
+import { useRouter } from "next/navigation";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -33,11 +35,15 @@ type Ad = {
   isActive: boolean; // <- not string
 
   timeAgo: string;
+  displayName: string;
+  userId: string;
+  category: string;
+
   title: string;
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -74,6 +80,7 @@ type Ad = {
 };
 const FashionStyle = () => {
   const MySwal = withReactContent(Swal);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -212,6 +219,8 @@ const FashionStyle = () => {
     googlePlus: "http://google.com",
     instagram: "http://instagram.com",
   });
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
@@ -1919,6 +1928,8 @@ const FashionStyle = () => {
         icon: "success",
         timer: 1000,
       });
+      setRefresh(!refresh);
+
       console.log(`isActive updated to: ${!currentState}`);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -1982,7 +1993,7 @@ const FashionStyle = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -2018,6 +2029,10 @@ const FashionStyle = () => {
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
             isActive: data.isActive || "",
+            displayName: data.displayName || "",
+            category: data.category || "",
+
+            userId: data.userId || "",
           };
         });
         console.log(adsList, "adsList___________adsList");
@@ -2074,7 +2089,7 @@ const FashionStyle = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPrice(adData.Price);
         setFormData((prev) => ({
           ...prev,
           SubCategory: adData.SubCategory || "",
@@ -2091,7 +2106,7 @@ const FashionStyle = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -2125,6 +2140,10 @@ const FashionStyle = () => {
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
+          displayName: adData.displayName || "displayName",
+          category: adData.category || "category",
+
+          userId: adData.userId || "userId",
 
           FeaturedAds: "",
         };
@@ -2150,7 +2169,7 @@ const FashionStyle = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2572,7 +2591,7 @@ const FashionStyle = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -2597,7 +2616,14 @@ const FashionStyle = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Payment
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
@@ -2643,9 +2669,32 @@ const FashionStyle = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">
-                  {" "}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={ad.isActive}
@@ -2654,8 +2703,10 @@ const FashionStyle = () => {
                       handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
-                </td>{" "}
-                <td className="px-6 py-4">{ad.price}</td>
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
+                </td>
+
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button

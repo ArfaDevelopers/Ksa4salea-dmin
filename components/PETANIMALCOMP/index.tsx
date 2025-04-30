@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
+import { useRouter } from "next/navigation";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -23,16 +24,21 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
+import { formatDistanceToNow, isValid } from "date-fns";
 type Ad = {
   id: any; // Change from string to number
   link: string;
+  displayName: string;
+  category: string;
+  userId: string;
+
   isActive: boolean;
   timeAgo: string;
   title: string;
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -72,10 +78,16 @@ registerLocale("en-US", enUS);
 
 const PETANIMALCOMP = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "",
+
+    displayName: "",
+    userId: "",
+
     kmDriven: "",
     Transmission: "",
     Emirates: "",
@@ -1962,7 +1974,7 @@ const PETANIMALCOMP = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -1997,6 +2009,11 @@ const PETANIMALCOMP = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+
+            displayName: data.displayName || "",
+            category: data.category || "",
+            userId: data.userId || "",
+
             isActive: data.isActive || "",
           };
         });
@@ -2071,7 +2088,7 @@ const PETANIMALCOMP = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -2103,7 +2120,12 @@ const PETANIMALCOMP = () => {
           whatsapp: adData.whatsapp || "whatsapp",
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
-          galleryImages: adData.FuelType || "galleryImages",
+          galleryImages: adData.galleryImages || "galleryImages",
+
+          displayName: adData.displayName || "displayName",
+          userId: adData.userId || "userId",
+          category: adData.category || "category",
+
           isActive: adData.isActive || "isActive",
 
           FeaturedAds: "",
@@ -2133,7 +2155,7 @@ const PETANIMALCOMP = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2605,7 +2627,7 @@ const PETANIMALCOMP = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -2630,10 +2652,17 @@ const PETANIMALCOMP = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Payment
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -2676,9 +2705,32 @@ const PETANIMALCOMP = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">
-                  {" "}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={ad.isActive}
@@ -2687,8 +2739,10 @@ const PETANIMALCOMP = () => {
                       handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
-                </td>{" "}
-                <td className="px-6 py-4">{ad.price}</td>
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
+                </td>
+
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button

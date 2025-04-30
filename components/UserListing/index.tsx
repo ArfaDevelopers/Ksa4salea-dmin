@@ -4,14 +4,16 @@ import { db } from "../Firebase/FirebaseConfig";
 import {
   addDoc,
   collection,
-  deleteDoc,
-  doc,
-  getDoc,
   getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
   updateDoc,
 } from "firebase/firestore";
+import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
-import { useRouter } from "next/navigation";
+import { formatDistanceToNow, parseISO, isValid } from "date-fns";
+import { useSearchParams } from "next/navigation";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -19,28 +21,24 @@ import { enUS } from "date-fns/locale"; // Import English locale
 import "react-datepicker/dist/react-datepicker.css";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
-import Select from "react-select";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { MdEdit } from "react-icons/md";
 
 // Register the English locale
 registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
-  userId: string;
-
-  displayName: string;
-  category: string;
-
-  isActive: boolean;
   timeAgo: string;
   title: string;
   description: string;
+  displayName: string;
+
   location: string;
+  isActive: boolean; // <- not string
+
   img: string;
   Price: string;
   DrivenKm: any;
@@ -63,6 +61,8 @@ type Ad = {
   assembly: string;
   bodyType: string;
   condition: string;
+  FeaturedAds: string;
+
   engineCapacity: string;
   isFeatured: string;
   model: string;
@@ -71,22 +71,32 @@ type Ad = {
   sellerType: string;
   type: string;
   whatsapp: string;
-  FeaturedAds: string;
-
   AdType: any;
   FuelType: any;
   galleryImages: any;
 };
-const JOBBOARDPage = () => {
-  const MySwal = withReactContent(Swal);
-  const router = useRouter();
+const saudiCities = City.getCitiesOfCountry("SA"); // 'SA' = Saudi Arabia
 
+interface Subcategory {
+  name: string;
+}
+
+interface Category {
+  name: string;
+  subcategories: Subcategory[];
+}
+
+interface SelectedOption {
+  value: string;
+  label: string;
+}
+
+const UserListing = () => {
+  const MySwal = withReactContent(Swal);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-
     category: "",
-    userId: "",
     displayName: "",
 
     kmDriven: "",
@@ -226,24 +236,25 @@ const JOBBOARDPage = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [SalaryRange, setSalaryRange] = useState("");
+  const [price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
-  const [SallaryFromRange, setSallaryFromRange] = useState("");
-  const [SallaryToRange, serSallaryToRange] = useState("");
 
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
   const [timeAgo, setTimeAgo] = useState<Date | null>(new Date());
   const [imageFiles, setImageFiles] = useState(Array(6).fill(null)); // Array to hold selected image files
+  const [registeredCity, setRegisteredCity] = useState("Un-Registered");
   const [assembly, setAssembly] = useState("Imported");
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [condition, setCondition] = useState("Used");
+  const [purpose, setPurpose] = useState("Sell");
   const [PhoneNumber, setPhoneNumber] = useState("");
-  const [jobdescription, setJobDescription] = useState("");
 
   const [model, setModel] = useState("2022");
+  const [DrivenKm, setDrivenKm] = useState("");
 
   const [whatsapp, setWhatsapp] = useState("03189391781");
-  const [Type, setType] = useState("");
+  const [type, setType] = useState("Sale");
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
 
@@ -252,32 +263,6 @@ const JOBBOARDPage = () => {
     setCities(saudiCities);
   }, []);
   const [Registeredin, setRegisteredin] = useState("");
-  const [OperatingSystem, setOperatingSystem] = useState("");
-  const [MeasurementRange, setMeasurementRange] = useState("");
-  const [Features, setFeatures] = useState("");
-  const [Accuracy, setAccuracy] = useState("");
-  const [CuffSize, setCuffSize] = useState("");
-  const [DisplayType, setDisplayType] = useState("");
-  const [BatteryType, setBatteryType] = useState("");
-  const [Compatibility, setCompatibility] = useState("");
-  const [StorageCapacity, setStorageCapacity] = useState("");
-  const [MeasurementUnits, setMeasurementUnits] = useState("");
-  const [SpeedofMeasurement, setSpeedofMeasurement] = useState("");
-  const [SellerType, setSellerType] = useState("");
-  const [JobTitle, setJobTitle] = useState("");
-
-  const [ScreenSize, setScreenSize] = useState("");
-
-  const [Processor, setProcessor] = useState("");
-  const [RAM, setRAM] = useState("");
-  const [StorageType, setStorageType] = useState("");
-  const [Storagecapacity, setStoragecapacity] = useState("");
-  const [GraphicsCard, setGraphicsCard] = useState("");
-  const [BatteryLife, setBatteryLife] = useState("");
-  const [DisplayQuality, setDisplayQuality] = useState("");
-  const [Connectivity, setConnectivity] = useState("");
-  const [SpecialFeatures, setSpecialFeatures] = useState("");
-
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -286,23 +271,23 @@ const JOBBOARDPage = () => {
   const [selectedAssembly, setSelectedAssembly] = useState("");
   const [selectedBodyType, setSelectedBodyType] = useState("");
   const [selectedNumberOfDoors, setSelectedNumberOfDoors] = useState("");
+  const [selectedSeatingCapacity, setSelectedSeatingCapacity] = useState("");
   const [selectedModalCategory, setSelectedModalCategory] = useState("");
   const [selectedSellerType, setSelectedSellerType] = useState("");
-  const [Mileage, setMileage] = useState("");
-  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
-  const [refresh, setRefresh] = useState(false);
-
-  console.log(OperatingSystem, "OperatingSystem_______"); // Log selected ad type to the console
-  const [isOpen, setIsOpen] = useState(false);
-
   const [selectedPictureAvailability, setSelectedPictureAvailability] =
     useState("");
   const [selectedVideoAvailability, setSelectedVideoAvailability] =
     useState("");
+  const [selectedFuelType, setSelectedFuelType] = useState("");
   const [selectedAdType, setSelectedAdType] = useState("");
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [isOpen, setIsOpen] = useState(false);
+
+  const closeModal = () => setIsOpen(false);
+  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
   const [selectedOption, setSelectedOption] = useState("All");
   console.log("isFeatured______", selectedOption);
   const [isActive, setisActive] = useState(false); // ✅ boolean, not string
@@ -323,6 +308,14 @@ const JOBBOARDPage = () => {
   const [nestedSubCategory, setNestedSubCategory] = useState<{
     NestedSubCategory?: string;
   }>({});
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  useEffect(() => {
+    if (userId) {
+      console.log("User ID from URL:", userId);
+    }
+  }, [userId]);
 
   const subcategoriesMapping = {
     categories: [
@@ -1916,7 +1909,7 @@ const JOBBOARDPage = () => {
     });
   };
   const handleFirebaseToggle = async (id: string, currentState: boolean) => {
-    const docRef = doc(db, "JOBBOARD", id);
+    const docRef = doc(db, "Cars", id);
     try {
       await updateDoc(docRef, {
         isActive: !currentState,
@@ -1930,12 +1923,12 @@ const JOBBOARDPage = () => {
         timer: 1000,
       });
       setRefresh(!refresh);
-
       console.log(`isActive updated to: ${!currentState}`);
     } catch (error) {
       console.error("Error updating document:", error);
     }
   };
+
   const handleCheckboxChange = (option: string) => {
     if (option === "Paid") {
       setSelectedOption("Featured Ads");
@@ -1948,137 +1941,83 @@ const JOBBOARDPage = () => {
       console.log("Filtering: All Ads");
     }
   };
-  const resetForm = () => {
-    setDescription("");
-    setLink("");
-    setManufactureYear("");
-    setAssembly("");
-    setTimeAgo(new Date());
 
-    setModel("");
-    setPhoneNumber("");
-    setType("");
-    setLocation("");
-    setName("");
-    setSelectedAd(null); // Assuming it's an object or string
-    setTrustedCars("");
-    setSelectedCity("");
-    setSelectedEngineType("");
-    setSelectedColor("");
-    setSelectedTransmission("");
-    setSelectedVideoAvailability("");
-    setSelectedPictureAvailability("");
-    setSelectedSellerType("");
-    setSelectedModalCategory("");
-    setSelectedNumberOfDoors("");
-    setSelectedBodyType("");
-    setSelectedAssembly("");
-  };
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const adsCollection = collection(db, "JOBBOARD"); // Get reference to the 'Cars' collection
-        const adsSnapshot = await getDocs(adsCollection); // Fetch the data
+        const response = await fetch(
+          `http://localhost:9002/api/user-data?userId=${userId}`
+        );
+        const data = await response.json();
+        console.log(data, "data_____________");
+        const adsList: Ad[] = (data.data || []).map((car: any) => ({
+          id: car.id || "",
+          link: car.link || "",
+          timeAgo: car.timeAgo || "",
+          title: car.title || "",
+          description: car.description || "",
+          location: car.location || "",
+          img: car.img || "",
+          Price: car.Price || "",
+          Assembly: car.Assembly || "",
+          BodyType: car.BodyType || "",
+          Color: car.Color || "",
+          DrivenKm: car.DrivenKm || "",
+          EngineCapacity: car.EngineCapacity || "",
+          City: car.City || "",
+          PictureAvailability: car.PictureAvailability || "",
+          EngineType: car.EngineType || "",
+          ManufactureYear: car.ManufactureYear || "",
+          ModalCategory: car.ModalCategory || "",
+          CoNumberOfDoorsor: car.NumberOfDoors || "",
+          PhoneNumber: car.PhoneNumber || "",
+          Registeredin: car.Registeredin || "",
+          SeatingCapacity: car.SeatingCapacity || "",
+          SellerType: car.SellerType || "",
+          Transmission: car.Transmission || "",
+          TrustedCars: car.TrustedCars || "",
+          VideoAvailability: car.VideoAvailability || "",
+          assembly: car.assembly || "",
+          bodyType: car.bodyType || "",
+          condition: car.condition || "",
+          engineCapacity: car.engineCapacity || "",
+          isFeatured: car.isFeatured || "",
+          model: car.model || "",
+          purpose: car.purpose || "",
+          registeredCity: car.registeredCity || "",
+          sellerType: car.sellerType || "",
+          type: car.type || "",
+          whatsapp: car.whatsapp || "",
+          isActive: car.isActive || "",
+          FeaturedAds: car.FeaturedAds || "",
+          AdType: car.AdType || "",
+          FuelType: car.FuelType || "",
+          galleryImages: car.galleryImages || {},
+          userId: car.userId || {},
+          displayName: car.displayName || {},
+        }));
 
-        const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
-          const data = doc.data() || {}; // Ensure data exists
+        console.log(adsList, "adsList from API");
 
-          return {
-            id: doc.id,
-            link: data.link || "",
-            timeAgo: data.timeAgo || "",
-            title: data.title || "",
-            description: data.description || "",
-            location: data.location || "",
-            img: data.img || "",
-            Price: data.Price || "",
-            Assembly: data.Assembly || "",
-            BodyType: data.BodyType || "", // Fixed typo here
-            Color: data.Color || "",
-            DrivenKm: data.DrivenKm || "",
-            EngineCapacity: data.EngineCapacity || "",
-            City: data.City || "",
-            PictureAvailability: data.PictureAvailability || "",
-            EngineType: data.EngineType || "",
-            ManufactureYear: data.ManufactureYear || "",
-            ModalCategory: data.ModalCategory || "",
-            CoNumberOfDoorsor: data.NumberOfDoors || "", // Ensure correct property name
-            PhoneNumber: data.PhoneNumber || "",
-            Registeredin: data.Registeredin || "",
-            SeatingCapacity: data.SeatingCapacity || "",
-            SellerType: data.SellerType || "",
-            Transmission: data.Transmission || "",
-            TrustedCars: data.TrustedCars || "",
-            VideoAvailability: data.VideoAvailability || "",
-            assembly: data.assembly || "",
-            bodyType: data.bodyType || "",
-            condition: data.condition || "",
-            engineCapacity: data.engineCapacity || "",
-            isFeatured: data.isFeatured || "",
-            model: data.model || "",
-            purpose: data.purpose || "",
-            registeredCity: data.registeredCity || "",
-            sellerType: data.sellerType || "",
-            type: data.type || "",
-            whatsapp: data.whatsapp || "",
-            FeaturedAds: data.FeaturedAds || "",
-
-            AdType: data.AdType || "",
-            FuelType: data.FuelType || "",
-            galleryImages: data.galleryImages || "",
-            userId: data.userId || "",
-
-            category: data.category || "",
-            displayName: data.displayName || "",
-
-            isActive: data.isActive || "",
-          };
-        });
-
-        console.log(adsList, "adsList___________adsList");
-
-        console.log(adsList, "adsList___________adsList");
         if (selectedOption === "All") {
-          setAds(adsList); // Set the state with the ads data
+          setAds(adsList);
         } else {
-          var newad = adsList.filter(
+          const filteredAds = adsList.filter(
             (val) => val.FeaturedAds === selectedOption
           );
-          setAds(newad); // Set the state with the ads data
+          setAds(filteredAds);
         }
-        setLoading(false); // Stop loading when data is fetched
+
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching ads:", error);
+        console.error("Error fetching ads from API:", error);
         setLoading(false);
       }
     };
 
     fetchAds();
-  }, [refresh, selectedOption]);
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        setLoading(true); // Show spinner
-        const carsCollectionRef = collection(db, "JOBBOARD");
-        const querySnapshot = await getDocs(carsCollectionRef);
-        const carsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+  }, [refresh, selectedOption, activeCheckboxes]);
 
-        console.log(carsData, "carsData_________JOBBOARD");
-      } catch (error) {
-        console.error("Error getting cars:", error);
-      }
-    };
-
-    fetchCars();
-  }, []);
-  const filteredAds = ads.filter(
-    (ad) =>
-      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
-      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
-  );
   const handleDelete = async (ad: any) => {
     // Display confirmation dialog
     MySwal.fire({
@@ -2102,7 +2041,7 @@ const JOBBOARDPage = () => {
         // Delete the ad from Firestore (Firebase)
         try {
           // Delete the document from Firestore using the ad's id
-          await deleteDoc(doc(db, "JOBBOARD", ad.id)); // Delete document by id
+          await deleteDoc(doc(db, "Cars", ad.id)); // Delete document by id
           console.log("Ad deleted from Firestore:", ad.id);
           setRefresh(!refresh);
           // Optionally, update the state or re-fetch the data after deletion
@@ -2123,16 +2062,17 @@ const JOBBOARDPage = () => {
   const handleEditClick = async (id: any) => {
     console.log(id, "WhatWhat");
     try {
-      const adDoc = await getDoc(doc(db, "JOBBOARD", id));
+      const adDoc = await getDoc(doc(db, "Cars", id));
       if (adDoc.exists()) {
         const adData = adDoc.data();
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
+        setPrice(adData.price);
         setFormData((prev) => ({
           ...prev,
           SubCategory: adData.SubCategory || "",
-          category: adData.category || "",
+          Category: adData.Category || "",
           NestedSubCategory: adData.NestedSubCategory || "",
         }));
 
@@ -2143,8 +2083,12 @@ const JOBBOARDPage = () => {
           timeAgo: adData.timeAgo || new Date().toISOString(),
           title: adData.title || "Untitled",
           description: adData.description || "No description",
+          displayName: adData.displayName || "No displayName",
+
           location: adData.location || "Unknown",
           img: adData.img || "",
+          Price: adData.Price || "0",
+          DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
           Color: adData.Color || "Color",
@@ -2176,44 +2120,34 @@ const JOBBOARDPage = () => {
           AdType: adData.AdType || "AdType",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
+          isActive: adData.isActive || "isActive",
 
-          category: adData.category || "category",
-          userId: adData.userId || "userId",
-          displayName: adData.displayName || "displayName",
-          Price: adData.Price || "Price",
-
-          DrivenKm: undefined,
           FeaturedAds: "",
-          isActive: false,
         };
-
         console.log(selectedAd, "selectedAd____________");
         console.log(adData, "selectedAd____________adData");
+
         const images = Array<string | null>(6).fill(null);
+        selectedAd.galleryImages.forEach((url: string, idx: number) => {
+          images[idx] = url;
+        });
 
-        if (Array.isArray(selectedAd.galleryImages)) {
-          selectedAd.galleryImages.forEach((url: string, idx: number) => {
-            if (idx < 6) images[idx] = url;
-          });
-        }
-
-        console.log(selectedAd, "selectedAd____________");
-        console.log(adData, "selectedAd____________adData");
         setImageUrls(images);
         setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
-        // setCondition(selectedAd.condition);
+        setCondition(selectedAd.condition);
         setAssembly(selectedAd.assembly);
-        // setRegisteredCity(selectedAd.registeredCity);
+        setRegisteredCity(selectedAd.registeredCity);
 
-        // setDrivenKm(selectedAd.DrivenKm);
+        setDrivenKm(selectedAd.DrivenKm);
         setModel(selectedAd.model);
         setPhoneNumber(selectedAd.PhoneNumber);
-        // setPurpose(selectedAd.purpose);
+        setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2227,19 +2161,70 @@ const JOBBOARDPage = () => {
         setSelectedPictureAvailability(selectedAd.PictureAvailability); // Pass a valid Ad object to setSelectedAd
         setSelectedSellerType(selectedAd.sellerType); // Pass a valid Ad object to setSelectedAd
         setSelectedModalCategory(selectedAd.ModalCategory); // Pass a valid Ad object to setSelectedAd
+        setSelectedSeatingCapacity(selectedAd.SeatingCapacity); // Pass a valid Ad object to setSelectedAd
         setSelectedNumberOfDoors(selectedAd.CoNumberOfDoorsor); // Pass a valid Ad object to setSelectedAd
         setSelectedBodyType(selectedAd.bodyType);
         setSelectedAssembly(selectedAd.assembly);
-        // setSelectedFuelType(selectedAd.FuelType);
+        setSelectedFuelType(selectedAd.FuelType);
 
         // Pass a valid Ad object to setSelectedAd
         setIsOpen(true);
       } else {
         console.error("No such document!");
       }
+      setPrice;
     } catch (error) {
       console.error("Error fetching ad by ID:", error);
     }
+  };
+  // const resetForm = () => {
+  //   setLocation("");
+  //   ("");
+  //   setLink("");
+  //   setDescription("");
+
+  //   // setIsOpen(false);
+  // };
+  const resetForm = () => {
+    setDescription("");
+    setLink("");
+    setManufactureYear("");
+    setCondition("");
+    setAssembly("");
+    setTimeAgo(new Date());
+
+    setRegisteredCity("");
+    setDrivenKm("");
+    setModel("");
+    setPhoneNumber("");
+    setPurpose("");
+    setType("");
+    setPrice("");
+    setLocation("");
+    setName("");
+    setSelectedAd(null); // Assuming it's an object or string
+    setTrustedCars("");
+    setSelectedCity("");
+    setSelectedEngineType("");
+    setSelectedColor("");
+    setSelectedTransmission("");
+    setSelectedVideoAvailability("");
+    setSelectedPictureAvailability("");
+    setSelectedSellerType("");
+    setSelectedModalCategory("");
+    setSelectedSeatingCapacity("");
+    setSelectedNumberOfDoors("");
+    setSelectedBodyType("");
+    setSelectedAssembly("");
+    setSelectedFuelType("");
+  };
+
+  // Call `resetForm` when you need to reset all fields
+
+  const handleFuelTypeChange = (event: any) => {
+    const fuelType = event.target.value;
+    setSelectedFuelType(fuelType);
+    console.log(fuelType); // Log selected fuel type to the console
   };
   const handleAdTypeChange = (event: any) => {
     const adType = event.target.value;
@@ -2267,7 +2252,11 @@ const JOBBOARDPage = () => {
     setSelectedModalCategory(modalCategory);
     console.log(modalCategory); // Log selected modal category to the console
   };
-
+  const handleSeatingCapacityChange = (event: any) => {
+    const seatingCapacity = event.target.value;
+    setSelectedSeatingCapacity(seatingCapacity);
+    console.log(seatingCapacity); // Log selected seating capacity to the console
+  };
   const handleNumberOfDoorsChange = (event: any) => {
     const numberOfDoors = event.target.value;
     setSelectedNumberOfDoors(numberOfDoors);
@@ -2319,23 +2308,14 @@ const JOBBOARDPage = () => {
     setSelectedCity(city);
     console.log(city, "city___________"); // Log selected city to the console
   };
-  const [selectedStates, setSelectedStates] = useState("");
-  const [Protective, setProtective] = useState("");
-  const [Vaccinated, setVaccinated] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   const handleLocationChange = (event: any) => {
     const location = event.target.value;
-    setSelectedStates(location);
+    setSelectedLocation(location);
     console.log(location); // Log selected location to the console
   };
   const [selectedCarBrand, setSelectedCarBrand] = useState("");
-  const [JobType, setJobType] = useState("");
-  const [Company, setCompany] = useState("");
-  const [EmploymentType, setEmploymentType] = useState("");
-  const [ExperienceLevel, setExperienceLevel] = useState("");
-  const [Industry, setIndustry] = useState("");
-  const [RequiredSkills, setRequiredSkills] = useState("");
-  const closeModal = () => setIsOpen(false);
 
   const handleCarBrandChange = (event: any) => {
     const carBrand = event.target.value;
@@ -2374,6 +2354,35 @@ const JOBBOARDPage = () => {
       handleImageUpload(file, index); // Upload the selected file
     }
   };
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true); // Show spinner
+        const carsCollectionRef = collection(db, "Cars");
+        const querySnapshot = await getDocs(carsCollectionRef);
+        const carsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        // 👇 Log all userIds
+        // carsData.forEach((car) => {
+        //   console.log("carsData_________ ID:", car.userId);
+        // });
+        console.log(carsData, "carsData_________");
+      } catch (error) {
+        console.error("Error getting cars:", error);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  const filteredAds = ads.filter(
+    (ad) =>
+      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
+      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
+  );
+  console.log(filteredAds, "carsData_________filteredAds");
 
   // Function to add a new car to Firestore
   const handleAddCar = async (e: any) => {
@@ -2386,66 +2395,53 @@ const JOBBOARDPage = () => {
 
     try {
       // Get a reference to the 'carData' collection
-      const carsCollection = collection(db, "JOBBOARD");
+      const carsCollection = collection(db, "Cars");
 
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
-        title: name,
+        Title: name,
         img: imageUrls[0], // img1
         img2: imageUrls[1], // img2
         img3: imageUrls[2], // img3
         img4: imageUrls[3], // img4
         img5: imageUrls[4], // img5
         img6: imageUrls[5], // img6
-        location: location,
-        SalaryRange: SalaryRange,
-        SallaryFromRange: SallaryFromRange,
-        SallaryToRange: SallaryToRange,
-        JobType: JobType,
-        category: Category1,
-
-        JobTitle: JobTitle,
-        Industry: Industry,
-        Brand: selectedCarBrand,
-        jobdescription: jobdescription,
-        Vaccinated: Vaccinated,
-        Accuracy: Accuracy,
-        EmploymentType: EmploymentType,
-        StorageCapacity: StorageCapacity,
-        SpeedofMeasurement: SpeedofMeasurement,
-        Features: Features,
-        CuffSize: CuffSize,
-        MeasurementRange: MeasurementRange,
-        BatteryLife: BatteryLife,
-        Protective: Protective,
-        RequiredSkills: RequiredSkills,
-        StorageType: StorageType,
-        Company: Company,
-        ExperienceLevel: ExperienceLevel,
-        Storagecapacity: Storagecapacity,
-        GraphicsCard: GraphicsCard,
-        DisplayQuality: DisplayQuality,
-        Connectivity: Connectivity,
-        SpecialFeatures: SpecialFeatures,
-        BatteryType: BatteryType,
-        DisplayType: DisplayType,
-        MeasurementUnits: MeasurementUnits,
-        Compatibility: Compatibility,
-        SellerType: SellerType,
-        link: link,
+        Location: location,
+        Price: price,
+        Link: link,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
-        States: selectedStates,
-        description: description,
-        sellerType: selectedSellerType,
-        engineCapacity: selectedEngineCapacity,
-        bodyType: selectedBodyType,
-        lastUpdated: lastUpdated.toISOString(),
-        model: model,
+        category: Category1,
+        NestedSubCategory: nestedSubCategory,
+        Description: description,
+        // displayName: displayName,
+
+        registeredCity: registeredCity,
+        assembly: assembly,
+        LastUpdated: lastUpdated.toISOString(),
+        Condition: condition,
+        Purpose: purpose,
+        Model: model,
         whatsapp: whatsapp,
-        Type: Type,
+        type: type,
+        isFeatured: selectedAdType,
+        VideoAvailability: selectedVideoAvailability,
+        PictureAvailability: selectedPictureAvailability,
+        FuelType: selectedFuelType,
         AdType: selectedAdType,
+        ModalCategory: selectedModalCategory,
+        SellerType: selectedSellerType,
+        NumberOfDoors: selectedNumberOfDoors,
+        SeatingCapacity: selectedSeatingCapacity,
+        Assembly: selectedAssembly,
         BodyType: selectedBodyType,
+        Color: selectedColor,
+        EngineType: selectedEngineType,
+        EngineCapacity: selectedEngineCapacity,
+        Transmission: selectedTransmission,
+        TrustedCars: TrustedCars,
+        Registeredin: Registeredin,
         City: selectedCity,
+        DrivenKm: DrivenKm,
         PhoneNumber: PhoneNumber,
 
         ManufactureYear: ManufactureYear,
@@ -2457,7 +2453,7 @@ const JOBBOARDPage = () => {
       // setImageUrls(Array(6).fill("")); // Reset all image URLs
       // setImageFiles(Array(6).fill(null)); // Reset all image files
       // setLocation("");
-      // setSalaryRange("");
+      // setPrice("");
       // setLink("");
       // setDescription("");
       setTimeAgo(new Date()); // Reset time to current date
@@ -2476,6 +2472,7 @@ const JOBBOARDPage = () => {
 
   return (
     <>
+      {/* Add New Button */}
       <button
         onClick={() => {
           setIsOpen(true);
@@ -2521,7 +2518,6 @@ const JOBBOARDPage = () => {
             <span>Unpaid</span>
           </label>
         </div>
-
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div>
             <button
@@ -2706,20 +2702,12 @@ const JOBBOARDPage = () => {
                       })
                     : "-"}
                 </td>
-                <td
-                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
-                  onClick={() =>
-                    router.push(
-                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
-                    )
-                  }
-                >
+                <td className="px-6 py-4">
                   {typeof ad.displayName === "string" &&
                   ad.displayName.trim() !== ""
                     ? ad.displayName
                     : "-"}
                 </td>
-
                 <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -2756,16 +2744,20 @@ const JOBBOARDPage = () => {
           </tbody>
         </table>
       </div>
+
       {isOpen && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "8%" }}
+          style={{ marginTop: "-2%" }}
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "68%" }}
+            style={{ marginTop: "69%" }}
           >
-            <div className="relative w-full max-w-lg">
+            <div
+              className="relative w-full max-w-lg"
+              style={{ marginTop: "52%" }}
+            >
               <button
                 onClick={closeModal}
                 className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
@@ -2774,7 +2766,7 @@ const JOBBOARDPage = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Job
+                  Add a New Car Listing
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}
@@ -2794,6 +2786,7 @@ const JOBBOARDPage = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       City
@@ -2811,25 +2804,6 @@ const JOBBOARDPage = () => {
                           {city.name}
                         </option>
                       ))}
-                    </select>
-                  </div>
-
-                  {/* Location Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      States
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedStates(e.target.value)}
-                      value={selectedStates}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="">Select State</option>
-                      <option value="California">California</option>
-                      <option value="Texas">Texas</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinois">Illinois</option>
                     </select>
                   </div>
                   <div className="card w-100 w-md-50">
@@ -3841,246 +3815,422 @@ const JOBBOARDPage = () => {
                   ) : (
                     ""
                   )}
+                  {/* Location Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Protective
+                      Location
                     </label>
                     <select
-                      onChange={(e) => setProtective(e.target.value)}
-                      value={Protective}
+                      onChange={(e) => setSelectedLocation(e.target.value)}
+                      value={selectedLocation}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option value="">Select Protective</option>
-                      <option value="Protective">Protective</option>
-                      <option value="Not Protective">Not Protective</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinois">Illinois</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Vaccinated
-                    </label>
-                    <select
-                      onChange={(e) => setVaccinated(e.target.value)}
-                      value={Vaccinated}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="">Select Vaccinated</option>
-                      <option value="Vaccinated">Vaccinated</option>
-                      <option value="Not Vaccinated">Not Vaccinated</option>
+                      <option value="">Select Location</option>
+                      <option value="Dubai Marina">Dubai Marina</option>
+                      <option value="Jumeirah">Jumeirah</option>
+                      <option value="Deira">Deira</option>
+                      <option value="Business Bay">Business Bay</option>
                     </select>
                   </div>
 
                   {/* Car Brand Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Job Title
+                      Make
                     </label>
                     <select
-                      onChange={(e) => setJobTitle(e.target.value)}
-                      value={JobTitle}
+                      onChange={(e) => setSelectedCarBrand(e.target.value)}
+                      value={selectedCarBrand}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option disabled value="">
-                        Job Title
+                        Select Make
                       </option>
-                      <option value="Full Stack ">Full Stack</option>
-                      <option value="Software Engineer">
-                        Software Engineer
-                      </option>
-                      <option value="Front-end Developer">
-                        Front-end Developer
-                      </option>
-                      <option value="Data Scientist">Data Scientist</option>
-                      <option value="Backend Engineer">Backend Engineer</option>
+                      <option value="Toyota">Toyota</option>
+                      <option value="Mercedez-Benz">Mercedez-Benz</option>
+                      <option value="Nissan">Nissan</option>
+                      <option value="BMW">BMW</option>
+                      <option value="Lamborghini">Lamborghini</option>
                     </select>
                   </div>
 
-                  {/* SalaryRange */}
+                  {/* Price */}
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formSalaryRange"
+                      htmlFor="formPrice"
                     >
-                      Expected Salary Range
+                      Price
                     </label>
                     <input
                       type="number"
-                      placeholder="Enter SalaryRange"
-                      value={SalaryRange}
-                      onChange={(e) => setSalaryRange(e.target.value)}
+                      placeholder="Enter price"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
 
+                  {/* Manufacture Year */}
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formSalaryRange"
+                      htmlFor="formManufactureYear"
                     >
-                      Sallary From Range
+                      Manufacture Year
                     </label>
                     <input
-                      type="number"
-                      placeholder="Enter SalaryRange"
-                      value={SallaryFromRange}
-                      onChange={(e) => setSallaryFromRange(e.target.value)}
+                      type="text"
+                      placeholder="Enter Manufacture Year"
+                      value={ManufactureYear}
+                      onChange={(e) => setManufactureYear(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+
+                  {/* Registered In */}
                   <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formSalaryRange"
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Registered in
+                    </label>
+                    <select
+                      onChange={(e) => setRegisteredin(e.target.value)}
+                      value={Registeredin}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      Sallary To Range
+                      <option value="" disabled>
+                        Select Registered In
+                      </option>
+                      <option value="Downtown Dubai">Downtown Dubai</option>
+                      <option value="Dubai Marina">Dubai Marina</option>
+                      <option value="Jumeirah">Jumeirah</option>
+                      <option value="Deira">Deira</option>
+                      <option value="Business Bay">Business Bay</option>
+                    </select>
+                  </div>
+
+                  {/* Trusted Cars */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Trusted Cars
+                    </label>
+                    <select
+                      onChange={(e) => setTrustedCars(e.target.value)}
+                      value={TrustedCars}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Trusted Cars
+                      </option>
+                      <option value="Toyota">Toyota</option>
+                      <option value="Mercedez-Benz">Mercedez-Benz</option>
+                      <option value="Nissan">Nissan</option>
+                      <option value="BMW">BMW</option>
+                      <option value="Lamborghini">Lamborghini</option>
+                    </select>
+                  </div>
+
+                  {/* Transmission */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Transmission
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedTransmission(e.target.value)}
+                      value={selectedTransmission}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Transmission
+                      </option>
+                      <option value="Manual">Manual</option>
+                      <option value="Automatic">Automatic</option>
+                    </select>
+                  </div>
+
+                  {/* Color */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Color
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedColor(e.target.value)}
+                      value={selectedColor}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Color
+                      </option>
+                      <option value="White">White</option>
+                      <option value="Black">Black</option>
+                      <option value="Grey">Grey</option>
+                      <option value="Red">Red</option>
+                      <option value="Yellow">Yellow</option>
+                      <option value="Blue">Blue</option>
+                      <option value="Green">Green</option>
+                      <option value="Silver">Silver</option>
+                      <option value="Orange">Orange</option>
+                      <option value="Purple">Purple</option>
+                      <option value="Brown">Brown</option>
+                      <option value="Pink">Pink</option>
+                      <option value="Beige">Beige</option>
+                      <option value="Maroon">Maroon</option>
+                      <option value="Turquoise">Turquoise</option>
+                    </select>
+                  </div>
+
+                  {/* Engine Type */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Engine Type
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedEngineType(e.target.value)}
+                      value={selectedEngineType}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Engine Type
+                      </option>
+                      <option value="Inline-4 (14) Engine">
+                        Inline-4 (14) Engine
+                      </option>
+                      <option value="V6 Engine">V6 Engine</option>
+                      <option value="V8 Engine">V8 Engine</option>
+                      <option value="Inline-6 (16) Engine">
+                        Inline-6 (16) Engine
+                      </option>
+                      <option value="V12 Engine">V12 Engine</option>
+                      <option value="Inline-3 Engine">Inline-3 Engine</option>
+                      <option value="V10 Engine">V10 Engine</option>
+                      <option value="Flat-4 Engine">Flat-4 Engine</option>
+                      <option value="Flat-6 Engine">Flat-6 Engine</option>
+                      <option value="W12 Engine">W12 Engine</option>
+                      <option value="W16 Engine">W16 Engine</option>
+                      <option value="Electric Motor">Electric Motor</option>
+                    </select>
+                  </div>
+
+                  {/* Engine Capacity */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Engine Capacity (cc)
                     </label>
                     <input
-                      type="number"
-                      placeholder="Enter SalaryRange"
-                      value={SallaryToRange}
-                      onChange={(e) => serSallaryToRange(e.target.value)}
-                      required
+                      type="text"
+                      placeholder="Enter Engine Capacity (cc)"
+                      value={selectedEngineCapacity}
+                      onChange={(e) =>
+                        setSelectedEngineCapacity(e.target.value)
+                      }
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
 
+                  {/* Assembly */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Job Type
+                      Assembly
                     </label>
                     <select
-                      onChange={(e) => setJobType(e.target.value)}
-                      value={JobType}
+                      onChange={(e) => setSelectedAssembly(e.target.value)}
+                      value={selectedAssembly}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option disabled value="">
-                        Select Job Type
+                      <option value="" disabled>
+                        Select Assembly
                       </option>
-                      <option value="Remote">Remote</option>
-                      <option value="Hybrid">Hybrid</option>
-                      <option value="On-site">On-site</option>
+                      <option value="Local">Local</option>
+                      <option value="Imported">Imported</option>
                     </select>
                   </div>
+
+                  {/* Body Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Company
+                      Body Type
                     </label>
                     <select
-                      onChange={(e) => setCompany(e.target.value)}
-                      value={Company}
+                      onChange={(e) => setSelectedBodyType(e.target.value)}
+                      value={selectedBodyType}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option disabled value="">
-                        Select Company
+                      <option value="" disabled>
+                        Select Body Type
                       </option>
-                      <option value="Google">Google</option>
-                      <option value="Microsoft">Microsoft</option>
-                      <option value="Apple">Apple</option>
-
-                      <option value="Amazon">Amazon</option>
-                      <option value="Facebook">Facebook</option>
+                      <option value="Coupe">Coupe</option>
+                      <option value="Sedan">Sedan (Saloon)</option>
+                      <option value="SUV">SUV</option>
+                      <option value="Hatchback">Hatchback</option>
+                      <option value="Convertible">Convertible</option>
+                      <option value="Crossover">Crossover</option>
+                      <option value="Station Wagon">Station Wagon</option>
+                      <option value="Minivan">Minivan</option>
+                      <option value="Pickup Truck">Pickup Truck</option>
+                      <option value="Roadster">Roadster</option>
+                      <option value="MPV">MPV (Multi-Purpose Vehicle)</option>
+                      <option value="Luxury Sedan">Luxury Sedan</option>
+                      <option value="Limousine">Limousine</option>
+                      <option value="Coupe SUV">Coupe SUV</option>
                     </select>
                   </div>
+
+                  {/* Number of Doors */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Employment Type
+                      Number of Doors
                     </label>
                     <select
-                      onChange={(e) => setEmploymentType(e.target.value)}
-                      value={EmploymentType}
+                      onChange={(e) => setSelectedNumberOfDoors(e.target.value)}
+                      value={selectedNumberOfDoors}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option disabled value="">
-                        Employment Type
+                      <option value="" disabled>
+                        Select Number of Doors
                       </option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Part-time">Part-time</option>
-                      <option value="Temporary">Temporary</option>
-
-                      <option value="Internship">Internship</option>
+                      <option value="4">4 Doors</option>
+                      <option value="5">5 Doors</option>
+                      <option value="2">2 Doors</option>
+                      <option value="3">3 Doors</option>
+                      <option value="0">
+                        No Doors (e.g., a truck or a specialized vehicle)
+                      </option>
                     </select>
                   </div>
+
+                  {/* Seating Capacity */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Experience Level
+                      Seating Capacity
                     </label>
-
                     <select
-                      onChange={(e) => setExperienceLevel(e.target.value)}
-                      value={ExperienceLevel}
+                      onChange={(e) =>
+                        setSelectedSeatingCapacity(e.target.value)
+                      }
+                      value={selectedSeatingCapacity}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option disabled value="">
-                        Experience Level
+                      <option value="" disabled>
+                        Select Seating Capacity
                       </option>
-                      <option value="Entry-level">Entry-level</option>
-                      <option value="Mid-level">Mid-level</option>
-                      <option value="Senior-level">Senior-level</option>
-
-                      <option value="Executive">Executive</option>
+                      <option value="4">4 Seats</option>
+                      <option value="5">5 Seats</option>
+                      <option value="2">2 Seats</option>
+                      <option value="3">3 Seats</option>
+                      <option value="0">
+                        No Seats (e.g., for cargo or specialty vehicles)
+                      </option>
                     </select>
                   </div>
+
+                  {/* Modal Category */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Industry
+                      Modal Category
                     </label>
-
                     <select
-                      onChange={(e) => setIndustry(e.target.value)}
-                      value={Industry}
+                      onChange={(e) => setSelectedModalCategory(e.target.value)}
+                      value={selectedModalCategory}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option disabled value="">
-                        Industry
+                      <option value="" disabled>
+                        Select Modal Category
                       </option>
-                      <option value="Finance">Finance</option>
-                      <option value="Information Technology">
-                        Information Technology
-                      </option>
-                      <option value="Education">Education</option>
-
-                      <option value="Consulting">Consulting</option>
+                      <option value="A-Class">A-Class (Compact)</option>
+                      <option value="B-Class">B-Class (Compact MPV)</option>
+                      <option value="C-Class">C-Class (Compact Exe)</option>
+                      <option value="E-Class">E-Class (Executive)</option>
+                      <option value="S-Class">S-Class (Luxury)</option>
+                      <option value="CLA">CLA (Compact Coupe)</option>
+                      <option value="CLS">CLS (Executive Coupe)</option>
+                      <option value="GLA">GLA (Compact SUV)</option>
+                      <option value="GLC">GLC (Luxury SUV)</option>
+                      <option value="GLE">GLE (Luxury SUV)</option>
+                      <option value="GLS">GLS (Full-Size SUV)</option>
+                      <option value="G-Class">G-Class (Off-Road SUV)</option>
+                      <option value="SLK">SLK (Compact Roadster)</option>
+                      <option value="SLC">SLC (Compact Roadster)</option>
+                      <option value="AMG GT">AMG GT (Performance)</option>
+                      <option value="EQC">EQC (Electric SUV)</option>
+                      <option value="EQS">EQS (Electric Luxury Sedan)</option>
                     </select>
                   </div>
+
+                  {/* Seller Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Required Skills
+                      Seller Type
                     </label>
-
                     <select
-                      onChange={(e) => setRequiredSkills(e.target.value)}
-                      value={RequiredSkills}
+                      onChange={(e) => setSelectedSellerType(e.target.value)}
+                      value={selectedSellerType}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                      <option disabled value="">
-                        Required Skills
+                      <option value="" disabled>
+                        Select Seller Type
                       </option>
-                      <option value="Programming Languages">
-                        Programming Languages
-                      </option>
-                      <option value="Frameworks/Tools">Frameworks/Tools</option>
-                      <option value="Databases">Databases</option>
-
-                      <option value="Soft Skills">Soft Skills</option>
+                      <option value="Dealers">Dealers</option>
+                      <option value="Individuals">Individuals</option>
                     </select>
                   </div>
+
+                  {/* Picture Availability */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Description
+                      Picture Availability
                     </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      required
+                    <select
+                      onChange={(e) =>
+                        setSelectedPictureAvailability(e.target.value)
+                      }
+                      value={selectedPictureAvailability}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
+                    >
+                      <option value="" disabled>
+                        Select Picture Availability
+                      </option>
+                      <option value="With Pictures">With Pictures</option>
+                      <option value="Without Pictures">Without Pictures</option>
+                    </select>
+                  </div>
+
+                  {/* Video Availability */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Video Availability
+                    </label>
+                    <select
+                      onChange={(e) =>
+                        setSelectedVideoAvailability(e.target.value)
+                      }
+                      value={selectedVideoAvailability}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Video Availability
+                      </option>
+                      <option value="With Video">With Video</option>
+                      <option value="Without Video">Without Video</option>
+                    </select>
+                  </div>
+
+                  {/* Ad Type */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Ad Type
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedAdType(e.target.value)}
+                      value={selectedAdType}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Ad Type
+                      </option>
+                      <option value="Featured Ad">Featured Ad</option>
+                    </select>
                   </div>
 
                   {[...Array(6)].map((_, index) => (
@@ -4135,6 +4285,19 @@ const JOBBOARDPage = () => {
                   </div>
 
                   {/* Description */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Enter description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
 
                   {/* Time Ago */}
                   <div className="mb-4">
@@ -4142,14 +4305,93 @@ const JOBBOARDPage = () => {
                       Time Ago (Date Posted)
                     </label>
                     <DatePicker
-                      selected={timeAgo} // Pass the state as the selected value.
-                      onChange={(date: Date | null) => setTimeAgo(date)} // Update state when a new date is selected.
+                      selected={timeAgo}
+                      onChange={(date) => setTimeAgo(date)} // Works because state allows null
                       dateFormat="MMMM d, yyyy"
                       showYearDropdown
                       scrollableYearDropdown
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       required
                     />
+                  </div>
+
+                  {/* Registered City */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Registered City
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter registered city"
+                      value={registeredCity}
+                      onChange={(e) => setRegisteredCity(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  {/* Assembly */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Assembly
+                    </label>
+                    <select
+                      onChange={(e) => setAssembly(e.target.value)}
+                      value={assembly}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="Imported">Imported</option>
+                      <option value="Local">Local</option>
+                    </select>
+                  </div>
+
+                  {/* Condition */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Condition
+                    </label>
+                    <select
+                      onChange={(e) => setCondition(e.target.value)}
+                      value={condition}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="New">New</option>
+                      <option value="Used">Used</option>
+                    </select>
+                  </div>
+
+                  {/* Purpose */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Purpose
+                    </label>
+                    <select
+                      onChange={(e) => setPurpose(e.target.value)}
+                      value={purpose}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="Sell">Sell</option>
+                      <option value="Rent">Rent</option>
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Fuel Type
+                    </label>
+                    <select
+                      onChange={handleFuelTypeChange}
+                      value={selectedFuelType}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Fuel Type
+                      </option>
+                      <option value="Petroleum">Petroleum</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
 
                   {/* Phone */}
@@ -4181,19 +4423,38 @@ const JOBBOARDPage = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+
+                  {/* Driven KM */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Job Description
+                      Driven KM
                     </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={jobdescription}
-                      onChange={(e) => setJobDescription(e.target.value)}
+                    <input
+                      type="text"
+                      placeholder="Enter Driven KMS"
+                      value={DrivenKm}
+                      onChange={(e) => setDrivenKm(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+
+                  {/* Type */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Type
+                    </label>
+                    <select
+                      onChange={(e) => setType(e.target.value)}
+                      value={type}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="Sale">Sale</option>
+                      <option value="Lease">Lease</option>
+                    </select>
+                  </div>
+
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -4203,6 +4464,7 @@ const JOBBOARDPage = () => {
                   </button>
                 </form>
               </div>
+              {/* </div> */}
             </div>
           </div>
         </div>
@@ -4211,4 +4473,4 @@ const JOBBOARDPage = () => {
   );
 };
 
-export default JOBBOARDPage;
+export default UserListing;

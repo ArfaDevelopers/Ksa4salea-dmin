@@ -13,6 +13,7 @@ import {
 import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
 import { formatDistanceToNow, parseISO, isValid } from "date-fns";
+import { useRouter } from "next/navigation";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -30,6 +31,9 @@ registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
+  userId: string;
+  category: string;
+
   timeAgo: string;
   title: string;
   description: string;
@@ -232,6 +236,8 @@ const Cars = () => {
     googlePlus: "http://google.com",
     instagram: "http://instagram.com",
   });
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
@@ -1913,6 +1919,7 @@ const Cars = () => {
         icon: "success",
         timer: 1000,
       });
+      setRefresh(!refresh);
       console.log(`isActive updated to: ${!currentState}`);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -1988,6 +1995,8 @@ const Cars = () => {
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || {},
             userId: data.userId || {},
+            category: data.category || {},
+
             displayName: data.displayName || {},
           };
         });
@@ -2114,8 +2123,9 @@ const Cars = () => {
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
-
-          FeaturedAds: "",
+          FeaturedAds: adData.FeaturedAds || "FeaturedAds",
+          userId: adData.userId || "userId",
+          category: adData.category || "category",
         };
         console.log(selectedAd, "selectedAd____________");
         console.log(adData, "selectedAd____________adData");
@@ -2361,7 +2371,7 @@ const Cars = () => {
         // carsData.forEach((car) => {
         //   console.log("carsData_________ ID:", car.userId);
         // });
-        console.log(carsData, "carsData_________");
+        console.log(carsData, "carsData_________1122");
       } catch (error) {
         console.error("Error getting cars:", error);
       }
@@ -2606,7 +2616,7 @@ const Cars = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -2629,6 +2639,9 @@ const Cars = () => {
               </th>
               <th scope="col" className="px-6 py-3">
                 Title
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Payment
               </th>
               <th scope="col" className="px-6 py-3">
                 Time
@@ -2682,20 +2695,31 @@ const Cars = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
                   {ad.timeAgo && isValid(new Date(ad.timeAgo))
                     ? formatDistanceToNow(new Date(ad.timeAgo), {
                         addSuffix: true,
                       })
                     : "-"}
                 </td>
-                <td className="px-6 py-4">
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
                   {typeof ad.displayName === "string" &&
                   ad.displayName.trim() !== ""
                     ? ad.displayName
                     : "-"}
                 </td>
-                <td className="px-6 py-4">
-                  {" "}
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={ad.isActive}
@@ -2704,6 +2728,7 @@ const Cars = () => {
                       handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
                 </td>
 
                 <td className="px-6 py-4">{ad.Price}</td>

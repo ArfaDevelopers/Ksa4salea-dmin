@@ -23,6 +23,8 @@ import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
 import Select from "react-select";
+import { formatDistanceToNow, isValid } from "date-fns";
+import { useRouter } from "next/navigation";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -32,11 +34,15 @@ type Ad = {
   isActive: boolean;
 
   timeAgo: string;
+  userId: string;
+  displayName: string;
+  category: string;
+
   title: string;
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -73,10 +79,17 @@ type Ad = {
 };
 const TRAVEL = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+
+    Price: "",
+    userId: "",
+    displayName: "",
     category: "",
+
     kmDriven: "",
     Transmission: "",
     Emirates: "",
@@ -165,7 +178,6 @@ const TRAVEL = () => {
     Season: "",
     ExteriorColor: "",
     Purpose: "",
-    Price: "",
 
     Gender: "",
     Size: "",
@@ -1953,7 +1965,7 @@ const TRAVEL = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -1985,6 +1997,10 @@ const TRAVEL = () => {
             whatsapp: data.whatsapp || "",
             FeaturedAds: data.FeaturedAds || "",
             isActive: data.isActive || "",
+
+            userId: data.userId || "",
+            displayName: data.displayName || "",
+            category: data.category || "",
 
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
@@ -2062,7 +2078,7 @@ const TRAVEL = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -2097,7 +2113,10 @@ const TRAVEL = () => {
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
 
-          FeaturedAds: "",
+          userId: adData.userId || "userId",
+          category: adData.category || "category",
+          displayName: adData.displayName || "displayName",
+          FeaturedAds: adData.FeaturedAds || "FeaturedAds",
         };
         const images = Array<string | null>(6).fill(null);
 
@@ -2124,7 +2143,7 @@ const TRAVEL = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2586,7 +2605,7 @@ const TRAVEL = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -2611,7 +2630,14 @@ const TRAVEL = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Payment
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
@@ -2657,9 +2683,32 @@ const TRAVEL = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">
-                  {" "}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={ad.isActive}
@@ -2668,8 +2717,10 @@ const TRAVEL = () => {
                       handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
-                </td>{" "}
-                <td className="px-6 py-4">{ad.price}</td>
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
+                </td>
+
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button

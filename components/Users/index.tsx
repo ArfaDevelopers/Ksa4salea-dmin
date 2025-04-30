@@ -42,10 +42,54 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState<any>(null); // To store selected user data for editing
   console.log(selectedUser, "user_______00");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [selectedOption, setSelectedOption] = useState("All");
+  const [activeCheckboxes, setActiveCheckboxes] = useState<{
+    [key: number]: boolean;
+  }>({});
   // Open and close modal functions
   const openModal = () => setIsSignupModalOpen(true);
   const closeModal = () => setIsSignupModalOpen(false);
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "users", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
+  };
+
   const handleDelete = async (user: any) => {
     const confirmResult = await MySwal.fire({
       title: "Are you sure?",
@@ -175,6 +219,7 @@ const Users = () => {
                             <span className="font-semibold">Phone:</span>{" "}
                             {user.phoneNumber}
                           </p>
+
                           <p>
                             <span className="font-semibold">Created At:</span>{" "}
                             {user.createdAt?.seconds
@@ -187,6 +232,23 @@ const Users = () => {
                       </div>
 
                       <div className="flex space-x-3 justify-end">
+                        <button
+                          className="text-blue-500 hover:text-blue-700"
+                          // onClick={() => openEditModal(user)}
+                        >
+                          {/* <MdEdit size={22} /> */}
+                          <input
+                            type="checkbox"
+                            checked={user.isActive}
+                            onChange={() => {
+                              handleToggle(user.id); // Toggle UI state
+                              handleFirebaseToggle(
+                                user.id,
+                                !!activeCheckboxes[user.id]
+                              ); // Update Firestore
+                            }}
+                          />
+                        </button>
                         <button
                           className="text-blue-500 hover:text-blue-700"
                           onClick={() => openEditModal(user)}

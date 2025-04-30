@@ -11,6 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { Country, State, City, ICity } from "country-state-city";
+import { useRouter } from "next/navigation";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -23,19 +24,25 @@ import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
 import Select from "react-select";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 // Register the English locale
 registerLocale("en-US", enUS);
 type Ad = {
   id: any; // Change from string to number
   link: string;
+
+  displayName: string;
+  category: string;
+  userId: string;
+
   isActive: boolean;
   timeAgo: string;
   title: string;
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -72,9 +79,15 @@ type Ad = {
 };
 const SPORTSGAMESComp = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+
+    displayName: "",
+    userId: "",
+
     category: "",
     kmDriven: "",
     Transmission: "",
@@ -1957,7 +1970,7 @@ const SPORTSGAMESComp = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -1993,6 +2006,10 @@ const SPORTSGAMESComp = () => {
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
             isActive: data.isActive || "",
+
+            displayName: data.displayName || "",
+            category: data.category || "",
+            userId: data.userId || "",
           };
         });
 
@@ -2066,7 +2083,7 @@ const SPORTSGAMESComp = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -2101,6 +2118,10 @@ const SPORTSGAMESComp = () => {
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
 
+          displayName: adData.displayName || "displayName",
+          category: adData.category || "category",
+          userId: adData.userId || "userId",
+
           FeaturedAds: "",
         };
         const images = Array<string | null>(6).fill(null);
@@ -2128,7 +2149,7 @@ const SPORTSGAMESComp = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2598,7 +2619,7 @@ const SPORTSGAMESComp = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -2623,7 +2644,14 @@ const SPORTSGAMESComp = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Payment
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
@@ -2669,9 +2697,32 @@ const SPORTSGAMESComp = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">
-                  {" "}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={ad.isActive}
@@ -2680,8 +2731,10 @@ const SPORTSGAMESComp = () => {
                       handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
-                </td>{" "}
-                <td className="px-6 py-4">{ad.price}</td>
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
+                </td>
+
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button

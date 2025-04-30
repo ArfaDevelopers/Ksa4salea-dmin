@@ -23,6 +23,8 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
+import { formatDistanceToNow, isValid } from "date-fns";
+import { useRouter } from "next/navigation";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -32,11 +34,15 @@ type Ad = {
   isActive: boolean; // <- not string
 
   timeAgo: string;
+  category: string;
+  displayName: string;
+  userId: string;
+
   title: string;
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -74,6 +80,8 @@ type Ad = {
 };
 const ElectronicComp = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -1637,7 +1645,6 @@ const ElectronicComp = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -1673,6 +1680,12 @@ const ElectronicComp = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+
+            category: data.category || "",
+            displayName: data.displayName || "",
+            Price: data.Price || "",
+
+            userId: data.userId || "",
           };
         });
 
@@ -1743,7 +1756,7 @@ const ElectronicComp = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -1778,7 +1791,10 @@ const ElectronicComp = () => {
 
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
-          FeaturedAds: "",
+          category: adData.category || "category",
+          displayName: adData.displayName || "displayName",
+          userId: adData.userId || "userId",
+          FeaturedAds: adData.FeaturedAds || "FeaturedAds",
         };
         const images = Array<string | null>(6).fill(null);
         selectedAd.galleryImages.forEach((url: string, idx: number) => {
@@ -1801,7 +1817,7 @@ const ElectronicComp = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2496,7 +2512,14 @@ const ElectronicComp = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Payment
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
@@ -2542,9 +2565,32 @@ const ElectronicComp = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">
-                  {" "}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={ad.isActive}
@@ -2553,8 +2599,10 @@ const ElectronicComp = () => {
                       handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
-                </td>{" "}
-                <td className="px-6 py-4">{ad.price}</td>
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
+                </td>
+
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button

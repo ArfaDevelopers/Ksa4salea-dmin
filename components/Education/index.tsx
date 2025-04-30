@@ -23,6 +23,8 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
 // Cloudinary upload
 import axios from "axios";
+import { formatDistanceToNow, isValid } from "date-fns";
+import { useRouter } from "next/navigation";
 
 // Register the English locale
 registerLocale("en-US", enUS);
@@ -32,11 +34,16 @@ type Ad = {
   isActive: boolean;
 
   timeAgo: string;
+
+  displayName: string;
+  category: string;
+  userId: string;
+
   title: string;
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -73,6 +80,8 @@ type Ad = {
 };
 const Education = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -1984,6 +1993,8 @@ const Education = () => {
         icon: "success",
         timer: 1000,
       });
+      setRefresh(!refresh);
+
       console.log(`isActive updated to: ${!currentState}`);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -2044,7 +2055,7 @@ const Education = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -2079,6 +2090,10 @@ const Education = () => {
             AdType: data.AdType || "",
             FuelType: data.FuelType || "",
             galleryImages: data.galleryImages || "",
+            displayName: data.displayName || "",
+            category: data.category || "",
+            userId: data.userId || "",
+
             isActive: data.isActive || "",
           };
         });
@@ -2153,7 +2168,7 @@ const Education = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -2188,6 +2203,10 @@ const Education = () => {
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
 
+          displayName: adData.displayName || "displayName",
+          category: adData.category || "category",
+          userId: adData.userId || "userId",
+
           FeaturedAds: "",
         };
         const images = Array<string | null>(6).fill(null);
@@ -2215,7 +2234,7 @@ const Education = () => {
         // setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setPrice(selectedAd.price);
+        setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);
@@ -2555,7 +2574,7 @@ const Education = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -2580,10 +2599,17 @@ const Education = () => {
                 Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Description
+                Payment
               </th>
               <th scope="col" className="px-6 py-3">
-                Location
+                Time
+              </th>
+
+              <th scope="col" className="px-6 py-3">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
@@ -2626,19 +2652,44 @@ const Education = () => {
                     <div className="font-normal text-gray-500"></div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{ad.description}</td>
                 <td className="px-6 py-4">
-                  {" "}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                </td>
+
+                <td className="px-6 py-4">
+                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
+                    ? formatDistanceToNow(new Date(ad.timeAgo), {
+                        addSuffix: true,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                    )
+                  }
+                >
+                  {typeof ad.displayName === "string" &&
+                  ad.displayName.trim() !== ""
+                    ? ad.displayName
+                    : "-"}
+                </td>
+
+                <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"
-                    checked={ad.isActive} // Convert string to boolean
+                    checked={ad.isActive}
                     onChange={() => {
-                      handleToggle(ad.id);
-                      handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]);
+                      handleToggle(ad.id); // Toggle UI state
+                      handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                     }}
                   />
+                  <span>{ad.isActive ? "Banned" : "Active"}</span>
                 </td>
-                <td className="px-6 py-4">{ad.price}</td>
+
+                <td className="px-6 py-4">{ad.Price}</td>
                 <td className="px-6 py-4">
                   {/* Delete Button */}
                   <button

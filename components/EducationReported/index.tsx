@@ -783,7 +783,7 @@ const EducationReported = () => {
               type="text"
               id="table-search-users"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for users"
+              placeholder="Search..."
               value={searchTerm} // Bind input value to state
               onChange={(e) => setSearchTerm(e.target.value)} // Update state on input
             />
@@ -856,8 +856,7 @@ const EducationReported = () => {
                     </div>
                   </th>
                   <td className="px-6 py-4">{ad.description}</td>
-                  <td className="px-6 py-4">
-                    {" "}
+                  <td className="px-6 py-4 flex items-center gap-2">
                     <input
                       type="checkbox"
                       checked={ad.isActive}
@@ -866,7 +865,9 @@ const EducationReported = () => {
                         handleFirebaseToggle(ad.id, !!activeCheckboxes[ad.id]); // Update Firestore
                       }}
                     />
-                  </td>{" "}
+                    <span>{ad.isActive ? "Banned" : "Active"}</span>
+                  </td>
+
                   <td className="px-6 py-4">{ad.Price}</td>
                   <td className="px-6 py-4">
                     {/* Delete Button */}
