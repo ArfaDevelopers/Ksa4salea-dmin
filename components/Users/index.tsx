@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../Firebase/FirebaseConfig";
 import { FiSearch } from "react-icons/fi"; // Importing Search Icon
+import { useRouter } from "next/navigation";
 
 import {
   collection,
@@ -16,6 +17,8 @@ import SignupModal from "./SignupModal";
 import EditUserModal from "./EditUserModal";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
+import { TbEyeShare } from "react-icons/tb";
+
 interface User {
   id: string;
   isAdmin?: string; // optional because not all users have it
@@ -33,6 +36,7 @@ interface User {
 
 const Users = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
 
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -40,7 +44,7 @@ const Users = () => {
 
   const [users, setUsers] = useState<any[]>([]); // To store users data
   const [selectedUser, setSelectedUser] = useState<any>(null); // To store selected user data for editing
-  console.log(selectedUser, "user_______00");
+  console.log(users, "user_______00");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState("All");
   const [activeCheckboxes, setActiveCheckboxes] = useState<{
@@ -231,30 +235,46 @@ const Users = () => {
                         </div>
                       </div>
 
-                      <div className="flex space-x-3 justify-end">
-                        <button
-                          className="text-blue-500 hover:text-blue-700"
-                          // onClick={() => openEditModal(user)}
-                        >
-                          {/* <MdEdit size={22} /> */}
+                      <div className="flex items-center space-x-3 justify-end">
+                        {/* Eye Share Icon - Leftmost */}
+                        <button className="text-green-500 hover:text-green-700">
+                          <TbEyeShare
+                            onClick={() =>
+                              router.push(
+                                `/UserListing?userId=${
+                                  user.uid
+                                }&callingFrom=${"HEALTHCARE"}`
+                              )
+                            }
+                            size={22}
+                          />
+                        </button>
+
+                        {/* Checkbox */}
+                        <button className="text-blue-500 hover:text-blue-700">
                           <input
                             type="checkbox"
                             checked={user.isActive}
                             onChange={() => {
-                              handleToggle(user.id); // Toggle UI state
+                              handleToggle(user.id);
                               handleFirebaseToggle(
                                 user.id,
                                 !!activeCheckboxes[user.id]
-                              ); // Update Firestore
+                              );
                             }}
+                            className="w-5 h-5 accent-blue-500"
                           />
                         </button>
+
+                        {/* Edit Icon */}
                         <button
                           className="text-blue-500 hover:text-blue-700"
                           onClick={() => openEditModal(user)}
                         >
                           <MdEdit size={22} />
                         </button>
+
+                        {/* Delete Icon */}
                         <button
                           className="text-red-500 hover:text-red-700"
                           onClick={() => handleDelete(user)}

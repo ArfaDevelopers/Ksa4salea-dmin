@@ -2698,7 +2698,7 @@ const TRAVEL = () => {
                   className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
                   onClick={() =>
                     router.push(
-                      `/UserListing?userId=${ad.userId}&callingFrom=${ad.category}`
+                      `/UserListing?userId=${ad.userId}&callingFrom=${"TRAVEL"}`
                     )
                   }
                 >

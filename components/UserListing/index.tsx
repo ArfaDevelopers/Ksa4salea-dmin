@@ -310,6 +310,8 @@ const UserListing = () => {
   }>({});
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId");
+  const callingFrom = searchParams.get("callingFrom");
+  console.log("User ID from URL:callingFrom", callingFrom);
 
   useEffect(() => {
     if (userId) {
@@ -1909,16 +1911,19 @@ const UserListing = () => {
     });
   };
   const handleFirebaseToggle = async (id: string, currentState: boolean) => {
-    const docRef = doc(db, "Cars", id);
+    if (!callingFrom) {
+      console.error("No collection specified in callingFrom");
+      return;
+    }
+
+    const docRef = doc(db, callingFrom, id); // dynamic collection name
     try {
       await updateDoc(docRef, {
         isActive: !currentState,
       });
       MySwal.fire({
         title: "Status Changed!",
-        text: `Status updated to: ${
-          !currentState === true ? "Banned" : "Activated"
-        }`,
+        text: `Status updated to: ${!currentState ? "Banned" : "Activated"}`,
         icon: "success",
         timer: 1000,
       });
@@ -1946,7 +1951,7 @@ const UserListing = () => {
     const fetchAds = async () => {
       try {
         const response = await fetch(
-          `http://localhost:9002/api/user-data?userId=${userId}`
+          `https://ksaforsaleapis.vercel.app/api/user-data?userId=${userId}`
         );
         const data = await response.json();
         console.log(data, "data_____________");
