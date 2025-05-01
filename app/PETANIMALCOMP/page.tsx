@@ -7,7 +7,7 @@ import RealEstate from "@/components/RealEstate";
 import PETANIMALCOMP from "@/components/PETANIMALCOMP";
 
 export const metadata: Metadata = {
-  title: "Next.js Calender | TailAdmin - Next.js Dashboard Template",
+  title: "ksa4sale | Admin Dashboard PETANIMALCOMP",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };
