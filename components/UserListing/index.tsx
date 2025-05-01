@@ -9,10 +9,11 @@ import {
   deleteDoc,
   getDoc,
   updateDoc,
+  Timestamp,
 } from "firebase/firestore";
 import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
-import { formatDistanceToNow, parseISO, isValid } from "date-fns";
+import { formatDistanceToNow, parseISO, isValid, format } from "date-fns";
 import { useSearchParams } from "next/navigation";
 
 // For date picker
@@ -25,19 +26,62 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 // Register the English locale
 registerLocale("en-US", enUS);
+
+// interface User {
+//   id: string;
+//   isAdmin?: string; // optional because not all users have it
+//   photoURL?: string | null;
+//   createdAt: {
+//     seconds: number;
+//     nanoseconds: number;
+//   };
+interface User {
+  uid: string;
+  email: string;
+  emailVerified: boolean;
+  displayName: string;
+  photoURL: string;
+  disabled: boolean;
+  createdAt: {
+    seconds: number;
+    nanoseconds: number;
+  };
+  metadata: {
+    creationTime: string;
+    lastSignInTime: string;
+    lastRefreshTime: string;
+  };
+  tokensValidAfterTime: string;
+  providerData: {
+    uid: string;
+    displayName: string;
+    email: string;
+    photoURL: string;
+    providerId: string;
+  }[];
+}
+//   uid: string;
+//   phoneNumber: string;
+//   displayName?: string;
+//   fullName?: string;
+//   email: string;
+// }
 type Ad = {
   id: any; // Change from string to number
   link: string;
   timeAgo: string;
   title: string;
   description: string;
+  userId: string;
+  views: any;
   displayName: string;
-
+  createdAt: any;
   location: string;
-  isActive: boolean; // <- not string
+  isActive: any; // <- not string
 
   img: string;
   Price: string;
@@ -93,6 +137,8 @@ interface SelectedOption {
 
 const UserListing = () => {
   const MySwal = withReactContent(Swal);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -285,6 +331,7 @@ const UserListing = () => {
   const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
 
   const closeModal = () => setIsOpen(false);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
@@ -1941,12 +1988,40 @@ const UserListing = () => {
     } else if (option === "Unpaid") {
       setSelectedOption("Not Featured Ads");
       console.log("Filtering: Not Featured Ads");
+    } else if (option === "inactive") {
+      setSelectedOption("inactive");
+      console.log("Filtering: Not Featured Ads");
+    } else if (option === "true") {
+      setSelectedOption("true");
+      console.log("Filtering: Not Featured Ads");
     } else {
       setSelectedOption("All");
       console.log("Filtering: All Ads");
     }
   };
+  const [users, setUsers] = useState<User | null>(null);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(
+          `https://ksaforsaleapis.vercel.app/api/getAuthUserByUid?uid=${userId}`
+        );
+        const usersData = await response.json(); // assuming the API returns JSON
+        console.log(usersData, "usersData________");
+
+        // Optionally filter the users if needed
+        // const newData = usersData.filter((user) => user?.isAdmin === "Admin");
+        if (usersData && usersData.user) {
+          setUsers(usersData.user);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, [refresh]);
   useEffect(() => {
     const fetchAds = async () => {
       try {
@@ -2000,17 +2075,44 @@ const UserListing = () => {
           galleryImages: car.galleryImages || {},
           userId: car.userId || {},
           displayName: car.displayName || {},
+          createdAt: data.createdAt || {},
         }));
 
         console.log(adsList, "adsList from API");
 
+        let filteredAds = adsList;
+
+        // Filter by selectedDate if it's set
+        if (selectedDate) {
+          filteredAds = adsList.filter((ad) => {
+            const createdAtTimestamp = ad.createdAt;
+            if (createdAtTimestamp.seconds) {
+              const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
+                .toISOString()
+                .split("T")[0]; // Convert timestamp to date string (YYYY-MM-DD)
+              return createdAtDate === selectedDate; // Compare with selectedDate
+            }
+            return false;
+          });
+        }
+
+        // Apply other filters based on selectedOption
         if (selectedOption === "All") {
-          setAds(adsList);
+          setAds(filteredAds);
+        } else if (selectedOption === "true") {
+          const activeAds = filteredAds.filter((val) => val.isActive === true);
+          setAds(activeAds);
+        } else if (selectedOption === "inactive") {
+          const inactiveAds = filteredAds.filter(
+            (val) =>
+              !val.isActive || val.isActive === "" || val.isActive === null
+          );
+          setAds(inactiveAds);
         } else {
-          const filteredAds = adsList.filter(
+          const featuredAds = filteredAds.filter(
             (val) => val.FeaturedAds === selectedOption
           );
-          setAds(filteredAds);
+          setAds(featuredAds);
         }
 
         setLoading(false);
@@ -2021,8 +2123,10 @@ const UserListing = () => {
     };
 
     fetchAds();
-  }, [refresh, selectedOption, activeCheckboxes]);
-
+  }, [refresh, selectedOption, activeCheckboxes, selectedDate]);
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date);
+  };
   const handleDelete = async (ad: any) => {
     // Display confirmation dialog
     MySwal.fire({
@@ -2126,8 +2230,10 @@ const UserListing = () => {
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
-
-          FeaturedAds: "",
+          createdAt: adData.createdAt || "createdAt",
+          FeaturedAds: adData.FeaturedAds || "FeaturedAds",
+          userId: adData.userId || "userId",
+          views: adData.views || "views",
         };
         console.log(selectedAd, "selectedAd____________");
         console.log(adData, "selectedAd____________adData");
@@ -2490,6 +2596,32 @@ const UserListing = () => {
         Add New
       </button> */}
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        {/* <div className="flex justify-center items-center min-h-screen bg-gray-100"> */}
+        {/* <div className="bg-white shadow-xl rounded-2xl p-8 max-w-xl w-full"> */}
+        <div className="flex items-center space-x-6">
+          <img
+            src={users?.photoURL || "https://via.placeholder.com/100"}
+            alt="User Avatar"
+            className="w-28 h-28 rounded-full border-4 border-indigo-100 shadow-sm"
+          />
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-gray-800 mb-1">
+              {users?.displayName || "Unknown User"}
+            </h2>
+            <p className="text-gray-600 text-sm mb-2">
+              {users?.email || "No Email Provided"}
+            </p>
+            <p className="text-gray-500 text-xs">
+              Account created on:{" "}
+              {users?.metadata?.creationTime
+                ? new Date(users.metadata.creationTime).toLocaleDateString()
+                : "N/A"}
+            </p>
+          </div>
+        </div>
+        {/* </div> */}
+        {/* </div> */}
+
         <div className="flex space-x-4 items-center">
           <span className="text-gray-700 font-medium">Filter:</span>
 
@@ -2521,6 +2653,33 @@ const UserListing = () => {
               className="form-checkbox text-blue-600"
             />
             <span>Unpaid</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "true"}
+              onChange={() => handleCheckboxChange("true")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Banned</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "inactive"}
+              onChange={() => handleCheckboxChange("inactive")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Active</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="date"
+              className="ml-4 p-1 border border-gray-300 rounded"
+              onChange={(e) => handleDateChange(e.target.value)}
+            />
+            <span>Date Posted</span>
           </label>
         </div>
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
@@ -2640,24 +2799,31 @@ const UserListing = () => {
                 </div>
               </th>
               <th scope="col" className="px-6 py-3">
-                Title
+                Ad Title
               </th>
               <th scope="col" className="px-6 py-3">
-                Payment
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Time
+                Paid / Unpaid
               </th>
 
+              {/* <th scope="col" className="px-6 py-3">
+                Posted Date & Time
+              </th> */}
               <th scope="col" className="px-6 py-3">
-                Name
+                Ad Live Link
+              </th>
+              {/* <th scope="col" className="px-6 py-3">
+                Ad Views
+              </th> */}
+              <th scope="col" className="px-6 py-3">
+                User Profile
               </th>
               <th scope="col" className="px-6 py-3">
-                Status
+                Ad Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Price
               </th>
+
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
@@ -2697,22 +2863,53 @@ const UserListing = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">
-                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : ""}
+                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : "Unpaid"}
                 </td>
 
+                {/* <td className="px-6 py-4">
+                  {ad.createdAt &&
+                  ad.createdAt instanceof Timestamp &&
+                  isValid(ad.createdAt.toDate()) ? (
+                    <>
+                      {format(ad.createdAt.toDate(), "yyyy-MM-dd")}
+                      <br />
+                      {format(ad.createdAt.toDate(), "HH:mm:ss")}
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </td> */}
+
                 <td className="px-6 py-4">
-                  {ad.timeAgo && isValid(new Date(ad.timeAgo))
-                    ? formatDistanceToNow(new Date(ad.timeAgo), {
-                        addSuffix: true,
-                      })
-                    : "-"}
+                  {/* {ad.FeaturedAds === "Featured Ads" && ( */}
+                  <a
+                    href={`http://168.231.80.24:3002/#/Dynamic_Route?id=${ad.id}&callingFrom=SportGamesComp`}
+                    target="_blank"
+                    rel="noopener noreferrer" // Recommended for security
+                    className="text-blue-600 underline cursor-pointer"
+                  >
+                    Live
+                  </a>
+                  {/* )} */}
                 </td>
-                <td className="px-6 py-4">
+
+                {/* <td className="px-6 py-4">{ad.views}</td> */}
+                <td
+                  className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
+                  onClick={() =>
+                    router.push(
+                      `/UserListing?userId=${
+                        ad.userId
+                      }&callingFrom=${"SPORTSGAMESComp"}`
+                    )
+                  }
+                >
                   {typeof ad.displayName === "string" &&
                   ad.displayName.trim() !== ""
                     ? ad.displayName
                     : "-"}
                 </td>
+
                 <td className="px-6 py-4 flex items-center gap-2">
                   <input
                     type="checkbox"

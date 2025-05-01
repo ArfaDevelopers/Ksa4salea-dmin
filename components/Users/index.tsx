@@ -18,6 +18,7 @@ import EditUserModal from "./EditUserModal";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { TbEyeShare } from "react-icons/tb";
+import axios from "axios";
 
 interface User {
   id: string;
@@ -135,17 +136,40 @@ const Users = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
+      try {
+        // Fetch Firebase users
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const firebaseUsers = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as any),
+          source: "firebase",
+        }));
+        console.log(firebaseUsers, "firebaseUsers");
 
-      const usersData: User[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<User, "id">),
-      }));
+        // Fetch API users
+        const response = await axios.get(
+          "https://ksaforsaleapis.vercel.app/api/getAuthUsers"
+        );
+        console.log(response.data.users, "api response");
 
-      console.log(usersData, "usersData");
+        // If API response is an object, extract the array
+        const apiUsersRaw = Array.isArray(response.data.users)
+          ? response.data.users
+          : response.data?.data.users || []; // adjust based on actual response
 
-      // const newData = usersData.filter((user) => user?.isAdmin === "Admin");
-      setUsers(usersData);
+        const apiUsers = apiUsersRaw.map((user: any) => ({
+          ...user,
+          source: "api",
+        }));
+        console.log(apiUsers, "firebaseUsers___________");
+        console.log(firebaseUsers, "firebaseUsers___________12");
+        console.log(apiUsersRaw, "firebaseUsers___________1222");
+
+        // Merge and set state
+        setUsers([...firebaseUsers, ...apiUsers]);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
     };
 
     fetchUsers();
