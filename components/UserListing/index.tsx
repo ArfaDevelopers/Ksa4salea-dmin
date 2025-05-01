@@ -2478,7 +2478,7 @@ const UserListing = () => {
   return (
     <>
       {/* Add New Button */}
-      <button
+      {/* <button
         onClick={() => {
           setIsOpen(true);
           setSelectedAd(null);
@@ -2488,7 +2488,7 @@ const UserListing = () => {
         className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
       >
         Add New
-      </button>
+      </button> */}
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <div className="flex space-x-4 items-center">
           <span className="text-gray-700 font-medium">Filter:</span>

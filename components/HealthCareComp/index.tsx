@@ -33,7 +33,7 @@ import { formatDistanceToNow, isValid, format } from "date-fns";
 registerLocale("en-US", enUS);
 type Ad = {
   FeaturedAds: string;
-  isActive: boolean; // <- not string
+  isActive: any; // <- not string
 
   id: any; // Change from string to number
   link: string;
@@ -307,6 +307,8 @@ const HealthCareComp = () => {
   const closeModal = () => setIsOpen(false);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
   const [selectedOption, setSelectedOption] = useState("All");
+  const [selectedDate, setSelectedDate] = useState("");
+
   console.log("isFeatured______", selectedOption);
   const [isActive, setisActive] = useState(false); // ✅ boolean, not string
   const [activeCheckboxes, setActiveCheckboxes] = useState<{
@@ -348,10 +350,19 @@ const HealthCareComp = () => {
     } else if (option === "Unpaid") {
       setSelectedOption("Not Featured Ads");
       console.log("Filtering: Not Featured Ads");
+    } else if (option === "inactive") {
+      setSelectedOption("inactive");
+      console.log("Filtering: Not Featured Ads");
+    } else if (option === "true") {
+      setSelectedOption("true");
+      console.log("Filtering: Not Featured Ads");
     } else {
       setSelectedOption("All");
       console.log("Filtering: All Ads");
     }
+  };
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date);
   };
   const [subcategories, setSubcategories] = useState<
     { value: string; label: string }[]
@@ -2060,13 +2071,39 @@ const HealthCareComp = () => {
 
         console.log(adsList, "adsList with views");
 
+        let filteredAds = adsList;
+
+        // Filter by selectedDate if it's set
+        if (selectedDate) {
+          filteredAds = adsList.filter((ad) => {
+            const createdAtTimestamp = ad.createdAt;
+            if (createdAtTimestamp.seconds) {
+              const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
+                .toISOString()
+                .split("T")[0]; // Convert timestamp to date string (YYYY-MM-DD)
+              return createdAtDate === selectedDate; // Compare with selectedDate
+            }
+            return false;
+          });
+        }
+
+        // Apply other filters based on selectedOption
         if (selectedOption === "All") {
-          setAds(adsList);
+          setAds(filteredAds);
+        } else if (selectedOption === "true") {
+          const activeAds = filteredAds.filter((val) => val.isActive === true);
+          setAds(activeAds);
+        } else if (selectedOption === "inactive") {
+          const inactiveAds = filteredAds.filter(
+            (val) =>
+              !val.isActive || val.isActive === "" || val.isActive === null
+          );
+          setAds(inactiveAds);
         } else {
-          const filteredAds = adsList.filter(
+          const featuredAds = filteredAds.filter(
             (val) => val.FeaturedAds === selectedOption
           );
-          setAds(filteredAds);
+          setAds(featuredAds);
         }
 
         setLoading(false);
@@ -2077,7 +2114,7 @@ const HealthCareComp = () => {
     };
 
     fetchAds();
-  }, [refresh, selectedOption, activeCheckboxes]);
+  }, [refresh, selectedOption, activeCheckboxes, selectedDate]);
 
   // useEffect(() => {
   //   const fetchAds = async () => {
@@ -2607,6 +2644,33 @@ const HealthCareComp = () => {
               className="form-checkbox text-blue-600"
             />
             <span>Unpaid</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "true"}
+              onChange={() => handleCheckboxChange("true")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Banned</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "inactive"}
+              onChange={() => handleCheckboxChange("inactive")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Active</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="date"
+              className="ml-4 p-1 border border-gray-300 rounded"
+              onChange={(e) => handleDateChange(e.target.value)}
+            />
+            <span>Date Posted</span>
           </label>
         </div>
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">

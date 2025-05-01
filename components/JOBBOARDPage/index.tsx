@@ -41,7 +41,7 @@ type Ad = {
   displayName: string;
   category: string;
 
-  isActive: boolean;
+  isActive: any;
   timeAgo: string;
   title: string;
   description: string;
@@ -310,7 +310,9 @@ const JOBBOARDPage = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [selectedOption, setSelectedOption] = useState("All");
   console.log("isFeatured______", selectedOption);
-  const [isActive, setisActive] = useState(false); // ✅ boolean, not string
+  const [isActive, setisActive] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  // ✅ boolean, not string
   const [activeCheckboxes, setActiveCheckboxes] = useState<{
     [key: number]: boolean;
   }>({});
@@ -2059,14 +2061,39 @@ const JOBBOARDPage = () => {
         await setDoc(viewsDocRef, { products: updatedViews }, { merge: true });
 
         console.log(adsList, "adsList with views");
+        let filteredAds = adsList;
 
+        // Filter by selectedDate if it's set
+        if (selectedDate) {
+          filteredAds = adsList.filter((ad) => {
+            const createdAtTimestamp = ad.createdAt;
+            if (createdAtTimestamp.seconds) {
+              const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
+                .toISOString()
+                .split("T")[0]; // Convert timestamp to date string (YYYY-MM-DD)
+              return createdAtDate === selectedDate; // Compare with selectedDate
+            }
+            return false;
+          });
+        }
+
+        // Apply other filters based on selectedOption
         if (selectedOption === "All") {
-          setAds(adsList);
+          setAds(filteredAds);
+        } else if (selectedOption === "true") {
+          const activeAds = filteredAds.filter((val) => val.isActive === true);
+          setAds(activeAds);
+        } else if (selectedOption === "inactive") {
+          const inactiveAds = filteredAds.filter(
+            (val) =>
+              !val.isActive || val.isActive === "" || val.isActive === null
+          );
+          setAds(inactiveAds);
         } else {
-          const filteredAds = adsList.filter(
+          const featuredAds = filteredAds.filter(
             (val) => val.FeaturedAds === selectedOption
           );
-          setAds(filteredAds);
+          setAds(featuredAds);
         }
 
         setLoading(false);
@@ -2077,7 +2104,10 @@ const JOBBOARDPage = () => {
     };
 
     fetchAds();
-  }, [refresh, selectedOption, activeCheckboxes]);
+  }, [refresh, selectedOption, activeCheckboxes, selectedDate]);
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date);
+  };
   // useEffect(() => {
   //   const fetchAds = async () => {
   //     try {
@@ -2625,6 +2655,33 @@ const JOBBOARDPage = () => {
               className="form-checkbox text-blue-600"
             />
             <span>Unpaid</span>
+          </label>
+
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "true"}
+              onChange={() => handleCheckboxChange("true")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Banned</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "inactive"}
+              onChange={() => handleCheckboxChange("inactive")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Active</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="date"
+              className="ml-4 p-1 border border-gray-300 rounded"
+              onChange={(e) => handleDateChange(e.target.value)}
+            />
+            <span>Date Posted</span>
           </label>
         </div>
 
