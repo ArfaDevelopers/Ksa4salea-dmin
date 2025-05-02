@@ -1,19 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { db } from "../Firebase/FirebaseConfig";
+import { db } from "./../Firebase/FirebaseConfig";
+
 import {
   addDoc,
+  Timestamp,
   collection,
   getDocs,
   doc,
   deleteDoc,
+  setDoc,
   getDoc,
   updateDoc,
-  Timestamp,
-  setDoc,
 } from "firebase/firestore";
 import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
+import { formatDistanceToNow, parseISO, isValid, format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 // For date picker
@@ -22,33 +24,29 @@ import { enUS } from "date-fns/locale"; // Import English locale
 import "react-datepicker/dist/react-datepicker.css";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { MdEdit } from "react-icons/md";
-
 // Cloudinary upload
 import axios from "axios";
-import { formatDistanceToNow, isValid, format } from "date-fns";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { MdEdit } from "react-icons/md";
 
 // Register the English locale
 registerLocale("en-US", enUS);
 type Ad = {
-  FeaturedAds: string;
-  isActive: any; // <- not string
-
   id: any; // Change from string to number
   link: string;
-  views: any;
-
-  createdAt: any;
-
-  category: string;
   userId: string;
-  displayName: string;
+  category: string;
+  views: string;
+  createdAt: any;
 
   timeAgo: string;
   title: string;
   description: string;
+  displayName: string;
+
   location: string;
+  isActive: any; // <- not string
+
   img: string;
   Price: string;
   DrivenKm: any;
@@ -71,6 +69,8 @@ type Ad = {
   assembly: string;
   bodyType: string;
   condition: string;
+  FeaturedAds: string;
+
   engineCapacity: string;
   isFeatured: string;
   model: string;
@@ -83,17 +83,30 @@ type Ad = {
   FuelType: any;
   galleryImages: any;
 };
-const HealthCareComp = () => {
-  const MySwal = withReactContent(Swal);
-  const router = useRouter();
+const saudiCities = City.getCitiesOfCountry("SA"); // 'SA' = Saudi Arabia
 
+interface Subcategory {
+  name: string;
+}
+
+interface Category {
+  name: string;
+  subcategories: Subcategory[];
+}
+
+interface SelectedOption {
+  value: string;
+  label: string;
+}
+
+const Cars = () => {
+  const MySwal = withReactContent(Swal);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-
     category: "",
-    userId: "",
     displayName: "",
+    createdAt: "",
 
     kmDriven: "",
     Transmission: "",
@@ -229,6 +242,8 @@ const HealthCareComp = () => {
     googlePlus: "http://google.com",
     instagram: "http://instagram.com",
   });
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
@@ -239,14 +254,18 @@ const HealthCareComp = () => {
   const [description, setDescription] = useState("");
   const [timeAgo, setTimeAgo] = useState<Date | null>(new Date());
   const [imageFiles, setImageFiles] = useState(Array(6).fill(null)); // Array to hold selected image files
+  const [registeredCity, setRegisteredCity] = useState("Un-Registered");
   const [assembly, setAssembly] = useState("Imported");
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [condition, setCondition] = useState("Used");
+  const [purpose, setPurpose] = useState("Sell");
   const [PhoneNumber, setPhoneNumber] = useState("");
 
   const [model, setModel] = useState("2022");
+  const [DrivenKm, setDrivenKm] = useState("");
 
   const [whatsapp, setWhatsapp] = useState("03189391781");
-  const [Type, setType] = useState("");
+  const [type, setType] = useState("Sale");
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
 
@@ -255,31 +274,6 @@ const HealthCareComp = () => {
     setCities(saudiCities);
   }, []);
   const [Registeredin, setRegisteredin] = useState("");
-  const [OperatingSystem, setOperatingSystem] = useState("");
-  const [MeasurementRange, setMeasurementRange] = useState("");
-  const [Features, setFeatures] = useState("");
-  const [Accuracy, setAccuracy] = useState("");
-  const [CuffSize, setCuffSize] = useState("");
-  const [DisplayType, setDisplayType] = useState("");
-  const [BatteryType, setBatteryType] = useState("");
-  const [Compatibility, setCompatibility] = useState("");
-  const [StorageCapacity, setStorageCapacity] = useState("");
-  const [MeasurementUnits, setMeasurementUnits] = useState("");
-  const [SpeedofMeasurement, setSpeedofMeasurement] = useState("");
-  const [SellerType, setSellerType] = useState("");
-
-  const [ScreenSize, setScreenSize] = useState("");
-
-  const [Processor, setProcessor] = useState("");
-  const [RAM, setRAM] = useState("");
-  const [StorageType, setStorageType] = useState("");
-  const [Storagecapacity, setStoragecapacity] = useState("");
-  const [GraphicsCard, setGraphicsCard] = useState("");
-  const [BatteryLife, setBatteryLife] = useState("");
-  const [DisplayQuality, setDisplayQuality] = useState("");
-  const [Connectivity, setConnectivity] = useState("");
-  const [SpecialFeatures, setSpecialFeatures] = useState("");
-
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -288,71 +282,30 @@ const HealthCareComp = () => {
   const [selectedAssembly, setSelectedAssembly] = useState("");
   const [selectedBodyType, setSelectedBodyType] = useState("");
   const [selectedNumberOfDoors, setSelectedNumberOfDoors] = useState("");
+  const [selectedSeatingCapacity, setSelectedSeatingCapacity] = useState("");
   const [selectedModalCategory, setSelectedModalCategory] = useState("");
   const [selectedSellerType, setSelectedSellerType] = useState("");
-  const [Mileage, setMileage] = useState("");
-  console.log(OperatingSystem, "OperatingSystem_______"); // Log selected ad type to the console
-
   const [selectedPictureAvailability, setSelectedPictureAvailability] =
     useState("");
   const [selectedVideoAvailability, setSelectedVideoAvailability] =
     useState("");
+  const [selectedFuelType, setSelectedFuelType] = useState("");
   const [selectedAdType, setSelectedAdType] = useState("");
-
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [isOpen, setIsOpen] = useState(false);
-  const closeModal = () => setIsOpen(false);
-  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
-  const [selectedOption, setSelectedOption] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
 
+  const closeModal = () => setIsOpen(false);
+  const [selectedAd, setSelectedAd] = useState<Ad | null>(null); // Holds the selected ad
+  const [selectedOption, setSelectedOption] = useState("All");
   console.log("isFeatured______", selectedOption);
   const [isActive, setisActive] = useState(false); // ✅ boolean, not string
   const [activeCheckboxes, setActiveCheckboxes] = useState<{
     [key: number]: boolean;
   }>({});
-
-  const handleToggle = (id: number) => {
-    setActiveCheckboxes((prev) => {
-      const newState = { ...prev, [id]: !prev[id] };
-      if (newState[id]) {
-        console.log("Checked Ad ID:", id);
-      }
-      return newState;
-    });
-  };
-  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
-    const docRef = doc(db, "HEALTHCARE", id);
-    try {
-      await updateDoc(docRef, {
-        isActive: !currentState,
-      });
-      MySwal.fire({
-        title: "Status Changed!",
-        text: `Status updated to: ${
-          !currentState === true ? "Banned" : "Activated"
-        }`,
-        icon: "success",
-        timer: 1000,
-      });
-      console.log(`isActive updated to: ${!currentState}`);
-    } catch (error) {
-      console.error("Error updating document:", error);
-    }
-  };
-  const handleCheckboxChange = (option: string) => {
-    setSelectedOption((prevSelected) =>
-      prevSelected.includes(option)
-        ? prevSelected.filter((item) => item !== option)
-        : [...prevSelected, option]
-    );
-  };
-  const handleDateChange = (date: string) => {
-    setSelectedDate(date);
-  };
   const [subcategories, setSubcategories] = useState<
     { value: string; label: string }[]
   >([]);
@@ -1617,7 +1570,6 @@ const HealthCareComp = () => {
       NestedSubCategory: selectedOption.value,
     }));
   };
-
   const AccountsSubscriptions = [
     { value: "Skincare", label: "Skincare" },
     { value: "Hair Care", label: "Hair Care" },
@@ -1951,42 +1903,62 @@ const HealthCareComp = () => {
 
     { value: "Agricultural Equipment", label: "Agricultural Equipment" },
   ];
+  const handleToggle = (id: number) => {
+    setActiveCheckboxes((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      if (newState[id]) {
+        console.log("Checked Ad ID:", id);
+      }
+      return newState;
+    });
+  };
+  const handleFirebaseToggle = async (id: string, currentState: boolean) => {
+    const docRef = doc(db, "Cars", id);
+    try {
+      await updateDoc(docRef, {
+        isActive: !currentState,
+      });
+      MySwal.fire({
+        title: "Status Changed!",
+        text: `Status updated to: ${
+          !currentState === true ? "Banned" : "Activated"
+        }`,
+        icon: "success",
+        timer: 1000,
+      });
+      setRefresh(!refresh);
+      console.log(`isActive updated to: ${!currentState}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  };
 
-  const resetForm = () => {
-    setDescription("");
-    setLink("");
-    setManufactureYear("");
-    setAssembly("");
-    setTimeAgo(new Date());
-
-    setModel("");
-    setPhoneNumber("");
-    setType("");
-    setPrice("");
-    setLocation("");
-    setName("");
-    setSelectedAd(null); // Assuming it's an object or string
-    setTrustedCars("");
-    setSelectedCity("");
-    setSelectedEngineType("");
-    setSelectedColor("");
-    setSelectedTransmission("");
-    setSelectedVideoAvailability("");
-    setSelectedPictureAvailability("");
-    setSelectedSellerType("");
-    setSelectedModalCategory("");
-    setSelectedNumberOfDoors("");
-    setSelectedBodyType("");
-    setSelectedAssembly("");
+  const handleCheckboxChange = (option: string) => {
+    if (option === "Paid") {
+      setSelectedOption("Featured Ads");
+      console.log("Filtering: Featured Ads");
+    } else if (option === "Unpaid") {
+      setSelectedOption("Not Featured Ads");
+      console.log("Filtering: Not Featured Ads");
+    } else if (option === "inactive") {
+      setSelectedOption("inactive");
+      console.log("Filtering: Not Featured Ads");
+    } else if (option === "true") {
+      setSelectedOption("true");
+      console.log("Filtering: Not Featured Ads");
+    } else {
+      setSelectedOption("All");
+      console.log("Filtering: All Ads");
+    }
   };
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const adsCollection = collection(db, "HEALTHCARE");
+        const adsCollection = collection(db, "Cars");
         const adsSnapshot = await getDocs(adsCollection);
 
         // Fetch views
-        const viewsDocRef = doc(db, "views", "healthcare");
+        const viewsDocRef = doc(db, "views", "cars");
         const viewsDocSnap = await getDoc(viewsDocRef);
         const productViews = viewsDocSnap.exists()
           ? viewsDocSnap.data().products || {}
@@ -1999,7 +1971,7 @@ const HealthCareComp = () => {
             const data = docSnap.data() || {};
             const id = docSnap.id;
 
-            // 🔼 Increment the view count in memory
+            // Increment the view count in memory
             updatedViews[id] = (updatedViews[id] || 0) + 1;
 
             return {
@@ -2055,53 +2027,45 @@ const HealthCareComp = () => {
           })
         );
 
-        // 🔥 Save updated views back to Firestore
+        // Save updated views back to Firestore
         await setDoc(viewsDocRef, { products: updatedViews }, { merge: true });
 
         console.log(adsList, "adsList with views");
+        console.log(selectedDate, "adsList with views______Date");
+
         let filteredAds = adsList;
 
-        // Filter by selectedDate
+        // Filter by selectedDate if it's set
         if (selectedDate) {
-          filteredAds = filteredAds.filter((ad) => {
+          filteredAds = adsList.filter((ad) => {
             const createdAtTimestamp = ad.createdAt;
             if (createdAtTimestamp.seconds) {
               const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
                 .toISOString()
-                .split("T")[0];
-              return createdAtDate === selectedDate;
+                .split("T")[0]; // Convert timestamp to date string (YYYY-MM-DD)
+              return createdAtDate === selectedDate; // Compare with selectedDate
             }
             return false;
           });
         }
 
-        // If "All" is selected, skip filtering
-        if (selectedOption.includes("All")) {
+        // Apply other filters based on selectedOption
+        if (selectedOption === "All") {
           setAds(filteredAds);
+        } else if (selectedOption === "true") {
+          const activeAds = filteredAds.filter((val) => val.isActive === true);
+          setAds(activeAds);
+        } else if (selectedOption === "inactive") {
+          const inactiveAds = filteredAds.filter(
+            (val) =>
+              !val.isActive || val.isActive === "" || val.isActive === null
+          );
+          setAds(inactiveAds);
         } else {
-          let tempAds = filteredAds;
-
-          if (selectedOption.includes("true")) {
-            tempAds = tempAds.filter((ad) => ad.isActive === true);
-          }
-
-          if (selectedOption.includes("inactive")) {
-            tempAds = tempAds.filter(
-              (ad) => !ad.isActive || ad.isActive === "" || ad.isActive === null
-            );
-          }
-
-          if (selectedOption.includes("Paid")) {
-            tempAds = tempAds.filter((ad) => ad.FeaturedAds === "Featured Ads");
-          }
-
-          if (selectedOption.includes("Unpaid")) {
-            tempAds = tempAds.filter(
-              (ad) => ad.FeaturedAds === "Not Featured Ads"
-            );
-          }
-
-          setAds(tempAds);
+          const featuredAds = filteredAds.filter(
+            (val) => val.FeaturedAds === selectedOption
+          );
+          setAds(featuredAds);
         }
 
         setLoading(false);
@@ -2114,116 +2078,54 @@ const HealthCareComp = () => {
     fetchAds();
   }, [refresh, selectedOption, activeCheckboxes, selectedDate]);
 
-  // useEffect(() => {
-  //   const fetchAds = async () => {
-  //     try {
-  //       const adsCollection = collection(db, "HEALTHCARE"); // Get reference to the 'Cars' collection
-  //       const adsSnapshot = await getDocs(adsCollection); // Fetch the data
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date);
+  };
+  const handleDelete = async (ad: any) => {
+    // Display confirmation dialog
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        // Proceed with deletion
+        MySwal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+          timer: 1000,
+        });
 
-  //       const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
-  //         const data = doc.data() || {}; // Ensure data exists
-
-  //         return {
-  //           id: doc.id,
-  //           link: data.link || "",
-  //           timeAgo: data.timeAgo || "",
-  //           title: data.title || "",
-  //           description: data.description || "",
-  //           location: data.location || "",
-  //           img: data.img || "",
-  //           Price: data.Price || "",
-  //           Assembly: data.Assembly || "",
-  //           BodyType: data.BodyType || "", // Fixed typo here
-  //           Color: data.Color || "",
-  //           DrivenKm: data.DrivenKm || "",
-  //           EngineCapacity: data.EngineCapacity || "",
-  //           City: data.City || "",
-  // PictureAvailability: data.PictureAvailability || "",
-  //           EngineType: data.EngineType || "",
-  //           ManufactureYear: data.ManufactureYear || "",
-  //           ModalCategory: data.ModalCategory || "",
-  //           CoNumberOfDoorsor: data.NumberOfDoors || "", // Ensure correct property name
-  //           PhoneNumber: data.PhoneNumber || "",
-  //           Registeredin: data.Registeredin || "",
-  //           SeatingCapacity: data.SeatingCapacity || "",
-  //           SellerType: data.SellerType || "",
-  //           Transmission: data.Transmission || "",
-  //           TrustedCars: data.TrustedCars || "",
-  //           VideoAvailability: data.VideoAvailability || "",
-  //           assembly: data.assembly || "",
-  //           bodyType: data.bodyType || "",
-  //           condition: data.condition || "",
-  //           engineCapacity: data.engineCapacity || "",
-  //           isFeatured: data.isFeatured || "",
-  //           model: data.model || "",
-  //           purpose: data.purpose || "",
-  //           registeredCity: data.registeredCity || "",
-  //           sellerType: data.sellerType || "",
-  //           type: data.type || "",
-  //           whatsapp: data.whatsapp || "",
-  //           AdType: data.AdType || "",
-  //           FeaturedAds: data.FeaturedAds || "",
-  //           isActive: data.isActive || "",
-
-  //           FuelType: data.FuelType || "",
-  //           galleryImages: data.galleryImages || "",
-
-  //           createdAt: data.createdAt || "",
-
-  //           category: data.category || "",
-  //           userId: data.userId || "",
-  //           displayName: data.displayName || "",
-  //         };
-  //       });
-
-  //       console.log(adsList, "adsList___________adsList");
-
-  //       console.log(adsList, "adsList___________adsList");
-  //       if (selectedOption === "All") {
-  //         setAds(adsList); // Set the state with the ads data
-  //       } else {
-  //         var newad = adsList.filter(
-  //           (val) => val.FeaturedAds === selectedOption
-  //         );
-  //         setAds(newad); // Set the state with the ads data
-  //       }
-  //       setLoading(false); // Stop loading when data is fetched
-  //     } catch (error) {
-  //       console.error("Error fetching ads:", error);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchAds();
-  // }, [refresh, selectedOption]);
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        setLoading(true); // Show spinner
-        const carsCollectionRef = collection(db, "HEALTHCARE");
-        const querySnapshot = await getDocs(carsCollectionRef);
-        const carsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        console.log(carsData, "carsData_________HEALTHCARE");
-      } catch (error) {
-        console.error("Error getting cars:", error);
+        // Delete the ad from Firestore (Firebase)
+        try {
+          // Delete the document from Firestore using the ad's id
+          await deleteDoc(doc(db, "Cars", ad.id)); // Delete document by id
+          console.log("Ad deleted from Firestore:", ad.id);
+          setRefresh(!refresh);
+          // Optionally, update the state or re-fetch the data after deletion
+          // For example, you can call a function to refetch ads here
+        } catch (error) {
+          console.error("Error deleting ad from Firestore:", error);
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        MySwal.fire({
+          title: "Cancelled",
+          text: "Your file is safe :)",
+          icon: "error",
+          timer: 1000,
+        });
       }
-    };
-
-    fetchCars();
-  }, []);
-  const filteredAds = ads.filter(
-    (ad) =>
-      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
-      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
-  );
+    });
+  };
   const handleEditClick = async (id: any) => {
     console.log(id, "WhatWhat");
     try {
-      const adDoc = await getDoc(doc(db, "HEALTHCARE", id));
+      const adDoc = await getDoc(doc(db, "Cars", id));
       if (adDoc.exists()) {
         const adData = adDoc.data();
         setDescription(adData.description);
@@ -2233,7 +2135,7 @@ const HealthCareComp = () => {
         setFormData((prev) => ({
           ...prev,
           SubCategory: adData.SubCategory || "",
-          category: adData.category || "",
+          Category: adData.Category || "",
           NestedSubCategory: adData.NestedSubCategory || "",
         }));
 
@@ -2244,6 +2146,8 @@ const HealthCareComp = () => {
           timeAgo: adData.timeAgo || new Date().toISOString(),
           title: adData.title || "Untitled",
           description: adData.description || "No description",
+          displayName: adData.displayName || "No displayName",
+
           location: adData.location || "Unknown",
           img: adData.img || "",
           Price: adData.Price || "0",
@@ -2280,33 +2184,33 @@ const HealthCareComp = () => {
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
           isActive: adData.isActive || "isActive",
-
-          category: adData.category || "category",
-          userId: adData.userId || "userId",
-          displayName: adData.displayName || "displayName",
-          createdAt: adData.createdAt || "createdAt",
           FeaturedAds: adData.FeaturedAds || "FeaturedAds",
+          userId: adData.userId || "userId",
+          category: adData.category || "category",
           views: adData.views || "views",
+          createdAt: adData.createdAt || "createdAt",
         };
+        console.log(selectedAd, "selectedAd____________");
+        console.log(adData, "selectedAd____________adData");
+
         const images = Array<string | null>(6).fill(null);
         selectedAd.galleryImages.forEach((url: string, idx: number) => {
           images[idx] = url;
         });
-        console.log(selectedAd, "selectedAd____________");
-        console.log(adData, "selectedAd____________adData");
+
         setImageUrls(images);
         setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
         setManufactureYear(selectedAd.ManufactureYear);
-        // setCondition(selectedAd.condition);
+        setCondition(selectedAd.condition);
         setAssembly(selectedAd.assembly);
-        // setRegisteredCity(selectedAd.registeredCity);
+        setRegisteredCity(selectedAd.registeredCity);
 
-        // setDrivenKm(selectedAd.DrivenKm);
+        setDrivenKm(selectedAd.DrivenKm);
         setModel(selectedAd.model);
         setPhoneNumber(selectedAd.PhoneNumber);
-        // setPurpose(selectedAd.purpose);
+        setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
         setPrice(selectedAd.Price);
@@ -2323,10 +2227,11 @@ const HealthCareComp = () => {
         setSelectedPictureAvailability(selectedAd.PictureAvailability); // Pass a valid Ad object to setSelectedAd
         setSelectedSellerType(selectedAd.sellerType); // Pass a valid Ad object to setSelectedAd
         setSelectedModalCategory(selectedAd.ModalCategory); // Pass a valid Ad object to setSelectedAd
+        setSelectedSeatingCapacity(selectedAd.SeatingCapacity); // Pass a valid Ad object to setSelectedAd
         setSelectedNumberOfDoors(selectedAd.CoNumberOfDoorsor); // Pass a valid Ad object to setSelectedAd
         setSelectedBodyType(selectedAd.bodyType);
         setSelectedAssembly(selectedAd.assembly);
-        // setSelectedFuelType(selectedAd.FuelType);
+        setSelectedFuelType(selectedAd.FuelType);
 
         // Pass a valid Ad object to setSelectedAd
         setIsOpen(true);
@@ -2338,46 +2243,54 @@ const HealthCareComp = () => {
       console.error("Error fetching ad by ID:", error);
     }
   };
-  const handleDelete = async (ad: any) => {
-    // Display confirmation dialog
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        // Proceed with deletion
-        MySwal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-          timer: 1000,
-        });
+  // const resetForm = () => {
+  //   setLocation("");
+  //   ("");
+  //   setLink("");
+  //   setDescription("");
 
-        // Delete the ad from Firestore (Firebase)
-        try {
-          // Delete the document from Firestore using the ad's id
-          await deleteDoc(doc(db, "HEALTHCARE", ad.id)); // Delete document by id
-          console.log("Ad deleted from Firestore:", ad.id);
-          setRefresh(!refresh);
-          // Optionally, update the state or re-fetch the data after deletion
-          // For example, you can call a function to refetch ads here
-        } catch (error) {
-          console.error("Error deleting ad from Firestore:", error);
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        MySwal.fire({
-          title: "Cancelled",
-          text: "Your file is safe :)",
-          icon: "error",
-          timer: 1000,
-        });
-      }
-    });
+  //   // setIsOpen(false);
+  // };
+  const resetForm = () => {
+    setDescription("");
+    setLink("");
+    setManufactureYear("");
+    setCondition("");
+    setAssembly("");
+    setTimeAgo(new Date());
+
+    setRegisteredCity("");
+    setDrivenKm("");
+    setModel("");
+    setPhoneNumber("");
+    setPurpose("");
+    setType("");
+    setPrice("");
+    setLocation("");
+    setName("");
+    setSelectedAd(null); // Assuming it's an object or string
+    setTrustedCars("");
+    setSelectedCity("");
+    setSelectedEngineType("");
+    setSelectedColor("");
+    setSelectedTransmission("");
+    setSelectedVideoAvailability("");
+    setSelectedPictureAvailability("");
+    setSelectedSellerType("");
+    setSelectedModalCategory("");
+    setSelectedSeatingCapacity("");
+    setSelectedNumberOfDoors("");
+    setSelectedBodyType("");
+    setSelectedAssembly("");
+    setSelectedFuelType("");
+  };
+
+  // Call `resetForm` when you need to reset all fields
+
+  const handleFuelTypeChange = (event: any) => {
+    const fuelType = event.target.value;
+    setSelectedFuelType(fuelType);
+    console.log(fuelType); // Log selected fuel type to the console
   };
   const handleAdTypeChange = (event: any) => {
     const adType = event.target.value;
@@ -2405,7 +2318,11 @@ const HealthCareComp = () => {
     setSelectedModalCategory(modalCategory);
     console.log(modalCategory); // Log selected modal category to the console
   };
-
+  const handleSeatingCapacityChange = (event: any) => {
+    const seatingCapacity = event.target.value;
+    setSelectedSeatingCapacity(seatingCapacity);
+    console.log(seatingCapacity); // Log selected seating capacity to the console
+  };
   const handleNumberOfDoorsChange = (event: any) => {
     const numberOfDoors = event.target.value;
     setSelectedNumberOfDoors(numberOfDoors);
@@ -2457,11 +2374,11 @@ const HealthCareComp = () => {
     setSelectedCity(city);
     console.log(city, "city___________"); // Log selected city to the console
   };
-  const [selectedStates, setSelectedStates] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   const handleLocationChange = (event: any) => {
     const location = event.target.value;
-    setSelectedStates(location);
+    setSelectedLocation(location);
     console.log(location); // Log selected location to the console
   };
   const [selectedCarBrand, setSelectedCarBrand] = useState("");
@@ -2503,6 +2420,35 @@ const HealthCareComp = () => {
       handleImageUpload(file, index); // Upload the selected file
     }
   };
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true); // Show spinner
+        const carsCollectionRef = collection(db, "Cars");
+        const querySnapshot = await getDocs(carsCollectionRef);
+        const carsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        // 👇 Log all userIds
+        // carsData.forEach((car) => {
+        //   console.log("carsData_________ ID:", car.userId);
+        // });
+        console.log(carsData, "carsData_________1122");
+      } catch (error) {
+        console.error("Error getting cars:", error);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  const filteredAds = ads.filter(
+    (ad) =>
+      ad.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by title
+      ad.description.toLowerCase().includes(searchTerm.toLowerCase()) // Search by description
+  );
+  console.log(filteredAds, "carsData_________filteredAds");
 
   // Function to add a new car to Firestore
   const handleAddCar = async (e: any) => {
@@ -2515,60 +2461,53 @@ const HealthCareComp = () => {
 
     try {
       // Get a reference to the 'carData' collection
-      const carsCollection = collection(db, "HEALTHCARE");
+      const carsCollection = collection(db, "Cars");
 
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
-        title: name,
+        Title: name,
         img: imageUrls[0], // img1
         img2: imageUrls[1], // img2
         img3: imageUrls[2], // img3
         img4: imageUrls[3], // img4
         img5: imageUrls[4], // img5
         img6: imageUrls[5], // img6
-        location: location,
-        price: price,
-        category: Category1,
-
-        RAM: RAM,
-        Brand: selectedCarBrand,
-        Accuracy: Accuracy,
-        StorageCapacity: StorageCapacity,
-        SpeedofMeasurement: SpeedofMeasurement,
-        Features: Features,
-        CuffSize: CuffSize,
-        MeasurementRange: MeasurementRange,
-        BatteryLife: BatteryLife,
-        StorageType: StorageType,
-        Storagecapacity: Storagecapacity,
-        GraphicsCard: GraphicsCard,
-        DisplayQuality: DisplayQuality,
-        Connectivity: Connectivity,
-        SpecialFeatures: SpecialFeatures,
-        BatteryType: BatteryType,
-        DisplayType: DisplayType,
-        MeasurementUnits: MeasurementUnits,
-        Compatibility: Compatibility,
-        SellerType: SellerType,
-        link: link,
+        Location: location,
+        Price: price,
+        Link: link,
         timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
-        States: selectedStates,
-        description: description,
-        sellerType: selectedSellerType,
-        engineCapacity: selectedEngineCapacity,
-        bodyType: selectedBodyType,
-        lastUpdated: lastUpdated.toISOString(),
-        model: model,
+        category: Category1,
+        NestedSubCategory: nestedSubCategory,
+        Description: description,
+        // displayName: displayName,
+
+        registeredCity: registeredCity,
+        assembly: assembly,
+        LastUpdated: lastUpdated.toISOString(),
+        Condition: condition,
+        Purpose: purpose,
+        Model: model,
         whatsapp: whatsapp,
-        Type: Type,
+        type: type,
         isFeatured: selectedAdType,
         VideoAvailability: selectedVideoAvailability,
         PictureAvailability: selectedPictureAvailability,
+        FuelType: selectedFuelType,
         AdType: selectedAdType,
+        ModalCategory: selectedModalCategory,
+        SellerType: selectedSellerType,
+        NumberOfDoors: selectedNumberOfDoors,
+        SeatingCapacity: selectedSeatingCapacity,
         Assembly: selectedAssembly,
         BodyType: selectedBodyType,
+        Color: selectedColor,
+        EngineType: selectedEngineType,
+        EngineCapacity: selectedEngineCapacity,
+        Transmission: selectedTransmission,
+        TrustedCars: TrustedCars,
         Registeredin: Registeredin,
         City: selectedCity,
+        DrivenKm: DrivenKm,
         PhoneNumber: PhoneNumber,
 
         ManufactureYear: ManufactureYear,
@@ -2599,6 +2538,7 @@ const HealthCareComp = () => {
 
   return (
     <>
+      {/* Add New Button */}
       <button
         onClick={() => {
           setIsOpen(true);
@@ -2617,7 +2557,7 @@ const HealthCareComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("All")}
+              checked={selectedOption === "All"}
               onChange={() => handleCheckboxChange("All")}
               className="form-checkbox text-blue-600"
             />
@@ -2627,7 +2567,7 @@ const HealthCareComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("Paid")}
+              checked={selectedOption === "Featured Ads"}
               onChange={() => handleCheckboxChange("Paid")}
               className="form-checkbox text-blue-600"
             />
@@ -2637,7 +2577,7 @@ const HealthCareComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("Unpaid")}
+              checked={selectedOption === "Not Featured Ads"}
               onChange={() => handleCheckboxChange("Unpaid")}
               className="form-checkbox text-blue-600"
             />
@@ -2647,17 +2587,16 @@ const HealthCareComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("true")}
+              checked={selectedOption === "true"}
               onChange={() => handleCheckboxChange("true")}
               className="form-checkbox text-blue-600"
             />
             <span>Banned</span>
           </label>
-
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("inactive")}
+              checked={selectedOption === "inactive"}
               onChange={() => handleCheckboxChange("inactive")}
               className="form-checkbox text-blue-600"
             />
@@ -2671,6 +2610,24 @@ const HealthCareComp = () => {
             />
             <span>Date Posted</span>
           </label>
+          {/* <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Not Featured Ads"}
+              onChange={() => handleCheckboxChange("Unpaid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Active</span>
+          </label>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOption === "Not Featured Ads"}
+              onChange={() => handleCheckboxChange("Unpaid")}
+              className="form-checkbox text-blue-600"
+            />
+            <span>Date Posted</span>
+          </label> */}
         </div>
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div>
@@ -2873,7 +2830,7 @@ const HealthCareComp = () => {
                 <td className="px-6 py-4">
                   {/* {ad.FeaturedAds === "Featured Ads" && ( */}
                   <a
-                    href={`http://168.231.80.24:3002/#/Dynamic_Route?id=${ad.id}&callingFrom=HealthCareComp`}
+                    href={`http://168.231.80.24:3002/#/Dynamic_Route?id=${ad.id}&callingFrom=AutomotiveComp`}
                     target="_blank"
                     rel="noopener noreferrer" // Recommended for security
                     className="text-blue-600 underline cursor-pointer"
@@ -2888,9 +2845,7 @@ const HealthCareComp = () => {
                   className="px-6 py-4 cursor-pointer text-blue-600 hover:underline"
                   onClick={() =>
                     router.push(
-                      `/UserListing?userId=${
-                        ad.userId
-                      }&callingFrom=${"HEALTHCARE"}`
+                      `/UserListing?userId=${ad.userId}&callingFrom=${"Cars"}`
                     )
                   }
                 >
@@ -2936,16 +2891,20 @@ const HealthCareComp = () => {
           </tbody>
         </table>
       </div>
+
       {isOpen && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "8%" }}
+          style={{ marginTop: "-2%" }}
         >
           <div
             className="flex justify-center items-center h-full"
-            style={{ marginTop: "75%" }}
+            style={{ marginTop: "69%" }}
           >
-            <div className="relative w-full max-w-lg">
+            <div
+              className="relative w-full max-w-lg"
+              style={{ marginTop: "52%" }}
+            >
               <button
                 onClick={closeModal}
                 className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
@@ -2954,7 +2913,7 @@ const HealthCareComp = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Home & Furniture
+                  Add a New Car Listing
                 </h3>
                 <form onSubmit={handleAddCar}>
                   {/* Name */}
@@ -2974,6 +2933,7 @@ const HealthCareComp = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       City
@@ -2991,25 +2951,6 @@ const HealthCareComp = () => {
                           {city.name}
                         </option>
                       ))}
-                    </select>
-                  </div>
-
-                  {/* Location Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      States
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedStates(e.target.value)}
-                      value={selectedStates}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="">Select State</option>
-                      <option value="California">California</option>
-                      <option value="Texas">Texas</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinois">Illinois</option>
                     </select>
                   </div>
                   <div className="card w-100 w-md-50">
@@ -4021,10 +3962,28 @@ const HealthCareComp = () => {
                   ) : (
                     ""
                   )}
+                  {/* Location Selection */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Location
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedLocation(e.target.value)}
+                      value={selectedLocation}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="">Select Location</option>
+                      <option value="Dubai Marina">Dubai Marina</option>
+                      <option value="Jumeirah">Jumeirah</option>
+                      <option value="Deira">Deira</option>
+                      <option value="Business Bay">Business Bay</option>
+                    </select>
+                  </div>
+
                   {/* Car Brand Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Brand
+                      Make
                     </label>
                     <select
                       onChange={(e) => setSelectedCarBrand(e.target.value)}
@@ -4034,10 +3993,11 @@ const HealthCareComp = () => {
                       <option disabled value="">
                         Select Make
                       </option>
-                      <option value="Omron">Omron</option>
-                      <option value="Withings">Withings</option>
-                      <option value="Beurer">Beurer</option>
-                      <option value="iHealth">iHealth</option>
+                      <option value="Toyota">Toyota</option>
+                      <option value="Mercedez-Benz">Mercedez-Benz</option>
+                      <option value="Nissan">Nissan</option>
+                      <option value="BMW">BMW</option>
+                      <option value="Lamborghini">Lamborghini</option>
                     </select>
                   </div>
 
@@ -4058,222 +4018,365 @@ const HealthCareComp = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+
+                  {/* Manufacture Year */}
+                  <div className="mb-4">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="formManufactureYear"
+                    >
+                      Manufacture Year
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter Manufacture Year"
+                      value={ManufactureYear}
+                      onChange={(e) => setManufactureYear(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  {/* Registered In */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Type
+                      Registered in
                     </label>
                     <select
-                      onChange={(e) => setType(e.target.value)}
-                      value={Type}
+                      onChange={(e) => setRegisteredin(e.target.value)}
+                      value={Registeredin}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Type
+                        Select Registered In
                       </option>
-                      <option value="Upper arm monitor">
-                        Upper arm monitor
-                      </option>
-                      <option value="Wrist monitor">Wrist monitor</option>
-                      <option value="Finger monitor">Finger monitor</option>
+                      <option value="Downtown Dubai">Downtown Dubai</option>
+                      <option value="Dubai Marina">Dubai Marina</option>
+                      <option value="Jumeirah">Jumeirah</option>
+                      <option value="Deira">Deira</option>
+                      <option value="Business Bay">Business Bay</option>
                     </select>
                   </div>
+
+                  {/* Trusted Cars */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Measurement Range
+                      Trusted Cars
                     </label>
                     <select
-                      onChange={(e) => setMeasurementRange(e.target.value)}
-                      value={MeasurementRange}
+                      onChange={(e) => setTrustedCars(e.target.value)}
+                      value={TrustedCars}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Measurement Range
+                        Select Trusted Cars
                       </option>
-                      <option value="90-230 mmHg">90-230 mmHg</option>
-                      <option value="60-180 mmHg">60-180 mmHg</option>
+                      <option value="Toyota">Toyota</option>
+                      <option value="Mercedez-Benz">Mercedez-Benz</option>
+                      <option value="Nissan">Nissan</option>
+                      <option value="BMW">BMW</option>
+                      <option value="Lamborghini">Lamborghini</option>
                     </select>
                   </div>
+
+                  {/* Transmission */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Accuracy
+                      Transmission
                     </label>
                     <select
-                      onChange={(e) => setAccuracy(e.target.value)}
-                      value={Accuracy}
+                      onChange={(e) => setSelectedTransmission(e.target.value)}
+                      value={selectedTransmission}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Accuracy{" "}
+                        Select Transmission
                       </option>
-                      <option value="±3 mmHg">±3 mmHg</option>
-                      <option value="±5 mmHg">±5 mmHg</option>
+                      <option value="Manual">Manual</option>
+                      <option value="Automatic">Automatic</option>
                     </select>
                   </div>
+
+                  {/* Color */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Features
+                      Color
                     </label>
                     <select
-                      onChange={(e) => setFeatures(e.target.value)}
-                      value={Features}
+                      onChange={(e) => setSelectedColor(e.target.value)}
+                      value={selectedColor}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Features{" "}
+                        Select Color
                       </option>
-                      <option value="Automatic inflation">
-                        Automatic inflation
-                      </option>
-                      <option value="Smart connectivity">
-                        Smart connectivity
-                      </option>
-                      <option value="LCD Display">LCD Display</option>
-                      <option value="Talking function">Talking function</option>
-                      <option value="Irregular heartbeat">
-                        Irregular heartbeat
-                      </option>
+                      <option value="White">White</option>
+                      <option value="Black">Black</option>
+                      <option value="Grey">Grey</option>
+                      <option value="Red">Red</option>
+                      <option value="Yellow">Yellow</option>
+                      <option value="Blue">Blue</option>
+                      <option value="Green">Green</option>
+                      <option value="Silver">Silver</option>
+                      <option value="Orange">Orange</option>
+                      <option value="Purple">Purple</option>
+                      <option value="Brown">Brown</option>
+                      <option value="Pink">Pink</option>
+                      <option value="Beige">Beige</option>
+                      <option value="Maroon">Maroon</option>
+                      <option value="Turquoise">Turquoise</option>
                     </select>
                   </div>
+
+                  {/* Engine Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Cuff Size
+                      Engine Type
                     </label>
                     <select
-                      onChange={(e) => setCuffSize(e.target.value)}
-                      value={CuffSize}
+                      onChange={(e) => setSelectedEngineType(e.target.value)}
+                      value={selectedEngineType}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Cuff Size{" "}
+                        Select Engine Type
                       </option>
-                      <option value="Standard (22-42 cm)">
-                        Standard (22-42 cm)
+                      <option value="Inline-4 (14) Engine">
+                        Inline-4 (14) Engine
                       </option>
-                      <option value="Large (32-50 cm)">Large (32-50 cm)</option>
+                      <option value="V6 Engine">V6 Engine</option>
+                      <option value="V8 Engine">V8 Engine</option>
+                      <option value="Inline-6 (16) Engine">
+                        Inline-6 (16) Engine
+                      </option>
+                      <option value="V12 Engine">V12 Engine</option>
+                      <option value="Inline-3 Engine">Inline-3 Engine</option>
+                      <option value="V10 Engine">V10 Engine</option>
+                      <option value="Flat-4 Engine">Flat-4 Engine</option>
+                      <option value="Flat-6 Engine">Flat-6 Engine</option>
+                      <option value="W12 Engine">W12 Engine</option>
+                      <option value="W16 Engine">W16 Engine</option>
+                      <option value="Electric Motor">Electric Motor</option>
                     </select>
                   </div>
+
+                  {/* Engine Capacity */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Display Type
+                      Engine Capacity (cc)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter Engine Capacity (cc)"
+                      value={selectedEngineCapacity}
+                      onChange={(e) =>
+                        setSelectedEngineCapacity(e.target.value)
+                      }
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  {/* Assembly */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Assembly
                     </label>
                     <select
-                      onChange={(e) => setDisplayType(e.target.value)}
-                      value={DisplayType}
+                      onChange={(e) => setSelectedAssembly(e.target.value)}
+                      value={selectedAssembly}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Display Type{" "}
+                        Select Assembly
                       </option>
-                      <option value="Digital">Digital</option>
-                      <option value="Analog">Analog</option>
+                      <option value="Local">Local</option>
+                      <option value="Imported">Imported</option>
                     </select>
                   </div>
+
+                  {/* Body Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Battery Type
+                      Body Type
                     </label>
                     <select
-                      onChange={(e) => setBatteryType(e.target.value)}
-                      value={BatteryType}
+                      onChange={(e) => setSelectedBodyType(e.target.value)}
+                      value={selectedBodyType}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Battery Type{" "}
+                        Select Body Type
                       </option>
-                      <option value="AA batteries">AA batteries</option>
-                      <option value="Rechargeable battery">
-                        Rechargeable battery
-                      </option>
-                      <option value="USB charging">USB charging</option>
-                      <option value="Disposable batteries">
-                        Disposable batteries
-                      </option>
+                      <option value="Coupe">Coupe</option>
+                      <option value="Sedan">Sedan (Saloon)</option>
+                      <option value="SUV">SUV</option>
+                      <option value="Hatchback">Hatchback</option>
+                      <option value="Convertible">Convertible</option>
+                      <option value="Crossover">Crossover</option>
+                      <option value="Station Wagon">Station Wagon</option>
+                      <option value="Minivan">Minivan</option>
+                      <option value="Pickup Truck">Pickup Truck</option>
+                      <option value="Roadster">Roadster</option>
+                      <option value="MPV">MPV (Multi-Purpose Vehicle)</option>
+                      <option value="Luxury Sedan">Luxury Sedan</option>
+                      <option value="Limousine">Limousine</option>
+                      <option value="Coupe SUV">Coupe SUV</option>
                     </select>
                   </div>
+
+                  {/* Number of Doors */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Compatibility
+                      Number of Doors
                     </label>
                     <select
-                      onChange={(e) => setCompatibility(e.target.value)}
-                      value={Compatibility}
+                      onChange={(e) => setSelectedNumberOfDoors(e.target.value)}
+                      value={selectedNumberOfDoors}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Compatibility{" "}
+                        Select Number of Doors
                       </option>
-                      <option value="Mobile app compatibility">
-                        Mobile app compatibility
-                      </option>
-                      <option value="Non-app compatible">
-                        Non-app compatible
+                      <option value="4">4 Doors</option>
+                      <option value="5">5 Doors</option>
+                      <option value="2">2 Doors</option>
+                      <option value="3">3 Doors</option>
+                      <option value="0">
+                        No Doors (e.g., a truck or a specialized vehicle)
                       </option>
                     </select>
                   </div>
+
+                  {/* Seating Capacity */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Storage Capacity
+                      Seating Capacity
                     </label>
                     <select
-                      onChange={(e) => setStorageCapacity(e.target.value)}
-                      value={StorageCapacity}
+                      onChange={(e) =>
+                        setSelectedSeatingCapacity(e.target.value)
+                      }
+                      value={selectedSeatingCapacity}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Storage Capacity{" "}
+                        Select Seating Capacity
                       </option>
-                      <option value="30 readings">30 readings</option>
-                      <option value="50 readings">50 readings</option>
+                      <option value="4">4 Seats</option>
+                      <option value="5">5 Seats</option>
+                      <option value="2">2 Seats</option>
+                      <option value="3">3 Seats</option>
+                      <option value="0">
+                        No Seats (e.g., for cargo or specialty vehicles)
+                      </option>
                     </select>
                   </div>
+
+                  {/* Modal Category */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Measurement Units
+                      Modal Category
                     </label>
                     <select
-                      onChange={(e) => setMeasurementUnits(e.target.value)}
-                      value={MeasurementUnits}
+                      onChange={(e) => setSelectedModalCategory(e.target.value)}
+                      value={selectedModalCategory}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Measurement Units{" "}
+                        Select Modal Category
                       </option>
-                      <option value="mmHg">mmHg</option>
-                      <option value="kPa">kPa</option>
+                      <option value="A-Class">A-Class (Compact)</option>
+                      <option value="B-Class">B-Class (Compact MPV)</option>
+                      <option value="C-Class">C-Class (Compact Exe)</option>
+                      <option value="E-Class">E-Class (Executive)</option>
+                      <option value="S-Class">S-Class (Luxury)</option>
+                      <option value="CLA">CLA (Compact Coupe)</option>
+                      <option value="CLS">CLS (Executive Coupe)</option>
+                      <option value="GLA">GLA (Compact SUV)</option>
+                      <option value="GLC">GLC (Luxury SUV)</option>
+                      <option value="GLE">GLE (Luxury SUV)</option>
+                      <option value="GLS">GLS (Full-Size SUV)</option>
+                      <option value="G-Class">G-Class (Off-Road SUV)</option>
+                      <option value="SLK">SLK (Compact Roadster)</option>
+                      <option value="SLC">SLC (Compact Roadster)</option>
+                      <option value="AMG GT">AMG GT (Performance)</option>
+                      <option value="EQC">EQC (Electric SUV)</option>
+                      <option value="EQS">EQS (Electric Luxury Sedan)</option>
                     </select>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Speed of Measurement
-                    </label>
-                    <select
-                      onChange={(e) => setSpeedofMeasurement(e.target.value)}
-                      value={SpeedofMeasurement}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Speed of Measurement{" "}
-                      </option>
-                      <option value="Quick">Quick</option>
-                      <option value="Standard">Standard</option>
-                    </select>
-                  </div>
+
+                  {/* Seller Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Seller Type
                     </label>
                     <select
-                      onChange={(e) => setSellerType(e.target.value)}
-                      value={SellerType}
+                      onChange={(e) => setSelectedSellerType(e.target.value)}
+                      value={selectedSellerType}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Seller Type{" "}
+                        Select Seller Type
                       </option>
-                      <option value="Brand Seller">Brand Seller</option>
+                      <option value="Dealers">Dealers</option>
                       <option value="Individuals">Individuals</option>
-                      <option value="Retailer">Retailer</option>
-                      <option value="Marketplace">Marketplace</option>
+                    </select>
+                  </div>
+
+                  {/* Picture Availability */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Picture Availability
+                    </label>
+                    <select
+                      onChange={(e) =>
+                        setSelectedPictureAvailability(e.target.value)
+                      }
+                      value={selectedPictureAvailability}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Picture Availability
+                      </option>
+                      <option value="With Pictures">With Pictures</option>
+                      <option value="Without Pictures">Without Pictures</option>
+                    </select>
+                  </div>
+
+                  {/* Video Availability */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Video Availability
+                    </label>
+                    <select
+                      onChange={(e) =>
+                        setSelectedVideoAvailability(e.target.value)
+                      }
+                      value={selectedVideoAvailability}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Video Availability
+                      </option>
+                      <option value="With Video">With Video</option>
+                      <option value="Without Video">Without Video</option>
+                    </select>
+                  </div>
+
+                  {/* Ad Type */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Ad Type
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedAdType(e.target.value)}
+                      value={selectedAdType}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Ad Type
+                      </option>
+                      <option value="Featured Ad">Featured Ad</option>
                     </select>
                   </div>
 
@@ -4359,6 +4462,85 @@ const HealthCareComp = () => {
                     />
                   </div>
 
+                  {/* Registered City */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Registered City
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter registered city"
+                      value={registeredCity}
+                      onChange={(e) => setRegisteredCity(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  {/* Assembly */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Assembly
+                    </label>
+                    <select
+                      onChange={(e) => setAssembly(e.target.value)}
+                      value={assembly}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="Imported">Imported</option>
+                      <option value="Local">Local</option>
+                    </select>
+                  </div>
+
+                  {/* Condition */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Condition
+                    </label>
+                    <select
+                      onChange={(e) => setCondition(e.target.value)}
+                      value={condition}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="New">New</option>
+                      <option value="Used">Used</option>
+                    </select>
+                  </div>
+
+                  {/* Purpose */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Purpose
+                    </label>
+                    <select
+                      onChange={(e) => setPurpose(e.target.value)}
+                      value={purpose}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="Sell">Sell</option>
+                      <option value="Rent">Rent</option>
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Fuel Type
+                    </label>
+                    <select
+                      onChange={handleFuelTypeChange}
+                      value={selectedFuelType}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Fuel Type
+                      </option>
+                      <option value="Petroleum">Petroleum</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
                   {/* Phone */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -4389,6 +4571,37 @@ const HealthCareComp = () => {
                     />
                   </div>
 
+                  {/* Driven KM */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Driven KM
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter Driven KMS"
+                      value={DrivenKm}
+                      onChange={(e) => setDrivenKm(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
+
+                  {/* Type */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Type
+                    </label>
+                    <select
+                      onChange={(e) => setType(e.target.value)}
+                      value={type}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="Sale">Sale</option>
+                      <option value="Lease">Lease</option>
+                    </select>
+                  </div>
+
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -4398,6 +4611,7 @@ const HealthCareComp = () => {
                   </button>
                 </form>
               </div>
+              {/* </div> */}
             </div>
           </div>
         </div>
@@ -4406,4 +4620,4 @@ const HealthCareComp = () => {
   );
 };
 
-export default HealthCareComp;
+export default Cars;

@@ -313,7 +313,7 @@ const SPORTSGAMESComp = () => {
   const [refresh, setRefresh] = useState(false);
 
   const closeModal = () => setIsOpen(false);
-  const [selectedOption, setSelectedOption] = useState("All");
+  const [selectedOption, setSelectedOption] = useState<string[]>([]);
   const [isActive, setisActive] = useState(false); // ✅ boolean, not string
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -1947,22 +1947,11 @@ const SPORTSGAMESComp = () => {
     }
   };
   const handleCheckboxChange = (option: string) => {
-    if (option === "Paid") {
-      setSelectedOption("Featured Ads");
-      console.log("Filtering: Featured Ads");
-    } else if (option === "Unpaid") {
-      setSelectedOption("Not Featured Ads");
-      console.log("Filtering: Not Featured Ads");
-    } else if (option === "inactive") {
-      setSelectedOption("inactive");
-      console.log("Filtering: Not Featured Ads");
-    } else if (option === "true") {
-      setSelectedOption("true");
-      console.log("Filtering: Not Featured Ads");
-    } else {
-      setSelectedOption("All");
-      console.log("Filtering: All Ads");
-    }
+    setSelectedOption((prevSelected) =>
+      prevSelected.includes(option)
+        ? prevSelected.filter((item) => item !== option)
+        : [...prevSelected, option]
+    );
   };
 
   useEffect(() => {
@@ -2048,37 +2037,47 @@ const SPORTSGAMESComp = () => {
 
         let filteredAds = adsList;
 
-        // Filter by selectedDate if it's set
+        // Filter by selectedDate
         if (selectedDate) {
-          filteredAds = adsList.filter((ad) => {
+          filteredAds = filteredAds.filter((ad) => {
             const createdAtTimestamp = ad.createdAt;
             if (createdAtTimestamp.seconds) {
               const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
                 .toISOString()
-                .split("T")[0]; // Convert timestamp to date string (YYYY-MM-DD)
-              return createdAtDate === selectedDate; // Compare with selectedDate
+                .split("T")[0];
+              return createdAtDate === selectedDate;
             }
             return false;
           });
         }
 
-        // Apply other filters based on selectedOption
-        if (selectedOption === "All") {
+        // If "All" is selected, skip filtering
+        if (selectedOption.includes("All")) {
           setAds(filteredAds);
-        } else if (selectedOption === "true") {
-          const activeAds = filteredAds.filter((val) => val.isActive === true);
-          setAds(activeAds);
-        } else if (selectedOption === "inactive") {
-          const inactiveAds = filteredAds.filter(
-            (val) =>
-              !val.isActive || val.isActive === "" || val.isActive === null
-          );
-          setAds(inactiveAds);
         } else {
-          const featuredAds = filteredAds.filter(
-            (val) => val.FeaturedAds === selectedOption
-          );
-          setAds(featuredAds);
+          let tempAds = filteredAds;
+
+          if (selectedOption.includes("true")) {
+            tempAds = tempAds.filter((ad) => ad.isActive === true);
+          }
+
+          if (selectedOption.includes("inactive")) {
+            tempAds = tempAds.filter(
+              (ad) => !ad.isActive || ad.isActive === "" || ad.isActive === null
+            );
+          }
+
+          if (selectedOption.includes("Paid")) {
+            tempAds = tempAds.filter((ad) => ad.FeaturedAds === "Featured Ads");
+          }
+
+          if (selectedOption.includes("Unpaid")) {
+            tempAds = tempAds.filter(
+              (ad) => ad.FeaturedAds === "Not Featured Ads"
+            );
+          }
+
+          setAds(tempAds);
         }
 
         setLoading(false);
@@ -2638,7 +2637,7 @@ const SPORTSGAMESComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption === "All"}
+              checked={selectedOption.includes("All")}
               onChange={() => handleCheckboxChange("All")}
               className="form-checkbox text-blue-600"
             />
@@ -2648,7 +2647,7 @@ const SPORTSGAMESComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption === "Featured Ads"}
+              checked={selectedOption.includes("Paid")}
               onChange={() => handleCheckboxChange("Paid")}
               className="form-checkbox text-blue-600"
             />
@@ -2658,7 +2657,7 @@ const SPORTSGAMESComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption === "Not Featured Ads"}
+              checked={selectedOption.includes("Unpaid")}
               onChange={() => handleCheckboxChange("Unpaid")}
               className="form-checkbox text-blue-600"
             />
@@ -2668,16 +2667,17 @@ const SPORTSGAMESComp = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption === "true"}
+              checked={selectedOption.includes("true")}
               onChange={() => handleCheckboxChange("true")}
               className="form-checkbox text-blue-600"
             />
             <span>Banned</span>
           </label>
+
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption === "inactive"}
+              checked={selectedOption.includes("inactive")}
               onChange={() => handleCheckboxChange("inactive")}
               className="form-checkbox text-blue-600"
             />
