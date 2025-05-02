@@ -96,6 +96,8 @@ const Users = () => {
   };
 
   const handleDelete = async (user: any) => {
+    console.log(user, "user________________");
+
     const confirmResult = await MySwal.fire({
       title: "Are you sure?",
       text: `Do you want to delete ${user.fullName}?`,
@@ -108,10 +110,39 @@ const Users = () => {
 
     if (confirmResult.isConfirmed) {
       try {
-        await deleteDoc(doc(db, "users", user.id)); // `user.id` must match Firestore document ID
-        MySwal.fire("Deleted!", "The user has been deleted.", "success");
-        setRefresh(!refresh);
-        // Optional: Refresh list if needed
+        if (user.id) {
+          // Firestore delete
+          await deleteDoc(doc(db, "users", user.id));
+          MySwal.fire(
+            "Deleted!",
+            "The user has been deleted from Firestore.",
+            "success"
+          );
+        } else if (user.uid) {
+          // Call your delete-user API
+          const response = await fetch(
+            `https://ksaforsaleapis.vercel.app/api/delete-user?uid=${user.uid}`,
+            {
+              method: "POST",
+            }
+          );
+
+          const result = await response.json();
+
+          if (response.ok) {
+            MySwal.fire(
+              "Deleted!",
+              "The user has been deleted from Auth.",
+              "success"
+            );
+          } else {
+            throw new Error(result.error || "Failed to delete user from Auth");
+          }
+        } else {
+          throw new Error("User ID or UID is required");
+        }
+
+        setRefresh(!refresh); // Refresh your user list
       } catch (error) {
         console.error("Error deleting user:", error);
         MySwal.fire(
