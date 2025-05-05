@@ -26,7 +26,8 @@ const SignupModal = ({ isOpen, closeModal }: SignupModalProps) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [refresh, setRefresh] = useState(false);
-
+  const [subAdmin, setsubAdmin] = useState(false);
+  console.log(subAdmin, "subAdmin_________");
   const handleImageChange = (e: any) => {
     setSelectedImage(e.target.files[0]);
   };
@@ -86,7 +87,7 @@ const SignupModal = ({ isOpen, closeModal }: SignupModalProps) => {
         phoneNumber,
         photoURL,
         createdAt: new Date(),
-        isAdmin: "Admin",
+        isAdmin: subAdmin ? "SubAdmin" : "Admin",
       });
 
       const token = await userCredential.user.getIdToken();
@@ -212,6 +213,18 @@ const SignupModal = ({ isOpen, closeModal }: SignupModalProps) => {
               >
                 {uploading ? "Uploading..." : "Upload Image"}
               </button>
+            </div>
+            <div className="mb-4 flex items-center">
+              <input
+                type="checkbox"
+                id="subAdmin"
+                checked={subAdmin}
+                onChange={(e) => setsubAdmin(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="subAdmin" className="text-sm font-medium">
+                Sub Admin
+              </label>
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}

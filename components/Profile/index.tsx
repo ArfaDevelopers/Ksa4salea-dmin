@@ -1,12 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { db } from "../Firebase/FirebaseConfig";
+import { auth, db } from "../Firebase/FirebaseConfig";
 import {
   collection,
   getDocs,
   updateDoc,
+  where,
+  query,
   doc,
   deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
@@ -30,23 +33,75 @@ interface User {
   fullName?: string;
   email: string;
 }
+interface UserProfile {
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  username: string;
+  displayName: string;
+  isAdmin: string;
+  uid: string;
 
+  bio: string;
+  photoURL: string;
+}
 const Profile = () => {
   const MySwal = withReactContent(Swal);
 
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null); // To store selected user data for editing
 
   const [users, setUsers] = useState<any[]>([]); // To store users data
-  const [selectedUser, setSelectedUser] = useState<any>(null); // To store selected user data for editing
-  console.log(selectedUser, "user_______00");
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [userProfile, setUserProfile] = useState<any | null>(null);
+  console.log("user___________1", userProfile?.isAdmin);
+  console.log("user___________2", currentUser);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setCurrentUser(user);
+
+        const q = query(collection(db, "users"), where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0].data();
+
+          setUserProfile({
+            fullName: docData.fullName || "",
+            username: docData.username || "",
+            bio: docData.bio || "",
+            displayName: docData.displayName || "",
+            email: docData.email || "",
+            phoneNumber: docData.phoneNumber || "",
+            photoURL: docData.photoURL || "/images/user/user-03.png",
+            isAdmin: docData.isAdmin || "User",
+            uid: docData.uid || user.uid,
+          });
+        } else {
+          console.warn("No Firestore user profile found for UID:", user.uid);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   // Open and close modal functions
   const openModal = () => setIsSignupModalOpen(true);
   const closeModal = () => setIsSignupModalOpen(false);
   const handleDelete = async (user: any) => {
+    // Rule 2: SubAdmin cannot delete Admin
+    if (userProfile?.isAdmin === "SubAdmin" && user.isAdmin === "Admin") {
+      MySwal.fire("Access Denied", "SubAdmins cannot delete Admins.", "error");
+      return;
+    }
+
     const confirmResult = await MySwal.fire({
       title: "Are you sure?",
       text: `Do you want to delete ${user.fullName}?`,
@@ -95,8 +150,10 @@ const Profile = () => {
       }));
 
       console.log(usersData, "usersData");
-
-      const newData = usersData.filter((user) => user?.isAdmin === "Admin");
+      const newData = usersData.filter(
+        (user) => user?.isAdmin === "Admin" || user?.isAdmin === "SubAdmin"
+      );
+      console.log("user___________data", newData);
       setUsers(newData);
     };
 
@@ -136,9 +193,9 @@ const Profile = () => {
               Users Accounts:
             </h2>
             {users.length === 0 ? (
-              <p className="text-gray-500">No users found.</p>
+              <p className="text-gray-500 text-center py-4">No users found.</p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 {users
                   .filter(
                     (user) =>
@@ -152,50 +209,69 @@ const Profile = () => {
                   .map((user, index) => (
                     <li
                       key={index}
-                      className="p-4 bg-white rounded-lg shadow-md border flex flex-col md:flex-row md:justify-between md:items-center"
+                      className="p-5 bg-white rounded-2xl shadow-md border border-gray-200 hover:shadow-lg transition duration-300 flex flex-col justify-between"
                     >
-                      <div className="flex items-center space-x-4 mb-4 md:mb-0">
-                        {user.photoURL && (
+                      <div className="flex items-center space-x-4 mb-4">
+                        {user.photoURL ? (
                           <img
                             src={user.photoURL}
                             alt="User Avatar"
-                            className="w-14 h-14 rounded-full object-cover border border-gray-300"
+                            className="w-16 h-16 rounded-full object-cover border border-gray-300"
                           />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xl font-bold border border-gray-300">
+                            {user.displayName?.[0]?.toUpperCase() || "?"}
+                          </div>
                         )}
-                        <div className="text-sm text-gray-700">
-                          <p>
-                            <span className="font-semibold">Name:</span>{" "}
+                        <div>
+                          <p className="text-lg font-semibold text-gray-800">
                             {user.displayName}
                           </p>
-                          <p>
-                            <span className="font-semibold">Email:</span>{" "}
-                            {user.email}
+                          <p className="text-sm text-gray-500">{user.email}</p>
+                          <p className="text-sm text-gray-500">
+                            📞 {user.phoneNumber || "N/A"}
                           </p>
-                          <p>
-                            <span className="font-semibold">Phone:</span>{" "}
-                            {user.phoneNumber}
-                          </p>
-                          <p>
-                            <span className="font-semibold">Created At:</span>{" "}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between mb-4">
+                        <span className="text-sm text-gray-500">
+                          Created:{" "}
+                          <span className="font-medium">
                             {user.createdAt?.seconds
                               ? new Date(
                                   user.createdAt.seconds * 1000
                                 ).toLocaleString()
                               : "N/A"}
-                          </p>
-                        </div>
+                          </span>
+                        </span>
+                        {user.isAdmin && (
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full font-medium ${
+                              user.isAdmin === "Admin"
+                                ? "bg-blue-100 text-blue-800"
+                                : user.isAdmin === "SubAdmin"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {user.isAdmin}
+                          </span>
+                        )}
                       </div>
 
-                      <div className="flex space-x-3 justify-end">
+                      <div className="flex justify-end space-x-3">
                         <button
                           className="text-blue-500 hover:text-blue-700"
                           onClick={() => openEditModal(user)}
+                          title="Edit User"
                         >
                           <MdEdit size={22} />
                         </button>
                         <button
                           className="text-red-500 hover:text-red-700"
                           onClick={() => handleDelete(user)}
+                          title="Delete User"
                         >
                           <RiDeleteBin5Line size={22} />
                         </button>

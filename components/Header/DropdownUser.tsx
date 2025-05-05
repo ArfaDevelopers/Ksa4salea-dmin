@@ -103,18 +103,17 @@ const DropdownUser = () => {
           )}
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          <Image
-            width={112}
-            height={112}
-            src={"/images/user/user-01.png"}
-            style={{
-              width: "auto",
-              height: "auto",
-            }}
-            alt="User"
-          />
-        </span>
+        <div className="flex justify-center mb-4">
+          <span className="h-14 w-14 rounded-full overflow-hidden">
+            <Image
+              src={userProfile.photoURL} // Your uploaded image path
+              alt="User"
+              width={56}
+              height={56}
+              className="object-cover h-full w-full"
+            />
+          </span>
+        </div>
 
         <svg
           className="hidden fill-current sm:block"

@@ -7,7 +7,7 @@ import Cars from "@/components/Cars";
 import CommercialAdscom from "@/components/CommercialAdscom";
 
 export const metadata: Metadata = {
-  title: "Next.js Calender | TailAdmin - Next.js Dashboard Template",
+  title: "k | TailAdmin - Next.js Dashboard Template",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

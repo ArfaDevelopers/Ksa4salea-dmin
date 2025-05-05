@@ -47,7 +47,7 @@ const Login = () => {
         const userData = userDocSnap.data();
         console.log(userData);
 
-        if (userData?.isAdmin === "Admin") {
+        if (userData?.isAdmin === "Admin" || userData?.isAdmin === "SubAdmin") {
           setCookie("token", token);
           router.push("/admin");
         } else {
