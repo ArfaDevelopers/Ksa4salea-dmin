@@ -2041,7 +2041,7 @@ const Education = () => {
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const adsCollection = collection(db, "ELECTRONICS");
+        const adsCollection = collection(db, "Education");
         const adsSnapshot = await getDocs(adsCollection);
 
         // Fetch views
@@ -2109,7 +2109,7 @@ const Education = () => {
               displayName: data.displayName || {},
               createdAt: data.createdAt || {},
 
-              views: updatedViews[id] || 0, // Show updated view count
+              views: data.views || 0, // Show updated view count
             };
           })
         );

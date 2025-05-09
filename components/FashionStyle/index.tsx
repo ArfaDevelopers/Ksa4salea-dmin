@@ -2051,7 +2051,7 @@ const FashionStyle = () => {
               displayName: data.displayName || {},
               createdAt: data.createdAt || {},
 
-              views: updatedViews[id] || 0, // Show updated view count
+              views: data.views || 0, // Show updated view count
             };
           })
         );
