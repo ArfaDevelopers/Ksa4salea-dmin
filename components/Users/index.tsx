@@ -121,7 +121,7 @@ const Users = () => {
         } else if (user.uid) {
           // Call your delete-user API
           const response = await fetch(
-            `https://ksaforsaleapis.vercel.app/api/delete-user?uid=${user.uid}`,
+            `http://168.231.80.24:9002/api/delete-user?uid=${user.uid}`,
             {
               method: "POST",
             }
@@ -179,7 +179,7 @@ const Users = () => {
 
         // Fetch API users
         const response = await axios.get(
-          "https://ksaforsaleapis.vercel.app/api/getAuthUsers"
+          "http://168.231.80.24:9002/api/getAuthUsers"
         );
         console.log(response.data.users, "api response");
 

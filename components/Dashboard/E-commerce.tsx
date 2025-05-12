@@ -70,7 +70,7 @@ const ECommerce: React.FC = () => {
     const fetchCollectionCounts = async () => {
       try {
         const response = await axios.get(
-          "https://ksaforsaleapis.vercel.app/api/collection-counts"
+          "http://168.231.80.24:9002/api/collection-counts"
         );
 
         if (response.data.success) {

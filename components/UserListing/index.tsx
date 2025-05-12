@@ -1994,7 +1994,7 @@ const UserListing = () => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          `https://ksaforsaleapis.vercel.app/api/getAuthUserByUid?uid=${userId}`
+          `http://168.231.80.24:9002/api/getAuthUserByUid?uid=${userId}`
         );
         const usersData = await response.json(); // assuming the API returns JSON
         console.log(usersData, "usersData________");
@@ -2015,7 +2015,7 @@ const UserListing = () => {
     const fetchAds = async () => {
       try {
         const response = await fetch(
-          `https://ksaforsaleapis.vercel.app/api/user-data?userId=${userId}`
+          `http://168.231.80.24:9002/api/user-data?userId=${userId}`
         );
         const data = await response.json();
         console.log(data, "data_____________");

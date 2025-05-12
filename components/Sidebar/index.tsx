@@ -196,6 +196,23 @@ const menuGroups = [
           { label: "Commercial Ads", route: "/CommercialAdscom" },
         ],
       },
+      {
+        icon: (
+          <GiAnimalHide
+            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
+          />
+        ),
+        label: "Company Info",
+        route: "#",
+        children: [
+          { label: "About Us", route: "/AboutUs" },
+          { label: "Terms & Conditions", route: "/TermsConditions" },
+          // { label: "Home & Furniture", route: "/HomeFurniture" },
+          { label: "Privacy & Policy", route: "/PrivacyPolicy" },
+          { label: "CopyRights", route: "/CopyRights" },
+        ],
+      },
+
       // {
       //   icon: (
       //     <FaCar
