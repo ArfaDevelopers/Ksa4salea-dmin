@@ -188,7 +188,7 @@ const menuGroups = [
           { label: "FashionStyle", route: "/FashionStyle" },
           { label: "Electronics", route: "/ElectronicComp" },
           { label: "Home & Furniture", route: "/HealthCareComp" },
-          { label: "Jobboard", route: "/JOBBOARD" },
+          { label: "Jobs", route: "/JOBBOARD" },
           { label: "Other", route: "/Education" },
           { label: "Real Estate", route: "/REALESTATECOMP" },
           { label: "Services", route: "/TRAVEL" },
@@ -511,23 +511,23 @@ const menuGroups = [
       //   label: "Settings",
       //   route: "/settings",
       // },
-      {
-        icon: (
-          <FaHome
-            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
-          />
-        ),
-        label: "Home Listing",
-        route: "#",
-        children: [
-          { label: "Ads", route: "/Ads" },
-          { label: "Automotive", route: "/Automotive" },
-          { label: "Real Estate", route: "/RealEstate" },
-          { label: "Electronic", route: "/Electronic" },
-          { label: "Healthcare", route: "/Healthcare" },
-          { label: "Games & Sport", route: "/GamesSport" },
-        ],
-      },
+      // {
+      //   icon: (
+      //     <FaHome
+      //       style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
+      //     />
+      //   ),
+      //   label: "Home Listing",
+      //   route: "#",
+      //   children: [
+      //     { label: "Ads", route: "/Ads" },
+      //     { label: "Automotive", route: "/Automotive" },
+      //     { label: "Real Estate", route: "/RealEstate" },
+      //     { label: "Electronic", route: "/Electronic" },
+      //     { label: "Home & Furniture", route: "/Healthcare" },
+      //     { label: "Games & Toys", route: "/GamesSport" },
+      //   ],
+      // },
       {
         icon: (
           <GiImbricatedArrows
@@ -541,16 +541,16 @@ const menuGroups = [
           { label: "Automotive", route: "/OurCategory" },
           { label: "Electronics", route: "/OurCategoryElectronics" },
           { label: "FashionStyle", route: "/OurCategoryFashionStyle" },
-          { label: "Healthcare", route: "/OurCategoryHealthCare" },
-          { label: "JobBoard", route: "/OurCategoryJobBoard" },
+          { label: "Home & Furniture", route: "/OurCategoryHealthCare" },
+          { label: "Jobs", route: "/OurCategoryJobBoard" },
           { label: "Real Estate", route: "/OurCategoryRealEstate" },
-          { label: "Travel", route: "/OurCategoryTravel" },
+          { label: "Services", route: "/OurCategoryTravel" },
 
-          { label: "Games & Sport", route: "/OurCategorySportGames" },
-          { label: "Pet & Animals", route: "/OurCategoryPetAnimals" },
-          { label: "House Hold", route: "/OurCategoryHouseHold" },
-          { label: "Education", route: "/OurCategoryEducation" },
-          { label: "MAGAZINES", route: "/OurCategoryMAGAZINES" },
+          { label: "Games & Toys", route: "/OurCategorySportGames" },
+          { label: "Pet", route: "/OurCategoryPetAnimals" },
+          // { label: "House Hold", route: "/OurCategoryHouseHold" },
+          { label: "Other", route: "/OurCategoryEducation" },
+          // { label: "MAGAZINES", route: "/OurCategoryMAGAZINES" },
         ],
       },
     ],

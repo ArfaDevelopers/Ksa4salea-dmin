@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { db } from "./../Firebase/FirebaseConfig";
 
 import {
@@ -17,6 +17,9 @@ import Select from "react-select";
 import { Country, State, City, ICity } from "country-state-city";
 import { formatDistanceToNow, parseISO, isValid, format } from "date-fns";
 import { useRouter } from "next/navigation";
+import WindowedSelect from "react-windowed-select";
+import cityData from "../../components/City.json";
+import locationData from "../../components/Location.json";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -98,7 +101,14 @@ interface SelectedOption {
   value: string;
   label: string;
 }
+interface CityOption {
+  value: string;
+  label: string;
+}
 
+interface FormData {
+  City: string;
+}
 const Cars = () => {
   const MySwal = withReactContent(Swal);
   const [formData, setFormData] = useState({
@@ -320,7 +330,55 @@ const Cars = () => {
   const [nestedSubCategory, setNestedSubCategory] = useState<{
     NestedSubCategory?: string;
   }>({});
+  const [locationList, setLocationList] = useState<string[]>([]);
+  console.log("1111111111111", locationList);
+  // useEffect(() => {
+  //   // Assuming Location.json is like { "location": [ ... ] } or is an array itself
+  //   if (locationData.location && Array.isArray(locationData.location)) {
+  //     setLocationList(locationData.location);
+  //   } else if (Array.isArray(locationData)) {
+  //     setLocationList(locationData);
+  //   } else {
+  //     // fallback empty or log error
+  //     setLocationList([]);
+  //     console.error("Location JSON data is not in expected format");
+  //   }
+  // }, []);
+  useEffect(() => {
+    console.log("11111122222", locationData); // Check what data you're getting
+    if (Array.isArray(locationData)) {
+      setLocationList(locationData); // Set cityList directly from locationData if it's an array
+    } else {
+      setLocationList([]); // You were using setLocationList before; make sure it's setCityList here
+      console.error("City data is not in expected format");
+    }
+  }, [locationData]);
 
+  const districtOptions = locationList.map((loc) => ({
+    value: loc,
+    label: loc,
+  }));
+
+  const [cityList, setCityList] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Check if cityData is an array directly
+    if (Array.isArray(cityData)) {
+      setCityList(cityData); // Set cityList directly from cityData if it's an array
+    } else {
+      setCityList([]);
+      console.error("City data is not in expected format");
+    }
+  }, [cityData]);
+
+  const CityOptions = useMemo(
+    () =>
+      cityList.map((city) => ({
+        value: city, // Adjust based on your cityData structure
+        label: city,
+      })),
+    [cityList]
+  );
   const subcategoriesMapping = {
     categories: [
       {
@@ -1570,6 +1628,86 @@ const Cars = () => {
       NestedSubCategory: selectedOption.value,
     }));
   };
+  const carBrands = [
+    "Toyota",
+    "Ford",
+    "Chevrolet",
+    "Nissan",
+    "Hyundai",
+    "Genesis",
+    "Lexus",
+    "GMC",
+    "Mercedes",
+    "Honda",
+    "BMW",
+    "Motorcycles",
+    "Kia",
+    "Dodge",
+    "Chrysler",
+    "Jeep",
+    "Mitsubishi",
+    "Mazda",
+    "Porsche",
+    "Audi",
+    "Suzuki",
+    "Infinity",
+    "Hummer",
+    "Lincoln",
+    "Volkswagen",
+    "Daihatsu",
+    "Geely",
+    "Mercury",
+    "Volvo",
+    "Peugeot",
+    "Bentley",
+    "Jaguar",
+    "Subaru",
+    "MG",
+    "ZXAUTO",
+    "Changan",
+    "Renault",
+    "Buick",
+    "Rolls-Royce",
+    "Lamborghini",
+    "Opel",
+    "Skoda",
+    "Ferrari",
+    "Citroen",
+    "Chery",
+    "Seat",
+    "Daewoo",
+    "SABB",
+    "SsangYong",
+    "Aston Martin",
+    "Proton",
+    "Haval",
+    "GAC",
+    "Great Wall",
+    "FAW",
+    "BYD",
+    "Alfa Romeo",
+    "TATA",
+    "JMC",
+    "JETOUR",
+    "CMC",
+    "VICTORY AUTO",
+    "MAXUS",
+    "McLaren",
+    "JAC",
+    "Baic",
+    "Dongfeng",
+    "EXEED",
+    "Tesla",
+    "Soueaste",
+    "Mahindra",
+    "Zotye",
+    "Hongqi",
+    "SMART",
+    "Tank",
+    "Lynk & Co",
+    "Lucid",
+    "INEOS",
+  ];
   const AccountsSubscriptions = [
     { value: "Skincare", label: "Skincare" },
     { value: "Hair Care", label: "Hair Care" },
@@ -2957,20 +3095,52 @@ const Cars = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       City
                     </label>
-                    <select
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      value={selectedCity}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Select City
-                      </option>
-                      {cities.map((city) => (
-                        <option key={city.name} value={city.name}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
+                    <WindowedSelect
+                      options={CityOptions}
+                      value={
+                        CityOptions.find(
+                          (option) => option.value === formData.City
+                        ) || null
+                      }
+                      onChange={(newValue: unknown, actionMeta) => {
+                        // Type assertion to CityOption or null
+                        const selectedOption = newValue as CityOption | null;
+                        setFormData((prev) => ({
+                          ...prev,
+                          City: selectedOption ? selectedOption.value : "",
+                        }));
+                      }}
+                      placeholder="Select a City"
+                      isClearable
+                      className="w-100"
+                      windowThreshold={100}
+                    />
+                  </div>
+                  <div className="card w-100 w-md-50">
+                    <div className="card-header">
+                      <h4>Select District</h4>
+                    </div>
+                    <div className="card-body">
+                      <Select
+                        options={districtOptions}
+                        value={
+                          districtOptions.find(
+                            (option) => option.value === formData.District
+                          ) || null
+                        }
+                        onChange={(selectedOption) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            District: selectedOption
+                              ? selectedOption.value
+                              : "",
+                          }))
+                        }
+                        placeholder="Select a district"
+                        isClearable
+                        className="w-100"
+                      />
+                    </div>
                   </div>
                   <div className="card w-100 w-md-50">
                     <div className="form-group">
@@ -3982,7 +4152,7 @@ const Cars = () => {
                     ""
                   )}
                   {/* Location Selection */}
-                  <div className="mb-4">
+                  {/* <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Location
                     </label>
@@ -3997,7 +4167,7 @@ const Cars = () => {
                       <option value="Deira">Deira</option>
                       <option value="Business Bay">Business Bay</option>
                     </select>
-                  </div>
+                  </div> */}
 
                   {/* Car Brand Selection */}
                   <div className="mb-4">
@@ -4012,11 +4182,11 @@ const Cars = () => {
                       <option disabled value="">
                         Select Make
                       </option>
-                      <option value="Toyota">Toyota</option>
-                      <option value="Mercedez-Benz">Mercedez-Benz</option>
-                      <option value="Nissan">Nissan</option>
-                      <option value="BMW">BMW</option>
-                      <option value="Lamborghini">Lamborghini</option>
+                      {carBrands.map((brand) => (
+                        <option key={brand} value={brand}>
+                          {brand}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -4037,7 +4207,53 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
+                  {/* Driven KM */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Driven KM
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter Driven KMS"
+                      value={DrivenKm}
+                      onChange={(e) => setDrivenKm(e.target.value)}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  </div>
 
+                  {/* Transmission */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Transmission
+                    </label>
+                    <select
+                      onChange={(e) => setSelectedTransmission(e.target.value)}
+                      value={selectedTransmission}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Transmission
+                      </option>
+                      <option value="Manual">Manual</option>
+                      <option value="Automatic">Automatic</option>
+                    </select>
+                  </div>
+                  {/* Condition */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Condition
+                    </label>
+                    <select
+                      onChange={(e) => setCondition(e.target.value)}
+                      value={condition}
+                      required
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="New">New</option>
+                      <option value="Used">Used</option>
+                    </select>
+                  </div>
                   {/* Manufacture Year */}
                   <div className="mb-4">
                     <label
@@ -4095,24 +4311,6 @@ const Cars = () => {
                       <option value="Nissan">Nissan</option>
                       <option value="BMW">BMW</option>
                       <option value="Lamborghini">Lamborghini</option>
-                    </select>
-                  </div>
-
-                  {/* Transmission */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Transmission
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedTransmission(e.target.value)}
-                      value={selectedTransmission}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Transmission
-                      </option>
-                      <option value="Manual">Manual</option>
-                      <option value="Automatic">Automatic</option>
                     </select>
                   </div>
 
@@ -4342,46 +4540,6 @@ const Cars = () => {
                     </select>
                   </div>
 
-                  {/* Picture Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Picture Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedPictureAvailability(e.target.value)
-                      }
-                      value={selectedPictureAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Picture Availability
-                      </option>
-                      <option value="With Pictures">With Pictures</option>
-                      <option value="Without Pictures">Without Pictures</option>
-                    </select>
-                  </div>
-
-                  {/* Video Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Video Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedVideoAvailability(e.target.value)
-                      }
-                      value={selectedVideoAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Video Availability
-                      </option>
-                      <option value="With Video">With Video</option>
-                      <option value="Without Video">Without Video</option>
-                    </select>
-                  </div>
-
                   {/* Ad Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -4512,22 +4670,6 @@ const Cars = () => {
                     </select>
                   </div>
 
-                  {/* Condition */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Condition
-                    </label>
-                    <select
-                      onChange={(e) => setCondition(e.target.value)}
-                      value={condition}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="New">New</option>
-                      <option value="Used">Used</option>
-                    </select>
-                  </div>
-
                   {/* Purpose */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -4570,36 +4712,6 @@ const Cars = () => {
                       placeholder="Enter Phone Number"
                       value={PhoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* WhatsApp */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      WhatsApp
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter WhatsApp number"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Driven KM */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Driven KM
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Driven KMS"
-                      value={DrivenKm}
-                      onChange={(e) => setDrivenKm(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />

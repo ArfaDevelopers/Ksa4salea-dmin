@@ -934,12 +934,16 @@ const OurCategoryJobBoard = () => {
                       <label className="block text-gray-700 text-sm font-bold mb-2">
                         Select Category
                       </label>
-                      <Select
-                        options={options}
-                        value={options.find((opt) => opt.value === name)}
-                        onChange={handleChange}
-                        placeholder="Select a category"
-                      />
+                      <div className="w-full max-w-sm">
+                        <input
+                          type="text"
+                          placeholder="Enter Our Category Title"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                      </div>
                     </div>
                   </div>
 
