@@ -20,7 +20,25 @@ import { useRouter } from "next/navigation";
 import WindowedSelect from "react-windowed-select";
 import cityData from "../../components/City.json";
 import locationData from "../../components/Location.json";
-
+import {
+  FiX,
+  FiPhone,
+  FiTag,
+  FiCheck,
+  FiShield,
+  FiSettings,
+  FiDollarSign,
+} from "react-icons/fi";
+import {
+  FaCity,
+  FaMapMarkedAlt,
+  FaListAlt,
+  FaCar,
+  FaCarSide,
+  FaRoad,
+  FaTools,
+  FaIdCard,
+} from "react-icons/fa";
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
 import { enUS } from "date-fns/locale"; // Import English locale
@@ -3843,138 +3861,331 @@ const Cars = () => {
       </div>
 
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "-2%" }}
-        >
-          <div
-            className="flex justify-center items-center h-full"
-            style={{ marginTop: "69%" }}
-          >
-            <div
-              className="relative w-full max-w-lg"
-              style={{ marginTop: "52%" }}
-            >
-              <button
-                onClick={closeModal}
-                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
-              >
-                &times;
-              </button>
-              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Car Listing
-                </h3>
-                <form onSubmit={handleAddCar}>
-                  {/* Name */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formName"
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm overflow-y-auto">
+          <div className="flex justify-center items-center min-h-screen py-8 px-4">
+            <div className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mt-20 -mr-20 blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      City
-                    </label>
-                    <WindowedSelect
-                      options={CityOptions}
-                      value={
-                        CityOptions.find(
-                          (option) => option.value === formData.City
-                        ) || null
-                      }
-                      onChange={(newValue: unknown, actionMeta) => {
-                        // Type assertion to CityOption or null
-                        const selectedOption = newValue as CityOption | null;
-                        setFormData((prev) => ({
-                          ...prev,
-                          City: selectedOption ? selectedOption.value : "",
-                        }));
-                      }}
-                      placeholder="Select a City"
-                      isClearable
-                      className="w-100"
-                      windowThreshold={100}
-                    />
+                <button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-colors z-10"
+                  aria-label="Close"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+
+                <div className="flex items-center mb-2">
+                  <div className="flex space-x-1 mr-3">
+                    <FaCar className="text-white/90 h-5 w-5" />
+                    <FaCarSide className="text-white/90 h-5 w-5" />
+                    <FaRoad className="text-white/90 h-5 w-5" />
                   </div>
-                  <div className="card w-100 w-md-50">
-                    <div className="card-header">
-                      <h4>Select District</h4>
-                    </div>
-                    <div className="card-body">
-                      <Select
-                        options={districtOptions}
-                        value={
-                          districtOptions.find(
-                            (option) => option.value === formData.District
-                          ) || null
-                        }
-                        onChange={(selectedOption) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            District: selectedOption
-                              ? selectedOption.value
-                              : "",
-                          }))
-                        }
-                        placeholder="Select a district"
-                        isClearable
-                        className="w-100"
-                      />
+                  <h3 className="text-white text-2xl font-bold relative z-10">
+                    Add a New Car Listing
+                  </h3>
+                </div>
+                <p className="text-white/80 mt-1 relative z-10">
+                  Fill in the details below to create your car listing
+                </p>
+              </div>
+
+              {/* Form */}
+              <div className="p-6 max-h-[70vh] overflow-y-auto bg-gray-50 dark:bg-gray-800">
+                <form onSubmit={handleAddCar} className="space-y-6">
+                  {/* Basic Information Section */}
+                  <div className="bg-white dark:bg-gray-750 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                        <FaIdCard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Basic Information
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {/* Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiTag className="mr-2 h-4 w-4 text-blue-500" />
+                            Car Name
+                          </div>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                        />
+                      </div>
+
+                      {/* Type */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiDollarSign className="mr-2 h-4 w-4 text-blue-500" />
+                            Type
+                          </div>
+                        </label>
+                        <select
+                          onChange={(e) => setType(e.target.value)}
+                          value={type}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors appearance-none bg-no-repeat bg-right"
+                          style={{
+                            backgroundImage:
+                              "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                            backgroundSize: "1.5em 1.5em",
+                            paddingRight: "2.5rem",
+                          }}
+                        >
+                          <option value="Sale">Sale</option>
+                          <option value="Lease">Lease</option>
+                        </select>
+                      </div>
+
+                      {/* Phone */}
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiPhone className="mr-2 h-4 w-4 text-blue-500" />
+                            Contact Phone
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiPhone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Enter Phone Number"
+                            value={PhoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                            className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="card w-100 w-md-50">
-                    <div className="form-group">
-                      <label className="col-form-label label-heading">
-                        Category
-                      </label>
-                      <div className="row category-listing">
+                  {/* Location Section */}
+                  <div className="bg-white dark:bg-gray-750 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                        <FaMapMarkedAlt className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Location Information
+                    </h4>
+
+                    <div className="space-y-5">
+                      {/* City */}
+
+                      {/* City */}
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <FaCity className="mr-2 h-4 w-4 text-purple-500" />
+                          City
+                        </label>
+                        <WindowedSelect
+                          options={CityOptions}
+                          value={
+                            CityOptions.find(
+                              (option) => option.value === formData.City
+                            ) || null
+                          }
+                          onChange={(newValue: unknown, actionMeta) => {
+                            const selectedOption = newValue as {
+                              value: string;
+                            } | null;
+                            setFormData((prev) => ({
+                              ...prev,
+                              City: selectedOption ? selectedOption.value : "",
+                            }));
+                          }}
+                          placeholder="Select a City"
+                          isClearable
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          windowThreshold={100}
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#a855f7",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#a855f7"
+                                : state.isFocused
+                                ? "#f3e8ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#a855f7",
+                              },
+                            }),
+                          }}
+                        />
+                      </div>
+
+                      {/* District */}
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <FaMapMarkedAlt className="mr-2 h-4 w-4 text-purple-500" />
+                          District
+                        </label>
+                        <Select
+                          options={districtOptions}
+                          value={
+                            districtOptions.find(
+                              (option) => option.value === formData.District
+                            ) || null
+                          }
+                          onChange={(selectedOption) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              District: selectedOption
+                                ? selectedOption.value
+                                : "",
+                            }))
+                          }
+                          placeholder="Select a district"
+                          isClearable
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#a855f7",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#a855f7"
+                                : state.isFocused
+                                ? "#f3e8ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#a855f7",
+                              },
+                            }),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Category Section */}
+                  <div className="bg-white dark:bg-gray-750 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                        <FaListAlt className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Category Information
+                    </h4>
+
+                    <div className="space-y-5">
+                      {/* Category */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FaCar className="mr-2 h-4 w-4 text-blue-500" />
+                            Category
+                          </div>
+                        </label>
                         <Select
                           options={categoryOptions}
                           value={categoryOptions.find(
                             (option) => option.value === formData.category
                           )}
                           onChange={handleCategoryChange}
-                          className="basic-single"
-                          classNamePrefix="select"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
                           placeholder="Select Category"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#2563eb",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#2563eb"
+                                : state.isFocused
+                                ? "#eff6ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#2563eb",
+                              },
+                            }),
+                          }}
                         />
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="card w-100 w-md-50">
-                    <div className="form-group">
-                      <label className="col-form-label label-heading">
-                        Select SubCategory
-                      </label>
-                      <div className="row category-listing">
+                      {/* SubCategory */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FaCarSide className="mr-2 h-4 w-4 text-blue-500" />
+                            SubCategory
+                          </div>
+                        </label>
                         <Select
                           options={subcategories}
                           value={subcategories.find(
                             (option) => option.value === formData.SubCategory
                           )}
                           onChange={handleSubcategoryChange}
-                          className="basic-single"
-                          classNamePrefix="select"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
                           placeholder="Select Subcategory"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#2563eb",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#2563eb"
+                                : state.isFocused
+                                ? "#eff6ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#2563eb",
+                              },
+                            }),
+                          }}
                         />
                       </div>
                     </div>
-                  </div>
-
+                  </div>{" "}
                   {Category.SubCategory === "Spare Parts" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4119,7 +4330,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Accounts & Subscriptions" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4144,7 +4354,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Special Number" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4169,7 +4378,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Home & Kitchen Appliance" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4242,7 +4450,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Cameras" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4532,7 +4739,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Medical & Nursing Jobs" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4822,7 +5028,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Dogs" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4847,7 +5052,6 @@ const Cars = () => {
                   ) : (
                     ""
                   )}
-
                   {Category.SubCategory === "Cows" ? (
                     <div className="card w-100 w-md-50">
                       <div className="form-group">
@@ -4961,7 +5165,6 @@ const Cars = () => {
                       <option value="Business Bay">Business Bay</option>
                     </select>
                   </div> */}
-
                   {/* Car Brand Selection */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -5350,7 +5553,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Mitsubishi" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -5374,7 +5576,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Mazda" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -5398,7 +5599,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Porsche" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -5468,7 +5668,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Infiniti" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -5492,7 +5691,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Hummer" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -5516,7 +5714,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Lincoln" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -5632,7 +5829,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Volvo" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6070,7 +6266,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "SsangYong" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6347,7 +6542,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "VICTORY AUTO" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6371,7 +6565,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "MAXUS" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6395,7 +6588,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "BAIC" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6419,7 +6611,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "DONGFENG" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6443,7 +6634,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "EXEED" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6467,7 +6657,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Tank" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6491,7 +6680,6 @@ const Cars = () => {
                       </select>
                     </div>
                   )}
-
                   {selectedCarBrand === "Lynk & Co" && (
                     <div className="mb-4">
                       <label className="block w-full text-gray-700 text-sm font-bold mb-2">
@@ -6592,7 +6780,6 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
                   {/* Transmission */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6662,7 +6849,6 @@ const Cars = () => {
                       <option value="Canadian">Canadian Specs</option>
                     </select>
                   </div>
-
                   {/* Color */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6754,7 +6940,6 @@ const Cars = () => {
                       <option value="Electric Motor">Electric Motor</option>
                     </select>
                   </div>
-
                   {/* Engine Capacity */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6770,7 +6955,6 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
                   {/* Assembly */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6788,7 +6972,6 @@ const Cars = () => {
                       <option value="Imported">Imported</option>
                     </select>
                   </div>
-
                   {/* Body Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6818,7 +7001,6 @@ const Cars = () => {
                       <option value="Coupe SUV">Coupe SUV</option>
                     </select>
                   </div>
-
                   {/* Number of Doors */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6841,7 +7023,6 @@ const Cars = () => {
                       </option>
                     </select>
                   </div>
-
                   {/* Seating Capacity */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6866,7 +7047,6 @@ const Cars = () => {
                       </option>
                     </select>
                   </div>
-
                   {/* Modal Category */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6899,7 +7079,6 @@ const Cars = () => {
                       <option value="EQS">EQS (Electric Luxury Sedan)</option>
                     </select>
                   </div>
-
                   {/* Seller Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6917,7 +7096,6 @@ const Cars = () => {
                       <option value="Individuals">Individuals</option>
                     </select>
                   </div>
-
                   {/* Ad Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6936,7 +7114,6 @@ const Cars = () => {
                       <option value="Wanted">Wanted</option>
                     </select>
                   </div>
-
                   {[...Array(6)].map((_, index) => (
                     <div className="mb-4" key={index}>
                       <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
@@ -6957,7 +7134,6 @@ const Cars = () => {
                       )}
                     </div>
                   ))}
-
                   {/* Description */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6972,7 +7148,6 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
                   {/* Time Ago */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -6988,7 +7163,6 @@ const Cars = () => {
                       required
                     />
                   </div>
-
                   {/* Registered City */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -7003,7 +7177,6 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
                   {/* Assembly */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -7019,7 +7192,6 @@ const Cars = () => {
                       <option value="Local">Local</option>
                     </select>
                   </div>
-
                   {/* Purpose */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -7055,126 +7227,139 @@ const Cars = () => {
                       <option value="cng">CNG</option>
                     </select>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Insurance{" "}
-                    </label>
-                    <select
-                      onChange={handleInsuranceChange}
-                      value={Insurance}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Insurance
-                      </option>
-                      <option value="Comprehensive">
-                        Comprehensive Insurance
-                      </option>
-                      <option value="ThirdParty">Third-Party Insurance</option>
-                      <option value="electric">Electric</option>
-                      <option value="hybrid">Hybrid</option>
-                      <option value="No Insurance">No Insurance</option>
-                      <option value="cng">CNG</option>
-                    </select>
-                  </div>
+                  <div className="bg-white dark:bg-gray-750 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                        <FaTools className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Car Features & Insurance
+                    </h4>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Additional Features
-                    </label>
-                    <select
-                      onChange={handleAdditionalFeatures}
-                      value={AdditionalFeatures}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Additional Feature
-                      </option>
-                      <option value="fullOption">Full option</option>
-                      <option value="insured">Insured</option>
-                      <option value="selfParking">Self Parking</option>
-                      <option value="alarmSystem">Alarm System</option>
-                      <option value="dealership">Dealership</option>
-                      <option value="quickSelling">Quick Selling</option>
-                      <option value="navigation">Navigation</option>
-                      <option value="temperatureSeats">
-                        Temperature Controlled Seats
-                      </option>
-                      <option value="inspected">Inspected</option>
-                      <option value="parkingSensors">Parking Sensors</option>
-                      <option value="bluetooth">Bluetooth</option>
-                      <option value="sunroof">Sunroof/Moonroof</option>
-                      <option value="leatherSeats">Leather Seats</option>
-                      <option value="backupCamera">Backup Camera</option>
-                      <option value="heatedSeats">Heated Seats</option>
-                      <option value="keylessEntry">Keyless Entry</option>
-                      <option value="remoteStart">Remote Start</option>
-                      <option value="adaptiveCruise">
-                        Adaptive Cruise Control
-                      </option>
-                      <option value="laneDeparture">
-                        Lane Departure Warning
-                      </option>
-                      <option value="blindSpot">Blind Spot Monitoring</option>
-                      <option value="premiumSound">Premium Sound System</option>
-                      <option value="awd">All-Wheel Drive</option>
-                      <option value="touchscreen">Touchscreen Display</option>
-                      <option value="carPlay">
-                        Apple CarPlay/Android Auto
-                      </option>
-                      <option value="ledHeadlights">LED Headlights</option>
-                      <option value="towPackage">Tow Package</option>
-                      <option value="powerLiftgate">Power Liftgate</option>
-                      <option value="headUpDisplay">Head-Up Display</option>
-                      <option value="rainWipers">Rain-Sensing Wipers</option>
-                      <option value="emergencyBraking">
-                        Automatic Emergency Braking
-                      </option>
-                      <option value="ambientLighting">Ambient Lighting</option>
-                    </select>
-                  </div>
+                    <div className="space-y-5">
+                      {/* Insurance */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiShield className="mr-2 h-4 w-4 text-blue-500" />
+                            Insurance
+                          </div>
+                        </label>
+                        <select
+                          onChange={handleInsuranceChange}
+                          value={Insurance}
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors appearance-none bg-no-repeat bg-right"
+                          style={{
+                            backgroundImage:
+                              "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                            backgroundSize: "1.5em 1.5em",
+                            paddingRight: "2.5rem",
+                          }}
+                        >
+                          <option value="" disabled>
+                            Select Insurance
+                          </option>
+                          <option value="Comprehensive">
+                            Comprehensive Insurance
+                          </option>
+                          <option value="ThirdParty">
+                            Third-Party Insurance
+                          </option>
+                          <option value="electric">Electric</option>
+                          <option value="hybrid">Hybrid</option>
+                          <option value="No Insurance">No Insurance</option>
+                          <option value="cng">CNG</option>
+                        </select>
+                      </div>
 
-                  {/* Phone */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Phone Number"
-                      value={PhoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
+                      {/* Additional Features */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiSettings className="mr-2 h-4 w-4 text-blue-500" />
+                            Additional Features
+                          </div>
+                        </label>
+                        <select
+                          onChange={handleAdditionalFeatures}
+                          value={AdditionalFeatures}
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors appearance-none bg-no-repeat bg-right"
+                          style={{
+                            backgroundImage:
+                              "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                            backgroundSize: "1.5em 1.5em",
+                            paddingRight: "2.5rem",
+                          }}
+                        >
+                          <option value="" disabled>
+                            Select Additional Feature
+                          </option>
+                          <option value="fullOption">Full option</option>
+                          <option value="insured">Insured</option>
+                          <option value="selfParking">Self Parking</option>
+                          <option value="alarmSystem">Alarm System</option>
+                          <option value="dealership">Dealership</option>
+                          <option value="quickSelling">Quick Selling</option>
+                          <option value="navigation">Navigation</option>
+                          <option value="temperatureSeats">
+                            Temperature Controlled Seats
+                          </option>
+                          <option value="inspected">Inspected</option>
+                          <option value="parkingSensors">
+                            Parking Sensors
+                          </option>
+                          <option value="bluetooth">Bluetooth</option>
+                          <option value="sunroof">Sunroof/Moonroof</option>
+                          <option value="leatherSeats">Leather Seats</option>
+                          <option value="backupCamera">Backup Camera</option>
+                          <option value="heatedSeats">Heated Seats</option>
+                          <option value="keylessEntry">Keyless Entry</option>
+                          <option value="remoteStart">Remote Start</option>
+                          <option value="adaptiveCruise">
+                            Adaptive Cruise Control
+                          </option>
+                          <option value="laneDeparture">
+                            Lane Departure Warning
+                          </option>
+                          <option value="blindSpot">
+                            Blind Spot Monitoring
+                          </option>
+                          <option value="premiumSound">
+                            Premium Sound System
+                          </option>
+                          <option value="awd">All-Wheel Drive</option>
+                          <option value="touchscreen">
+                            Touchscreen Display
+                          </option>
+                          <option value="carPlay">
+                            Apple CarPlay/Android Auto
+                          </option>
+                          <option value="ledHeadlights">LED Headlights</option>
+                          <option value="towPackage">Tow Package</option>
+                          <option value="powerLiftgate">Power Liftgate</option>
+                          <option value="headUpDisplay">Head-Up Display</option>
+                          <option value="rainWipers">
+                            Rain-Sensing Wipers
+                          </option>
+                          <option value="emergencyBraking">
+                            Automatic Emergency Braking
+                          </option>
+                          <option value="ambientLighting">
+                            Ambient Lighting
+                          </option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Type
-                    </label>
-                    <select
-                      onChange={(e) => setType(e.target.value)}
-                      value={type}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="Sale">Sale</option>
-                      <option value="Lease">Lease</option>
-                    </select>
-                  </div>
-
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium rounded-xl shadow-md hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center"
                   >
-                    Add Listing
+                    <FiCheck className="mr-2 h-5 w-5" />
+                    Add Car Listing
                   </button>
                 </form>
               </div>
-              {/* </div> */}
             </div>
           </div>
         </div>
