@@ -39,13 +39,47 @@ const SliderImage: React.FC = () => {
     fetchImages();
   }, []);
 
+  // const handleSingleImageChange = (index: number, file: File) => {
+  //   const updatedImages = [...selectedImages];
+  //   const updatedPreviews = [...previews];
+  //   updatedImages[index] = file;
+  //   updatedPreviews[index] = URL.createObjectURL(file);
+  //   setSelectedImages(updatedImages);
+  //   setPreviews(updatedPreviews);
+  // };
   const handleSingleImageChange = (index: number, file: File) => {
-    const updatedImages = [...selectedImages];
-    const updatedPreviews = [...previews];
-    updatedImages[index] = file;
-    updatedPreviews[index] = URL.createObjectURL(file);
-    setSelectedImages(updatedImages);
-    setPreviews(updatedPreviews);
+    const imageUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = imageUrl;
+
+    img.onload = () => {
+      if (img.width === 1280 && img.height === 477) {
+        const updatedImages = [...selectedImages];
+        const updatedPreviews = [...previews];
+        updatedImages[index] = file;
+        updatedPreviews[index] = imageUrl;
+        setSelectedImages(updatedImages);
+        setPreviews(updatedPreviews);
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "Invalid Image Size",
+          text: `Please upload an image with exact dimensions: 1280 × 477 pixels.`,
+          confirmButtonColor: "#d33",
+        });
+        URL.revokeObjectURL(imageUrl); // clean up
+      }
+    };
+
+    img.onerror = () => {
+      MySwal.fire({
+        icon: "error",
+        title: "File Error",
+        text: `Could not load the selected image.`,
+        confirmButtonColor: "#d33",
+      });
+      URL.revokeObjectURL(imageUrl);
+    };
   };
 
   const handleMultipleImageUpload = (

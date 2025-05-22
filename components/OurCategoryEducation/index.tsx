@@ -629,14 +629,63 @@ const OurCategoryEducation = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [existingImageId, setExistingImageId] = useState<string | null>(null);
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
-      setPreview(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      setPreview(url);
+      checkImageBackground(url);
     }
   };
+
+  const checkImageBackground = (imageUrl: string) => {
+    const img = new Image();
+    img.src = imageUrl;
+    img.crossOrigin = "anonymous";
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return;
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // Check transparency in corners
+      const checkPixel = (x: number, y: number) => {
+        const index = (y * canvas.width + x) * 4;
+        const alpha = data[index + 3]; // Alpha value
+        return alpha > 200; // Mostly opaque
+      };
+
+      const hasBackground =
+        checkPixel(0, 0) &&
+        checkPixel(canvas.width - 1, 0) &&
+        checkPixel(0, canvas.height - 1) &&
+        checkPixel(canvas.width - 1, canvas.height - 1);
+
+      if (hasBackground) {
+        MySwal.fire({
+          icon: "warning",
+          title: "Background Detected",
+          text: "Please remove the background from the image before uploading.",
+        });
+      }
+    };
+  };
+  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     setSelectedImage(file);
+  //     setPreview(URL.createObjectURL(file));
+  //   }
+  // };
   const handleUpload = async () => {
     if (!selectedImage) {
       MySwal.fire({
@@ -916,7 +965,7 @@ const OurCategoryEducation = () => {
               </button>
               <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a Our Category Listing
+                  {/* Add a Our Category Listing */}
                 </h3>
                 <form onSubmit={_id ? handleAddCarUpdatedd : handleAddCar}>
                   {/* Name */}

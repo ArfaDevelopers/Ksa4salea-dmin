@@ -34,12 +34,40 @@ const BannerUpload: React.FC = () => {
 
     fetchExistingImage();
   }, []);
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
-      setSelectedImage(file);
-      setPreview(URL.createObjectURL(file));
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.src = objectUrl;
+
+      img.onload = () => {
+        if (img.width === 1200 && img.height === 1242) {
+          setSelectedImage(file);
+          setPreview(objectUrl);
+        } else {
+          MySwal.fire({
+            icon: "error",
+            title: "Invalid Image Size",
+            text: "Please upload an image with exact dimensions: 1200 × 1242 pixels.",
+            confirmButtonColor: "#3085d6",
+          });
+          URL.revokeObjectURL(objectUrl);
+          event.target.value = ""; // Reset input
+        }
+      };
+
+      img.onerror = () => {
+        MySwal.fire({
+          icon: "error",
+          title: "File Error",
+          text: "The selected file is not a valid image.",
+          confirmButtonColor: "#3085d6",
+        });
+        URL.revokeObjectURL(objectUrl);
+        event.target.value = "";
+      };
     }
   };
 
