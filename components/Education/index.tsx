@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { db } from "./../Firebase/FirebaseConfig";
 import {
   addDoc,
@@ -13,8 +13,20 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import Select from "react-select";
-import { Country, State, City, ICity } from "country-state-city";
-
+import {
+  FiX,
+  FiUpload,
+  FiDollarSign,
+  FiPhone,
+  FiTag,
+  FiImage,
+  FiFileText,
+  FiStar,
+} from "react-icons/fi";
+import { FaCity, FaMapMarkedAlt, FaListAlt, FaBoxOpen } from "react-icons/fa";
+import WindowedSelect from "react-windowed-select";
+import cityData from "../../components/City.json";
+import locationData from "../../components/Location.json";
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
 import { enUS } from "date-fns/locale"; // Import English locale
@@ -246,12 +258,7 @@ const Education = () => {
   const [whatsapp, setWhatsapp] = useState("03189391781");
   const [type, setType] = useState("Sale");
   const [selectedCity, setSelectedCity] = useState<string>("");
-  const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
 
-  useEffect(() => {
-    const saudiCities = City.getCitiesOfCountry("SA") || []; // fallback to empty array
-    setCities(saudiCities);
-  }, []);
   const [Registeredin, setRegisteredin] = useState("");
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
@@ -270,8 +277,47 @@ const Education = () => {
   const [selectedVideoAvailability, setSelectedVideoAvailability] =
     useState("");
   const [selectedAdType, setSelectedAdType] = useState("");
+  const [locationList, setLocationList] = useState<string[]>([]);
+  interface CityOption {
+    value: string;
+    label: string;
+  }
   const closeModal = () => setIsOpen(false);
+  useEffect(() => {
+    console.log("11111122222", locationData); // Check what data you're getting
+    if (Array.isArray(locationData)) {
+      setLocationList(locationData); // Set cityList directly from locationData if it's an array
+    } else {
+      setLocationList([]); // You were using setLocationList before; make sure it's setCityList here
+      console.error("City data is not in expected format");
+    }
+  }, [locationData]);
 
+  const districtOptions = locationList.map((loc) => ({
+    value: loc,
+    label: loc,
+  }));
+
+  const [cityList, setCityList] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Check if cityData is an array directly
+    if (Array.isArray(cityData)) {
+      setCityList(cityData); // Set cityList directly from cityData if it's an array
+    } else {
+      setCityList([]);
+      console.error("City data is not in expected format");
+    }
+  }, [cityData]);
+
+  const CityOptions = useMemo(
+    () =>
+      cityList.map((city) => ({
+        value: city, // Adjust based on your cityData structure
+        label: city,
+      })),
+    [cityList]
+  );
   const handleAdTypeChange = (event: any) => {
     const adType = event.target.value;
     setSelectedAdType(adType);
@@ -2917,117 +2963,246 @@ const Education = () => {
         </table>
       </div>
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "8%" }}
-        >
-          <div
-            className="flex justify-center items-center h-full"
-            style={{ marginTop: "64%" }}
-          >
-            <div className="relative w-full max-w-lg">
-              <button
-                onClick={closeModal}
-                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
-              >
-                &times;
-              </button>
-              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Eductaion
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="flex justify-center items-center min-h-screen py-8 px-4">
+            <div className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-teal-500 to-emerald-500 p-6">
+                <button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+                  aria-label="Close"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+                <h3 className="text-white text-2xl font-bold">
+                  Add Other Listing
                 </h3>
-                <form onSubmit={handleAddCar}>
-                  {/* Name */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formName"
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
+                <p className="text-white/80 mt-1">
+                  Fill in the details below to create your listing
+                </p>
+              </div>
+
+              {/* Form */}
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                <form onSubmit={handleAddCar} className="space-y-5">
+                  {/* Basic Information Section */}
+                  <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FaBoxOpen className="mr-2 h-5 w-5 text-teal-500" />
+                      Basic Information
+                    </h4>
+
+                    <div className="space-y-4">
+                      {/* Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiTag className="mr-2 h-4 w-4 text-teal-500" />
+                            Name
+                          </div>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                        />
+                      </div>
+
+                      {/* City */}
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <FaCity className="mr-2 h-4 w-4 text-purple-500" />
+                          City
+                        </label>
+                        <WindowedSelect
+                          options={CityOptions}
+                          value={
+                            CityOptions.find(
+                              (option) => option.value === formData.City
+                            ) || null
+                          }
+                          onChange={(newValue: unknown, actionMeta) => {
+                            const selectedOption = newValue as {
+                              value: string;
+                            } | null;
+                            setFormData((prev) => ({
+                              ...prev,
+                              City: selectedOption ? selectedOption.value : "",
+                            }));
+                          }}
+                          placeholder="Select a City"
+                          isClearable
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          windowThreshold={100}
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#a855f7",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#a855f7"
+                                : state.isFocused
+                                ? "#f3e8ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#a855f7",
+                              },
+                            }),
+                          }}
+                        />
+                      </div>
+
+                      {/* District */}
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <FaMapMarkedAlt className="mr-2 h-4 w-4 text-purple-500" />
+                          District
+                        </label>
+                        <Select
+                          options={districtOptions}
+                          value={
+                            districtOptions.find(
+                              (option) => option.value === formData.District
+                            ) || null
+                          }
+                          onChange={(selectedOption) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              District: selectedOption
+                                ? selectedOption.value
+                                : "",
+                            }))
+                          }
+                          placeholder="Select a district"
+                          isClearable
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#a855f7",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#a855f7"
+                                : state.isFocused
+                                ? "#f3e8ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#a855f7",
+                              },
+                            }),
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      City
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      value={selectedCity}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Select City
-                      </option>
-                      {cities.map((city) => (
-                        <option key={city.name} value={city.name}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* Category Section */}
+                  <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FaListAlt className="mr-2 h-5 w-5 text-teal-500" />
+                      Category Information
+                    </h4>
 
-                  {/* Location Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      States
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedStates(e.target.value)}
-                      value={selectedStates}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="">Select State</option>
-                      <option value="California">California</option>
-                      <option value="Texas">Texas</option>
-                      <option value="Newyork">Newyork</option>
-                      <option value="Florida">Florida</option>
-                      <option value="Illinois">Illinois</option>
-                    </select>
-                  </div>
-                  <div className="card w-100 w-md-50">
-                    <div className="form-group">
-                      <label className="col-form-label label-heading">
-                        Category
-                      </label>
-                      <div className="row category-listing">
+                    <div className="space-y-4">
+                      {/* Category */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Category
+                        </label>
                         <Select
                           options={categoryOptions}
                           value={categoryOptions.find(
                             (option) => option.value === formData.category
                           )}
                           onChange={handleCategoryChange}
-                          className="basic-single"
-                          classNamePrefix="select"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
                           placeholder="Select Category"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#14b8a6",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#14b8a6"
+                                : state.isFocused
+                                ? "#ccfbf1"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#14b8a6",
+                              },
+                            }),
+                          }}
                         />
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="card w-100 w-md-50">
-                    <div className="form-group">
-                      <label className="col-form-label label-heading">
-                        Select SubCategory
-                      </label>
-                      <div className="row category-listing">
+                      {/* SubCategory */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          SubCategory
+                        </label>
                         <Select
                           options={subcategories}
                           value={subcategories.find(
                             (option) => option.value === formData.SubCategory
                           )}
                           onChange={handleSubcategoryChange}
-                          className="basic-single"
-                          classNamePrefix="select"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
                           placeholder="Select Subcategory"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#14b8a6",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#14b8a6"
+                                : state.isFocused
+                                ? "#ccfbf1"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#14b8a6",
+                              },
+                            }),
+                          }}
                         />
                       </div>
                     </div>
@@ -4002,319 +4177,164 @@ const Education = () => {
                   ) : (
                     ""
                   )}
-                  {/* Car Brand Selection */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Make
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedCarBrand(e.target.value)}
-                      value={selectedCarBrand}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Select Make
-                      </option>
-                      <option value="Trek Bicycle Corporation">
-                        Trek Bicycle Corporation
-                      </option>
-                      <option value="Specialized Bicycle">
-                        Specialized Bicycle
-                      </option>
-                      <option value="Cannondale">Cannondale</option>
-                      <option value="Santa Cruz">Santa Cruz</option>
-                      <option value="Huffy Corporation">
-                        Huffy Corporation
-                      </option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Subject Categories
-                    </label>
-                    <select
-                      onChange={(e) => setSubjectCategories(e.target.value)}
-                      value={SubjectCategories}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Subject Categories
-                      </option>
-                      <option value="Business">Business</option>
-                      <option value="Arts & Humanities">
-                        Arts & Humanities
-                      </option>
-                      <option value="Personal Development">
-                        Personal Development
-                      </option>
-                      <option value="Health & Fitness">Health & Fitness</option>
-                    </select>
-                  </div>
-                  {/* Price */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formPrice"
-                    >
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter price"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Skill Level
-                    </label>
-                    <select
-                      onChange={(e) => setSkillLevel(e.target.value)}
-                      value={SkillLevel}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Skill Level
-                      </option>
+                  <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FiFileText className="mr-2 h-5 w-5 text-teal-500" />
+                      Listing Details
+                    </h4>
 
-                      <option value="Beginner">Beginner</option>
-                      <option value="Intermediate">Intermediate</option>
-                      <option value="Advanced">Advanced</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Content Type
-                    </label>
-                    <select
-                      onChange={(e) => setContentType(e.target.value)}
-                      value={ContentType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Content Type{" "}
-                      </option>
+                    <div className="space-y-4">
+                      {/* Price */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiDollarSign className="mr-2 h-4 w-4 text-teal-500" />
+                            Price
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiDollarSign className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="number"
+                            placeholder="Enter price"
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            required
+                            className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                          />
+                        </div>
+                      </div>
 
-                      <option value="Courses">Courses</option>
-                      <option value="Guided Projects">Guided Projects</option>
-                      <option value="Specializations">Specializations</option>
-                      <option value="Degrees">Degrees</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Language
-                    </label>
-                    <select
-                      onChange={(e) => setLanguage(e.target.value)}
-                      value={Language}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Language{" "}
-                      </option>
+                      {/* Ad Type */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiStar className="mr-2 h-4 w-4 text-teal-500" />
+                            Ad Type
+                          </div>
+                        </label>
+                        <select
+                          onChange={(e) => setSelectedAdType(e.target.value)}
+                          value={selectedAdType}
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors appearance-none bg-no-repeat bg-right"
+                          style={{
+                            backgroundImage:
+                              "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                            backgroundSize: "1.5em 1.5em",
+                            paddingRight: "2.5rem",
+                          }}
+                        >
+                          <option value="" disabled>
+                            Select Ad Type
+                          </option>
+                          <option value="Featured Ad">Featured Ad</option>
+                          <option value="Not Featured Ad">
+                            Not Featured Ad
+                          </option>
+                        </select>
+                      </div>
 
-                      <option value="English">English</option>
-                      <option value="Spanish">Spanish</option>
-                      <option value="French">French</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Duration
-                    </label>
-                    <select
-                      onChange={(e) => setDuration(e.target.value)}
-                      value={Duration}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Duration{" "}
-                      </option>
-
-                      <option value="Short-term">Short-term</option>
-                      <option value="Medium-term">Medium-term</option>
-                      <option value="Long-term">Long-term</option>
-                    </select>
-                  </div>
-
-                  {/* Picture Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Picture Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedPictureAvailability(e.target.value)
-                      }
-                      value={selectedPictureAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Picture Availability
-                      </option>
-                      <option value="With Pictures">With Pictures</option>
-                      <option value="Without Pictures">Without Pictures</option>
-                    </select>
-                  </div>
-
-                  {/* Video Availability */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Video Availability
-                    </label>
-                    <select
-                      onChange={(e) =>
-                        setSelectedVideoAvailability(e.target.value)
-                      }
-                      value={selectedVideoAvailability}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Video Availability
-                      </option>
-                      <option value="With Video">With Video</option>
-                      <option value="Without Video">Without Video</option>
-                    </select>
-                  </div>
-
-                  {/* Ad Type */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Ad Type
-                    </label>
-                    <select
-                      onChange={(e) => setSelectedAdType(e.target.value)}
-                      value={selectedAdType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Ad Type
-                      </option>
-                      <option value="Featured Ad">Featured Ad</option>
-                    </select>
-                  </div>
-
-                  {[...Array(6)].map((_, index) => (
-                    <div className="mb-4" key={index}>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
-                        index + 1
-                      }`}</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange(index)}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      />
-                      {imageUrls[index] && (
-                        <img
-                          src={imageUrls[index]}
-                          alt={`Preview ${index + 1}`}
-                          className="mt-2 w-32 h-32 object-cover border rounded"
+                      {/* Description */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiFileText className="mr-2 h-4 w-4 text-teal-500" />
+                            Description
+                          </div>
+                        </label>
+                        <textarea
+                          rows={4}
+                          placeholder="Enter description"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                         />
-                      )}
+                      </div>
+
+                      {/* Phone */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiPhone className="mr-2 h-4 w-4 text-teal-500" />
+                            Phone
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiPhone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Enter Phone Number"
+                            value={PhoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                            className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  ))}
-
-                  {/* Location */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
                   </div>
 
-                  {/* Link */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Link
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter link"
-                      value={link}
-                      onChange={(e) => setLink(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
+                  {/* Image Uploads */}
+                  <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FiImage className="mr-2 h-5 w-5 text-teal-500" />
+                      Product Images
+                    </h4>
 
-                  {/* Description */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Time Ago */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Time Ago (Date Posted)
-                    </label>
-                    <DatePicker
-                      selected={timeAgo}
-                      onChange={(date) => setTimeAgo(date)} // Works because state allows null
-                      dateFormat="MMMM d, yyyy"
-                      showYearDropdown
-                      scrollableYearDropdown
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      required
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Phone Number"
-                      value={PhoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* WhatsApp */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      WhatsApp
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter WhatsApp number"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {[...Array(6)].map((_, index) => (
+                        <div
+                          key={index}
+                          className="border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3 transition-colors hover:border-teal-500 dark:hover:border-teal-400"
+                        >
+                          <div className="flex flex-col items-center">
+                            {imageUrls[index] ? (
+                              <div className="relative w-full">
+                                <img
+                                  src={imageUrls[index] || "/placeholder.svg"}
+                                  alt={`Preview ${index + 1}`}
+                                  className="w-full h-28 object-cover rounded-md"
+                                />
+                                <label
+                                  htmlFor={`image-upload-${index}`}
+                                  className="absolute bottom-2 right-2 bg-white dark:bg-gray-800 rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <FiUpload className="h-4 w-4 text-teal-500" />
+                                </label>
+                              </div>
+                            ) : (
+                              <label
+                                htmlFor={`image-upload-${index}`}
+                                className="flex flex-col items-center justify-center w-full h-28 cursor-pointer"
+                              >
+                                <FiUpload className="h-8 w-8 text-gray-400 mb-2" />
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                  Image {index + 1}
+                                </span>
+                              </label>
+                            )}
+                            <input
+                              id={`image-upload-${index}`}
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileChange(index)}
+                              className="hidden"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-medium rounded-lg shadow-md hover:from-teal-600 hover:to-emerald-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors"
                   >
                     Add Listing
                   </button>
@@ -4323,6 +4343,7 @@ const Education = () => {
             </div>
           </div>
         </div>
+        // </div>
       )}
     </>
   );

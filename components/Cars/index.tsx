@@ -59,7 +59,7 @@ type Ad = {
   City: string;
   PictureAvailability: any;
   EngineType: string;
-  ManufactureYear: string;
+  mileage: string;
   ModalCategory: string;
   CoNumberOfDoorsor: string; // Possible typo: Should this be 'NumberOfDoors'?
   PhoneNumber: string;
@@ -71,7 +71,7 @@ type Ad = {
   VideoAvailability: string;
   assembly: string;
   bodyType: string;
-  condition: string;
+  Condition: string;
   FeaturedAds: string;
 
   engineCapacity: string;
@@ -82,8 +82,13 @@ type Ad = {
   sellerType: string;
   type: string;
   whatsapp: string;
-  AdType: any;
+  Purpose: any;
   FuelType: any;
+  RegionalSpec: any;
+  Insurance: any;
+  InteriorColor: any;
+  AdditionalFeatures: any;
+
   galleryImages: any;
 };
 const saudiCities = City.getCitiesOfCountry("SA"); // 'SA' = Saudi Arabia
@@ -123,9 +128,12 @@ const Cars = () => {
     Emirates: "",
     Registeredin: "",
     TrustedCars: "",
+    InteriorColor: "",
+    AdditionalFeatures: "",
+
     EngineType: "",
     EngineCapacity: "",
-    ManufactureYear: "",
+    mileage: "",
     Assembly: "",
     BodyType: "",
     Type: "",
@@ -258,7 +266,7 @@ const Cars = () => {
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
-  const [ManufactureYear, setManufactureYear] = useState("");
+  const [mileage, setmileage] = useState("");
 
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
@@ -267,7 +275,7 @@ const Cars = () => {
   const [registeredCity, setRegisteredCity] = useState("Un-Registered");
   const [assembly, setAssembly] = useState("Imported");
   const [lastUpdated, setLastUpdated] = useState(new Date());
-  const [condition, setCondition] = useState("Used");
+  const [Condition, setCondition] = useState("Used");
   const [purpose, setPurpose] = useState("Sell");
   const [PhoneNumber, setPhoneNumber] = useState("");
 
@@ -287,6 +295,10 @@ const Cars = () => {
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  const [InteriorColor, setInteriorColor] = useState("");
+
+  const [selectedSpec, setSelectedSpec] = useState("");
+
   const [selectedEngineType, setSelectedEngineType] = useState("");
   const [selectedEngineCapacity, setSelectedEngineCapacity] = useState("");
   const [selectedAssembly, setSelectedAssembly] = useState("");
@@ -300,6 +312,9 @@ const Cars = () => {
   const [selectedVideoAvailability, setSelectedVideoAvailability] =
     useState("");
   const [selectedFuelType, setSelectedFuelType] = useState("");
+  const [Insurance, selectedInsurance] = useState("");
+  const [AdditionalFeatures, setAdditionalFeatures] = useState("");
+
   const [selectedAdType, setSelectedAdType] = useState("");
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
   const [loading, setLoading] = useState(true);
@@ -2136,7 +2151,10 @@ const Cars = () => {
               City: data.City || "",
               PictureAvailability: data.PictureAvailability || "",
               EngineType: data.EngineType || "",
-              ManufactureYear: data.ManufactureYear || "",
+              InteriorColor: data.InteriorColor || "",
+              AdditionalFeatures: data.AdditionalFeatures || "",
+
+              mileage: data.mileage || "",
               ModalCategory: data.ModalCategory || "",
               CoNumberOfDoorsor: data.NumberOfDoors || "",
               PhoneNumber: data.PhoneNumber || "",
@@ -2148,7 +2166,7 @@ const Cars = () => {
               VideoAvailability: data.VideoAvailability || "",
               assembly: data.assembly || "",
               bodyType: data.bodyType || "",
-              condition: data.condition || "",
+              Condition: data.Condition || "",
               engineCapacity: data.engineCapacity || "",
               isFeatured: data.isFeatured || "",
               model: data.model || "",
@@ -2160,8 +2178,14 @@ const Cars = () => {
               isActive: data.isActive || "",
               FeaturedAds: data.FeaturedAds || "",
               AdType: data.AdType || "",
+              Purpose: data.Purpose || "",
+
               FuelType: data.FuelType || "",
+              RegionalSpec: data.selectedSpec || "",
+              Insurance: data.Insurance || "",
+
               galleryImages: data.galleryImages || {},
+
               userId: data.userId || {},
               category: data.category || {},
               displayName: data.displayName || {},
@@ -2312,7 +2336,10 @@ const Cars = () => {
           Color: adData.Color || "Color",
           EngineCapacity: adData.EngineCapacity || "EngineCapacity",
           EngineType: adData.EngineType || "EngineType",
-          ManufactureYear: adData.ManufactureYear || "ManufactureYear",
+          InteriorColor: adData.InteriorColor || "InteriorColor",
+          AdditionalFeatures: adData.AdditionalFeatures || "AdditionalFeatures",
+
+          mileage: adData.mileage || "mileage",
           ModalCategory: adData.ModalCategory || "ModalCategory",
           CoNumberOfDoorsor: adData.NumberOfDoors || "NumberOfDoors",
           PhoneNumber: adData.PhoneNumber || "PhoneNumber",
@@ -2326,7 +2353,7 @@ const Cars = () => {
           VideoAvailability: adData.VideoAvailability || "VideoAvailability",
           assembly: adData.assembly || "assembly",
           bodyType: adData.bodyType || "bodyType",
-          condition: adData.condition || "condition",
+          Condition: adData.Condition || "Condition",
           engineCapacity: adData.engineCapacity || "engineCapacity",
           isFeatured: adData.isFeatured || "isFeatured",
           model: adData.model || "engineCapacity",
@@ -2335,9 +2362,12 @@ const Cars = () => {
           sellerType: adData.sellerType || "sellerType",
           type: adData.type || "type",
           whatsapp: adData.whatsapp || "whatsapp",
-          AdType: adData.AdType || "AdType",
+          Purpose: adData.Purpose || "Purpose",
           FuelType: adData.FuelType || "FuelType",
           galleryImages: adData.galleryImages || "galleryImages",
+          RegionalSpec: adData.selectedSpec || "selectedSpec",
+          Insurance: adData.Insurance || "Insurance",
+
           isActive: adData.isActive || "isActive",
           FeaturedAds: adData.FeaturedAds || "FeaturedAds",
           userId: adData.userId || "userId",
@@ -2357,8 +2387,8 @@ const Cars = () => {
         setImageFiles(Array(6).fill(null));
         setDescription(selectedAd.description);
         setLink(selectedAd.link);
-        setManufactureYear(selectedAd.ManufactureYear);
-        setCondition(selectedAd.condition);
+        setmileage(selectedAd.mileage);
+        setCondition(selectedAd.Condition);
         setAssembly(selectedAd.assembly);
         setRegisteredCity(selectedAd.registeredCity);
 
@@ -2371,11 +2401,15 @@ const Cars = () => {
         setPrice(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
-        setSelectedAd(selectedAd.AdType);
+        setSelectedAd(selectedAd.Purpose);
+
         setTrustedCars(selectedAd.TrustedCars); // Pass a valid Ad object to setSelectedAd
         setSelectedCity(selectedAd.City); // Pass a valid Ad object to setSelectedAd
         setSelectedEngineType(selectedAd.EngineType); // Pass a valid Ad object to setSelectedAd
         setSelectedColor(selectedAd.Color); // Pass a valid Ad object to setSelectedAd
+        setInteriorColor(selectedAd.InteriorColor); // Pass a valid Ad object to setSelectedAd
+        setAdditionalFeatures(selectedAd.AdditionalFeatures); // Pass a valid Ad object to setSelectedAd
+
         setSelectedTransmission(selectedAd.Transmission); // Pass a valid Ad object to setSelectedAd
 
         setSelectedVideoAvailability(selectedAd.VideoAvailability); // Pass a valid Ad object to setSelectedAd
@@ -2409,7 +2443,7 @@ const Cars = () => {
   const resetForm = () => {
     setDescription("");
     setLink("");
-    setManufactureYear("");
+    setmileage("");
     setCondition("");
     setAssembly("");
     setTimeAgo(new Date());
@@ -2428,6 +2462,9 @@ const Cars = () => {
     setSelectedCity("");
     setSelectedEngineType("");
     setSelectedColor("");
+    setInteriorColor("");
+    setAdditionalFeatures("");
+
     setSelectedTransmission("");
     setSelectedVideoAvailability("");
     setSelectedPictureAvailability("");
@@ -2445,6 +2482,16 @@ const Cars = () => {
   const handleFuelTypeChange = (event: any) => {
     const fuelType = event.target.value;
     setSelectedFuelType(fuelType);
+    console.log(fuelType); // Log selected fuel type to the console
+  };
+  const handleAdditionalFeatures = (event: any) => {
+    const fuelType = event.target.value;
+    setAdditionalFeatures(fuelType);
+    console.log(fuelType); // Log selected fuel type to the console
+  };
+  const handleInsuranceChange = (event: any) => {
+    const fuelType = event.target.value;
+    selectedInsurance(fuelType);
     console.log(fuelType); // Log selected fuel type to the console
   };
   const handleAdTypeChange = (event: any) => {
@@ -2564,7 +2611,748 @@ const Cars = () => {
       alert("Error uploading image.");
     }
   };
+  const nissanModels = [
+    "Patrol",
+    "DDSEN",
+    "Tama",
+    "Maxima",
+    "Pathfinder",
+    "Sunny",
+    "Armada",
+    "Xterra",
+    "Class Z",
+    "Nissan Shass",
+    "Navara",
+    "Murano",
+    "Tiida",
+    "Orphan",
+    "Skyline",
+    "Sentra",
+    "X Trail",
+    "Gloria",
+    "Primera",
+    "Terrano",
+    "Qashqai",
+    "Juke",
+    "Kicks",
+    "370Z",
+    "GTR",
+    "Civilian",
+    "Patrol Safari",
+    "Cedric",
+    "Patrol NISMO",
+  ];
+  const bmwModels = [
+    "Series VII",
+    "Fifth Series",
+    "Series X",
+    "Series III",
+    "Series VI",
+    "Series 1st",
+    "Series M",
+    "Mini Cooper",
+    "Series Z",
+    "Series i",
+    "Series 8",
+    "Series 2",
+    "Series 4",
+  ];
+  const jeepModels = [
+    "Cherokee",
+    "Grand Cherokee",
+    "Wrangler",
+    "Liberty",
+    "Renegade",
+    "Compass",
+    "Geladiator",
+  ];
+  const mitsubishiModels = [
+    "Pajero",
+    "Lancer",
+    "L200",
+    "Nativa",
+    "Galant",
+    "Colt",
+    "Magna",
+    "Sigma",
+    "ASX",
+    "Attrage",
+    "Eclipse Cross",
+    "Outlander",
+    "Space Star",
+    "Montero",
+    "Xpander",
+    "Grandis",
+  ];
+  const mazdaModels = [
+    "Mazda 6",
+    "CX9",
+    "Mazda 3",
+    "323",
+    "626",
+    "CX7",
+    "BT50",
+    "MPV",
+    "CX5",
+    "CX2",
+    "RX8",
+    "MX-5",
+    "CX3",
+    "Mazda 2",
+    "Mazda 5",
+    "CX30",
+    "CX60",
+    "CX90",
+  ];
 
+  const baicModels = [
+    "D50",
+    "X35",
+    "X7",
+    "BJ80",
+    "BJ40SE",
+    "BJ40S",
+    "BJ40 Plus",
+    "BJ40F",
+    "BJ40 C",
+  ];
+  const ineosModels = ["Grenadier"];
+
+  const lucidModels = ["Air", "Gravity"];
+
+  const lynkCoModels = ["1", "3", "03 plus", "5", "9"];
+
+  const tankModels = ["Tank 300", "Tank 500"];
+
+  const exeedModels = ["txl", "VX", "Exeed LX"];
+
+  const dongfengModels = [
+    "A30",
+    "A60 MAX",
+    "AX7",
+    "AX7 MACH",
+    "C31",
+    "C32",
+    "C35",
+    "E32",
+    "T5 Evo",
+  ];
+  const maxusModels = [
+    "D90",
+    "Maxus V80",
+    "Maxus T60",
+    "V90",
+    "T70",
+    "G50",
+    "G10",
+    "D90 Pro",
+    "D60",
+    "60 Tornado",
+    "Maxus G90",
+    "Maxus T90",
+  ];
+  const victoryAutoModels = ["Lifan"];
+
+  const cmcModels = ["Foton", "Tunland"];
+
+  const jetourModels = ["X70", "X70S", "X90", "Dashing"];
+
+  const tataModels = ["XENON"];
+
+  const alfaRomeoModels = ["GIULIA", "GIULIETTA", "STELVIO"];
+
+  const bydModels = ["F3", "F5", "F7", "S6", "S7"];
+
+  const fawModels = [
+    "T80",
+    "V80",
+    "Oley",
+    "Besturn B50",
+    "Besturn B70",
+    "Besturn X80",
+    "T77",
+    "X40",
+    "T33",
+    "T99",
+  ];
+  const greatWallModels = ["Wingle 5", "Wingle 6", "Wingle 7", "POER"];
+
+  const gacModels = [
+    "GA3",
+    "GA4",
+    "GA8",
+    "GS3",
+    "GS4",
+    "GS8",
+    "GN6",
+    "GN8",
+    "GS5",
+    "GA6",
+    "EMPOW",
+    "EMZOOM",
+    "EMKOO",
+  ];
+  const havalModels = [
+    "Haval H2",
+    "Haval H6",
+    "Haval H9",
+    "Jolion",
+    "Dargo",
+    "H6 GT",
+  ];
+  const protonModels = ["GEN•2", "Persona", "Waja"];
+
+  const astonMartinModels = ["DB11", "DBS", "Rapide S", "Vantage"];
+
+  const ssangYongModels = [
+    "Actyon",
+    "Musso",
+    "Korando",
+    "XLV",
+    "Tivoli",
+    "Rexton",
+  ];
+  const sabbModels = [
+    "Fiat",
+    "Dolce Vita",
+    "Fiat 500",
+    "Fiat 500X",
+    "Fiorino",
+    "Linea",
+  ];
+  const daewooModels = ["Leganza", "Lanos", "Mats", "Nubira"];
+
+  const cheryModels = [
+    "QQ",
+    "Chery A5",
+    "EASTAR",
+    "Quinn",
+    "Chery A3",
+    "Chery A1",
+    "Arezzo 3",
+    "Arezzo 6",
+    "Tiggo 2",
+    "Tiggo 7",
+    "Tiggo 8",
+    "Tiggo 4",
+    "Arrizo 5",
+    "Arrizo 8",
+  ];
+  const citroenModels = [
+    "C3",
+    "C4",
+    "C6",
+    "Xara",
+    "C2",
+    "C1",
+    "Regency",
+    "Berlingo",
+  ];
+  const ferrariModels = [
+    "488 PISTA",
+    "812",
+    "Break up",
+    "GTC4",
+    "MONZA",
+    "Roma",
+    "SF90",
+  ];
+  const porscheModels = [
+    "Cayenne",
+    "Panamera",
+    "911",
+    "Carrera",
+    "Cayman",
+    "Boxster",
+    "Turbo",
+    "GT",
+    "Macan",
+    "718",
+  ];
+  const skodaModels = [
+    "Octavia",
+    "Rapid",
+    "Superb",
+    "Fabia",
+    "Karoq",
+    "Kodiaq",
+  ];
+  const opelModels = ["Astra", "Rekord"];
+
+  const rollsRoyceModels = ["Phantom", "Quest", "Dawn", "Wraith", "Cullinan"];
+  const lamborghiniModels = ["Aventador", "Urus", "Huracan", "Gallardo"];
+
+  const buickModels = [
+    "Encore",
+    "Encore GX",
+    "Enclave",
+    "Envision",
+    "LaCrosse",
+    "Regal",
+    "Verano",
+    "Lucerne",
+    "Cascada",
+    "Century",
+    "Rainier",
+    "Park Avenue",
+    "Rendezvous",
+  ];
+  const renaultModels = [
+    "Megane",
+    "Fluence",
+    "Safrane",
+    "Laguna",
+    "Clio",
+    "Talisman",
+    "Duster",
+    "Dokker Van",
+    "Symbol",
+    "Capture",
+    "Koleos",
+    "Master",
+    "Megane GT",
+    "Megane RS",
+  ];
+  const changanModels = [
+    "Eado",
+    "CS35",
+    "CS75",
+    "CS95",
+    "Changan V7",
+    "CS85",
+    "Alsvin",
+    "Hunter",
+    "CS35 Plus",
+    "CS75 Plus",
+    "UNI-T",
+    "UNI-K",
+    "UNI-V",
+  ];
+  const mgModels = [
+    "5",
+    "6",
+    "HS",
+    "MG RX8",
+    "RX5",
+    "ZS",
+    "T60",
+    "MG GT",
+    "HS PHEV",
+    "MG 1",
+    "MG 3",
+    "WHALE",
+  ];
+  const subaruModels = [
+    "Legacy",
+    "Impreza",
+    "Forrester",
+    "Outback",
+    "WRX",
+    "WRX STI",
+    "XV",
+  ];
+  const jaguarModels = [
+    "XJ",
+    "X type",
+    "S type",
+    "Suv Virgen",
+    "Daimler",
+    "E pace",
+    "F pace",
+    "F type",
+    "I pace",
+    "XE",
+    "XF",
+  ];
+  const bentleyModels = [
+    "Continental Flying Spur",
+    "Continental GT",
+    "Arnage",
+    "Azure",
+    "Continental GTC",
+    "Brooklands Coupe",
+    "Bentayga",
+    "Mulsanne",
+  ];
+  const peugeotModels = [
+    "307",
+    "407",
+    "206",
+    "508",
+    "406",
+    "Partner",
+    "607",
+    "404",
+    "3008",
+    "301",
+    "5008",
+    "Boxer",
+    "Expert",
+    "2008",
+    "208",
+    "408",
+    "504",
+    "Traveller",
+    "Rifter",
+    "Landtrek",
+  ];
+  const volvoModels = [
+    "S 80",
+    "850",
+    "XC90",
+    "S 60R",
+    "S 40",
+    "960",
+    "S 70",
+    "V 70XC",
+    "C 70",
+    "S60",
+    "S90",
+    "XC40",
+    "XC60",
+  ];
+
+  const mercuryModels = ["Mountaineer", "Marauder"];
+
+  const daihatsuModels = ["Sirion", "Taurus", "Materia"];
+  const geelyModels = [
+    "EC7",
+    "EC8",
+    "LC Panda",
+    "Emgrand 7",
+    "Emgrand GS",
+    "Emgrand X7",
+    "Binray",
+    "Coolray",
+    "Azkarra",
+    "Tugella",
+    "Okavango",
+    "Monjaro",
+    "Preface",
+    "Geometry c",
+    "Starray",
+  ];
+  const volkswagenModels = [
+    "Passat",
+    "Touareg",
+    "Golf",
+    "Beetle",
+    "Polo",
+    "Jetta",
+    "Scirocco",
+    "Tiguan",
+    "Teramont",
+    "T-roc",
+    "Arteon",
+  ];
+  const hummerModels = ["H3", "H2", "H1"];
+  const lincolnModels = [
+    "Town Car",
+    "Navigator",
+    "MKS",
+    "S",
+    "Continental",
+    "Nautilus",
+    "Aviator",
+    "Corsair",
+  ];
+  const infinitiModels = [
+    "FX",
+    "QX",
+    "G",
+    "Q",
+    "M",
+    "Q30",
+    "Q50",
+    "Q60",
+    "Q70",
+    "QX50",
+    "QX60",
+    "QX70",
+    "QX80",
+    "QX56",
+  ];
+  const suzukiModels = [
+    "Vitara",
+    "Samurai",
+    "Swift",
+    "Jimny",
+    "Liana",
+    "SX4",
+    "Ertiga",
+    "Baleno",
+    "Grand Vitara",
+    "Ciaz",
+    "Celerio",
+    "APV Pickup",
+    "APV van",
+    "Dzire",
+    "Kizashi",
+    "Fronx",
+  ];
+  const audiModels = [
+    "A8",
+    "A6",
+    "Q7",
+    "Q5",
+    "A4",
+    "A5",
+    "A7",
+    "S8",
+    "TT",
+    "A3",
+    "Q3",
+    "Q8",
+    "R8",
+    "RS",
+    "S3",
+  ];
+  const chryslerModels = [
+    "M300",
+    "C300",
+    "Grand Voyager",
+    "Concorde",
+    "Crossfire",
+    "C200",
+    "PT Cruiser",
+    "Imperial",
+    "Plymouth",
+    "Pacifica",
+  ];
+  const dodgeModels = [
+    "Charger",
+    "Gallinger",
+    "Durango",
+    "Caravan",
+    "Archer",
+    "Nitro",
+    "Caliber",
+    "Fiber",
+    "Dodge Pickup",
+    "Voyager",
+    "Interpid",
+    "Neon",
+  ];
+  const kiaModels = [
+    "Optima",
+    "Cerato",
+    "Rio",
+    "Carnival",
+    "Sportage",
+    "Cadenza",
+    "Opirus",
+    "Sorento",
+    "Cairns",
+    "Picanto",
+    "Mohave",
+    "Corres",
+    "Soul",
+    "Sephia",
+    "K900",
+    "Pegas",
+    "Telluride",
+    "Stinger",
+    "Seltos",
+    "Niro",
+    "K5",
+    "Sonet",
+    "NS",
+  ];
+  const motorcycleBrands = [
+    "Suzuki",
+    "Yamaha Motorcycles",
+    "Chinese Motorcycle",
+    "Honda Motorcycles",
+    "Harley Motorcycles",
+    "Ram's Motorcycles",
+    "Kuzaki Motorcycles",
+    "Jet Ski",
+    "BMW Motorcycle",
+    "KTM Motorcycles",
+    "indian Motorcycle",
+    "Buggy Car",
+    "Polaris Bike",
+    "can am",
+    "Karting",
+    "Haojue Motorcycle",
+  ];
+  const hondaModels = [
+    "Accord",
+    "Civic",
+    "Odyssey",
+    "CRV",
+    "Baylott",
+    "City",
+    "Legends",
+    "Brielle",
+    "Integra",
+    "HRV",
+    "ZRV",
+  ];
+  const mercedesModels = [
+    "S",
+    "E",
+    "SE",
+    "SEL",
+    "AMG",
+    "Mercedes-Benz G",
+    "C",
+    "SL",
+    "CLS",
+    "ML",
+    "CL",
+    "CLK",
+    "SEC",
+    "SLK",
+    "A-Class",
+    "GLS",
+    "GLE",
+    "GLC",
+    "GLA",
+    "CLA",
+    "V-Class",
+    "B",
+    "GL",
+    "GLK",
+    "GT",
+    "GTS",
+    "R",
+    "SLC",
+    "Van Sprinter",
+    "Maybach",
+    "GLB",
+    "EQA",
+    "EQB",
+    "EQE",
+    "EQS",
+  ];
+  const gmcModels = [
+    "Yukon",
+    "Superban",
+    "Sierra",
+    "Pick up",
+    "Envoy",
+    "Acadia",
+    "Van",
+    "Savana",
+    "Safari",
+    "Terrain",
+    "Jimmy",
+  ];
+  const genesisModels = ["G70", "G80", "G90", "GV80", "GV70"];
+  const lexusModels = [
+    "LS",
+    "LX",
+    "ES",
+    "GS",
+    "IS",
+    "RX",
+    "GX",
+    "SC",
+    "NX",
+    "LC",
+    "RC",
+    "RCF",
+    "UX",
+    "GSF",
+  ];
+  const hyundaiModels = [
+    "Sonata",
+    "Elantra",
+    "Accent",
+    "Azera",
+    "Hyundai H1",
+    "Sentavi",
+    "Tucson",
+    "Veloster",
+    "Trajet",
+    "i40",
+    "Centennial",
+    "Coupe",
+    "i10",
+    "Veracruz",
+    "Terracan",
+    "Matrix",
+    "Galloper",
+    "Kona",
+    "Creta",
+    "Palisade",
+    "Grand Santa Fe",
+    "i30",
+    "Venue",
+    "Staria",
+    "Stargazer",
+  ];
+  const chevroletModels = [
+    "Caprice",
+    "Tahoe",
+    "Suburban",
+    "Lumina",
+    "Salvador",
+    "Camaro",
+    "Blazer",
+    "Epica",
+    "Malibu",
+    "Aveo",
+    "Cruze",
+    "Optra",
+    "Trail Blazer",
+    "Avalanche",
+    "Corvette",
+    "فان",
+    "Impala",
+    "Traverse",
+    "Uplander",
+    "Express Van",
+    "فنشر",
+    "Captiva",
+    "Astro Van",
+    "Sonic",
+    "Spark",
+    "Caravan",
+    "Cavalier",
+    "Colorado",
+    "جي فان",
+    "Equinox",
+    "Bolt",
+    "Groove",
+    "Trax",
+  ];
+  const toyotaModels = [
+    "Land Cruiser",
+    "Camry",
+    "Avalon",
+    "Hilux",
+    "Corolla",
+    "FJ Cruiser",
+    "Land Cruiser 70 Series",
+    "Land Cruiser 70 Series Pick up",
+    "Yaris",
+    "Land Cruiser Prado",
+    "Fortuner",
+    "Aurion",
+    "Cressida",
+    "Sequoia",
+    "Bus",
+    "Innova",
+    "RAV4",
+    "XA",
+    "Eco",
+    "Tundra",
+    "Previa",
+    "Supra",
+    "Toyota 86",
+    "Avanza",
+    "Highlander",
+    "Prius",
+    "Rush",
+    "Granvia",
+    "C-HR",
+    "Corolla Cross",
+    "Raize",
+    "Crown",
+    "Urban Cruiser",
+  ];
   // Handle file selection for images
   const handleFileChange = (index: any) => (e: any) => {
     const file = e.target.files[0];
@@ -2639,8 +3427,11 @@ const Cars = () => {
         registeredCity: registeredCity,
         assembly: assembly,
         LastUpdated: lastUpdated.toISOString(),
-        Condition: condition,
+        Condition: Condition,
         Purpose: purpose,
+        RegionalSpec: selectedSpec,
+        Insurance: Insurance,
+
         Model: model,
         whatsapp: whatsapp,
         type: type,
@@ -2648,7 +3439,6 @@ const Cars = () => {
         VideoAvailability: selectedVideoAvailability,
         PictureAvailability: selectedPictureAvailability,
         FuelType: selectedFuelType,
-        AdType: selectedAdType,
         ModalCategory: selectedModalCategory,
         SellerType: selectedSellerType,
         NumberOfDoors: selectedNumberOfDoors,
@@ -2656,6 +3446,9 @@ const Cars = () => {
         Assembly: selectedAssembly,
         BodyType: selectedBodyType,
         Color: selectedColor,
+        InteriorColor: InteriorColor,
+        AdditionalFeatures: AdditionalFeatures,
+
         EngineType: selectedEngineType,
         EngineCapacity: selectedEngineCapacity,
         Transmission: selectedTransmission,
@@ -2665,7 +3458,7 @@ const Cars = () => {
         DrivenKm: DrivenKm,
         PhoneNumber: PhoneNumber,
 
-        ManufactureYear: ManufactureYear,
+        mileage: mileage,
       });
 
       alert("Car added successfully!");
@@ -4189,7 +4982,1585 @@ const Cars = () => {
                       ))}
                     </select>
                   </div>
+                  {selectedCarBrand === "Toyota" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {toyotaModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Ford" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {toyotaModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Chevrolet" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {chevroletModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Nissan" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {nissanModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Hyundai" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {hyundaiModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Genesis" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {genesisModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Lexus" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {lexusModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "GMC" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {gmcModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Mercedes" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {mercedesModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Honda" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {hondaModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "BMW" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {bmwModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Motorcycles" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {motorcycleBrands.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Kia" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {kiaModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Dodge" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {dodgeModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Chrysler" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {chryslerModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Jeep" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {jeepModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
+                  {selectedCarBrand === "Mitsubishi" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {mitsubishiModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Mazda" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {mazdaModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Porsche" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {porscheModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Audi" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {audiModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Suzuki" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {suzukiModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Infiniti" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {infinitiModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Hummer" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {hummerModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Lincoln" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {lincolnModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Volkswagen" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {volkswagenModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Daihatsu" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {daihatsuModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Geely" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {geelyModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Mercury" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {mercuryModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Volvo" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {volvoModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Peugeot" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {peugeotModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Bentley" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {bentleyModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Jaguar" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {jaguarModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Subaru" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {subaruModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "MG" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {mgModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Changan" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {changanModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Renault" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {renaultModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Buick" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {buickModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Rolls-Royce" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {rollsRoyceModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Lamborghini" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {lamborghiniModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Opel" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {opelModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Rolls-Royce" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {rollsRoyceModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Skoda" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {skodaModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Ferrari" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {ferrariModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Citroen" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {citroenModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Chery" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {cheryModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Daewoo" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {daewooModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "SABB" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {sabbModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "SsangYong" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {ssangYongModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Aston Martin" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {astonMartinModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Proton" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {protonModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Haval" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {havalModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "GAC" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {gacModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Great Wall" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {greatWallModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "FAW" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {fawModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "BYD" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {bydModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Alfa Romeo" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {alfaRomeoModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "TATA" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {tataModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "JETOUR" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {jetourModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "CMC" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {cmcModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "VICTORY AUTO" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {victoryAutoModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "MAXUS" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {maxusModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "BAIC" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {baicModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "DONGFENG" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {dongfengModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "EXEED" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {exeedModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Tank" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {tankModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedCarBrand === "Lynk & Co" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {lynkCoModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "Lucid" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {lucidModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {selectedCarBrand === "INEOS" && (
+                    <div className="mb-4">
+                      <label className="block w-full text-gray-700 text-sm font-bold mb-2">
+                        Make
+                      </label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Model: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select Model</option>
+                        {ineosModels.map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   {/* Price */}
                   <div className="mb-4">
                     <label
@@ -4246,7 +6617,7 @@ const Cars = () => {
                     </label>
                     <select
                       onChange={(e) => setCondition(e.target.value)}
-                      value={condition}
+                      value={Condition}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
@@ -4258,66 +6629,44 @@ const Cars = () => {
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formManufactureYear"
+                      htmlFor="formmileage"
                     >
                       Manufacture Year
                     </label>
                     <input
                       type="text"
-                      placeholder="Enter Manufacture Year"
-                      value={ManufactureYear}
-                      onChange={(e) => setManufactureYear(e.target.value)}
+                      placeholder="Enter mileage "
+                      value={mileage}
+                      onChange={(e) => setmileage(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                   </div>
-
-                  {/* Registered In */}
+                  {/* Specification */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Registered in
+                      Specification
                     </label>
                     <select
-                      onChange={(e) => setRegisteredin(e.target.value)}
-                      value={Registeredin}
+                      onChange={(e) => setSelectedSpec(e.target.value)}
+                      value={selectedSpec}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Select Registered In
+                        Select Specification
                       </option>
-                      <option value="Downtown Dubai">Downtown Dubai</option>
-                      <option value="Dubai Marina">Dubai Marina</option>
-                      <option value="Jumeirah">Jumeirah</option>
-                      <option value="Deira">Deira</option>
-                      <option value="Business Bay">Business Bay</option>
-                    </select>
-                  </div>
-
-                  {/* Trusted Cars */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Trusted Cars
-                    </label>
-                    <select
-                      onChange={(e) => setTrustedCars(e.target.value)}
-                      value={TrustedCars}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" disabled>
-                        Select Trusted Cars
-                      </option>
-                      <option value="Toyota">Toyota</option>
-                      <option value="Mercedez-Benz">Mercedez-Benz</option>
-                      <option value="Nissan">Nissan</option>
-                      <option value="BMW">BMW</option>
-                      <option value="Lamborghini">Lamborghini</option>
+                      <option value="GCC">GCC Specs</option>
+                      <option value="American">American Specs</option>
+                      <option value="Japanese">Japanese Specs</option>
+                      <option value="European">European Specs</option>
+                      <option value="Canadian">Canadian Specs</option>
                     </select>
                   </div>
 
                   {/* Color */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Color
+                      Exterior Color
                     </label>
                     <select
                       onChange={(e) => setSelectedColor(e.target.value)}
@@ -4325,7 +6674,7 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
-                        Select Color
+                        Select Exterior Color
                       </option>
                       <option value="White">White</option>
                       <option value="Black">Black</option>
@@ -4344,7 +6693,36 @@ const Cars = () => {
                       <option value="Turquoise">Turquoise</option>
                     </select>
                   </div>
-
+                  {/* Color */}
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Interior Color
+                    </label>
+                    <select
+                      onChange={(e) => setInteriorColor(e.target.value)}
+                      value={InteriorColor}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Interior Color
+                      </option>
+                      <option value="White">White</option>
+                      <option value="Black">Black</option>
+                      <option value="Grey">Grey</option>
+                      <option value="Red">Red</option>
+                      <option value="Yellow">Yellow</option>
+                      <option value="Blue">Blue</option>
+                      <option value="Green">Green</option>
+                      <option value="Silver">Silver</option>
+                      <option value="Orange">Orange</option>
+                      <option value="Purple">Purple</option>
+                      <option value="Brown">Brown</option>
+                      <option value="Pink">Pink</option>
+                      <option value="Beige">Beige</option>
+                      <option value="Maroon">Maroon</option>
+                      <option value="Turquoise">Turquoise</option>
+                    </select>
+                  </div>
                   {/* Engine Type */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -4553,7 +6931,9 @@ const Cars = () => {
                       <option value="" disabled>
                         Select Ad Type
                       </option>
-                      <option value="Featured Ad">Featured Ad</option>
+                      <option value="Sell">Sell</option>
+                      <option value="Rent">Rent</option>
+                      <option value="Wanted">Wanted</option>
                     </select>
                   </div>
 
@@ -4577,36 +6957,6 @@ const Cars = () => {
                       )}
                     </div>
                   ))}
-
-                  {/* Location */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* Link */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Link
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter link"
-                      value={link}
-                      onChange={(e) => setLink(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
 
                   {/* Description */}
                   <div className="mb-4">
@@ -4698,7 +7048,89 @@ const Cars = () => {
                         Select Fuel Type
                       </option>
                       <option value="Petroleum">Petroleum</option>
-                      <option value="Other">Other</option>
+                      <option value="diesel">Diesel</option>
+                      <option value="electric">Electric</option>
+                      <option value="hybrid">Hybrid</option>
+                      <option value="lpg">LPG</option>
+                      <option value="cng">CNG</option>
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Insurance{" "}
+                    </label>
+                    <select
+                      onChange={handleInsuranceChange}
+                      value={Insurance}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Insurance
+                      </option>
+                      <option value="Comprehensive">
+                        Comprehensive Insurance
+                      </option>
+                      <option value="ThirdParty">Third-Party Insurance</option>
+                      <option value="electric">Electric</option>
+                      <option value="hybrid">Hybrid</option>
+                      <option value="No Insurance">No Insurance</option>
+                      <option value="cng">CNG</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Additional Features
+                    </label>
+                    <select
+                      onChange={handleAdditionalFeatures}
+                      value={AdditionalFeatures}
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" disabled>
+                        Select Additional Feature
+                      </option>
+                      <option value="fullOption">Full option</option>
+                      <option value="insured">Insured</option>
+                      <option value="selfParking">Self Parking</option>
+                      <option value="alarmSystem">Alarm System</option>
+                      <option value="dealership">Dealership</option>
+                      <option value="quickSelling">Quick Selling</option>
+                      <option value="navigation">Navigation</option>
+                      <option value="temperatureSeats">
+                        Temperature Controlled Seats
+                      </option>
+                      <option value="inspected">Inspected</option>
+                      <option value="parkingSensors">Parking Sensors</option>
+                      <option value="bluetooth">Bluetooth</option>
+                      <option value="sunroof">Sunroof/Moonroof</option>
+                      <option value="leatherSeats">Leather Seats</option>
+                      <option value="backupCamera">Backup Camera</option>
+                      <option value="heatedSeats">Heated Seats</option>
+                      <option value="keylessEntry">Keyless Entry</option>
+                      <option value="remoteStart">Remote Start</option>
+                      <option value="adaptiveCruise">
+                        Adaptive Cruise Control
+                      </option>
+                      <option value="laneDeparture">
+                        Lane Departure Warning
+                      </option>
+                      <option value="blindSpot">Blind Spot Monitoring</option>
+                      <option value="premiumSound">Premium Sound System</option>
+                      <option value="awd">All-Wheel Drive</option>
+                      <option value="touchscreen">Touchscreen Display</option>
+                      <option value="carPlay">
+                        Apple CarPlay/Android Auto
+                      </option>
+                      <option value="ledHeadlights">LED Headlights</option>
+                      <option value="towPackage">Tow Package</option>
+                      <option value="powerLiftgate">Power Liftgate</option>
+                      <option value="headUpDisplay">Head-Up Display</option>
+                      <option value="rainWipers">Rain-Sensing Wipers</option>
+                      <option value="emergencyBraking">
+                        Automatic Emergency Braking
+                      </option>
+                      <option value="ambientLighting">Ambient Lighting</option>
                     </select>
                   </div>
 

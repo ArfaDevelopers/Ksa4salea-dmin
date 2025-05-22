@@ -12,11 +12,22 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { Country, State, City, ICity } from "country-state-city";
 import { useRouter } from "next/navigation";
 import cityData from "../../components/City.json";
 import locationData from "../../components/Location.json";
 import WindowedSelect from "react-windowed-select";
+import {
+  FiX,
+  FiUpload,
+  FiDollarSign,
+  FiPhone,
+  FiTag,
+  FiImage,
+  FiFileText,
+  FiBriefcase,
+  FiUser,
+} from "react-icons/fi";
+import { FaCity, FaMapMarkedAlt, FaBuilding } from "react-icons/fa";
 
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -1102,12 +1113,7 @@ const JOBBOARDPage = () => {
   const [whatsapp, setWhatsapp] = useState("03189391781");
   const [Type, setType] = useState("");
   // const [selectedCity, setSelectedCity] = useState<string>("");
-  const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
 
-  useEffect(() => {
-    const saudiCities = City.getCitiesOfCountry("SA") || []; // fallback to empty array
-    setCities(saudiCities);
-  }, []);
   const [Registeredin, setRegisteredin] = useState("");
   const [OperatingSystem, setOperatingSystem] = useState("");
   const [MeasurementRange, setMeasurementRange] = useState("");
@@ -1182,7 +1188,6 @@ const JOBBOARDPage = () => {
   const [nestedSubCategory, setNestedSubCategory] = useState<{
     NestedSubCategory?: string;
   }>({});
-  const [CityList, setCityList] = useState<string[]>([]);
   const [selectedCity, setselectedCity] = useState("");
 
   const [selectedDistrict, setselectedDistrict] = useState("");
@@ -1194,48 +1199,47 @@ const JOBBOARDPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     console.log(name, value);
   };
+  const [locationList, setLocationList] = useState<string[]>([]);
+  interface CityOption {
+    value: string;
+    label: string;
+  }
   useEffect(() => {
-    const data = cityData as unknown as CityJsonFormat;
-    console.log("_________________22", data);
+    console.log("11111122222", locationData); // Check what data you're getting
+    if (Array.isArray(locationData)) {
+      setLocationList(locationData); // Set cityList directly from locationData if it's an array
+    } else {
+      setLocationList([]); // You were using setLocationList before; make sure it's setCityList here
+      console.error("City data is not in expected format");
+    }
+  }, [locationData]);
 
-    if (data && Array.isArray(data)) {
-      setCityList(data);
+  const districtOptions = locationList.map((loc) => ({
+    value: loc,
+    label: loc,
+  }));
+
+  const [cityList, setCityList] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Check if cityData is an array directly
+    if (Array.isArray(cityData)) {
+      setCityList(cityData); // Set cityList directly from cityData if it's an array
     } else {
       setCityList([]);
-      console.error("City JSON data is not in expected format");
+      console.error("City data is not in expected format");
     }
-  }, []);
+  }, [cityData]);
+
   const CityOptions = useMemo(
     () =>
-      CityList.map((city) => ({
+      cityList.map((city) => ({
         value: city, // Adjust based on your cityData structure
         label: city,
       })),
-    [CityList]
+    [cityList]
   );
-  const [DistrictList, setDistrictList] = useState<string[]>([]);
-  console.log("_________________", DistrictList);
-
-  useEffect(() => {
-    const data = locationData as unknown as DistrictJsonFormat;
-    console.log("_________________11", data);
-
-    if (data && Array.isArray(data)) {
-      setDistrictList(data);
-    } else {
-      setDistrictList([]);
-      console.error("Dis JSON data is not in expected format");
-    }
-  }, []);
-
-  const DistrictOptions = useMemo(
-    () =>
-      DistrictList.map((Dis) => ({
-        value: Dis,
-        label: Dis,
-      })),
-    [DistrictList]
-  );
+  console.log(CityOptions, "CityOptions___________");
   const handleCitySelect = (selectedOption: any) => {
     console.log("Selected Option:", selectedOption); // Debug
     setselectedCity(selectedOption); // Update selectedCity state
@@ -3906,135 +3910,259 @@ const JOBBOARDPage = () => {
         </table>
       </div>
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto"
-          style={{ marginTop: "8%" }}
-        >
-          <div
-            className="flex justify-center items-center h-full"
-            style={{ marginTop: "68%" }}
-          >
-            <div className="relative w-full max-w-lg">
-              <button
-                onClick={closeModal}
-                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
-              >
-                &times;
-              </button>
-              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Job
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="flex justify-center items-center min-h-screen py-8 px-4">
+            <div className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6">
+                <button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+                  aria-label="Close"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+                <h3 className="text-white text-2xl font-bold">
+                  Add a New Job Listing
                 </h3>
-                <form onSubmit={handleAddCar}>
-                  {/* Name */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formName"
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <div className="w-full max-w-md mx-auto mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Select a City
-                      </label>
-                      <div className="border border-gray-300 rounded-md shadow-sm p-1 bg-white">
-                        <WindowedSelect
-                          options={CityOptions}
-                          value={selectedCity}
-                          onChange={handleCitySelect}
-                          placeholder="Select a City"
-                          isClearable
-                          windowThreshold={100}
-                          classNames={{
-                            control: () => "p-2",
-                            menu: () => "z-50",
-                          }}
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              borderColor: "#d1d5db", // Tailwind border-gray-300
-                              boxShadow: "none",
-                            }),
-                          }}
+                <p className="text-white/80 mt-1">
+                  Fill in the details below to create your job listing
+                </p>
+              </div>
+
+              {/* Form */}
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                <form onSubmit={handleAddCar} className="space-y-5">
+                  {/* Basic Information Section */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FiUser className="mr-2 h-5 w-5 text-blue-500" />
+                      Basic Information
+                    </h4>
+
+                    <div className="space-y-4">
+                      {/* Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiTag className="mr-2 h-4 w-4 text-blue-500" />
+                            Name
+                          </div>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <div className="w-full max-w-md mx-auto mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Select a District
-                      </label>
-                      <div className="border border-gray-300 rounded-md shadow-sm p-1 bg-white">
-                        <WindowedSelect
-                          options={DistrictOptions}
-                          value={selectedDistrict}
-                          onChange={handleDistrictSelect}
-                          placeholder="Select a City"
-                          isClearable
-                          windowThreshold={100}
-                          classNames={{
-                            control: () => "p-2",
-                            menu: () => "z-50",
-                          }}
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              borderColor: "#d1d5db", // Tailwind border-gray-300
-                              boxShadow: "none",
-                            }),
-                          }}
-                        />
+
+                      {/* Location Information */}
+                      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
+                      {/* City */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FaCity className="mr-2 h-4 w-4 text-blue-500" />
+                            City
+                          </div>
+                        </label>
+                        <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                          <WindowedSelect
+                            options={CityOptions}
+                            value={
+                              CityOptions.find(
+                                (option) => option.value === formData.City
+                              ) || null
+                            }
+                            onChange={(newValue: unknown, actionMeta) => {
+                              const selectedOption = newValue as {
+                                value: string;
+                              } | null;
+                              setFormData((prev) => ({
+                                ...prev,
+                                City: selectedOption
+                                  ? selectedOption.value
+                                  : "",
+                              }));
+                            }}
+                            placeholder="Select a City"
+                            isClearable
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            windowThreshold={100}
+                            styles={{
+                              control: (base) => ({
+                                ...base,
+                                borderRadius: "0.5rem",
+                                borderColor: "#d1d5db",
+                                minHeight: "42px",
+                                boxShadow: "none",
+                                "&:hover": {
+                                  borderColor: "#a855f7",
+                                },
+                              }),
+                              option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isSelected
+                                  ? "#a855f7"
+                                  : state.isFocused
+                                  ? "#f3e8ff"
+                                  : undefined,
+                                "&:active": {
+                                  backgroundColor: "#a855f7",
+                                },
+                              }),
+                            }}
+                          />
+                        </div>
                       </div>
+
+                      {/* District */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FaMapMarkedAlt className="mr-2 h-4 w-4 text-blue-500" />
+                            District
+                          </div>
+                        </label>
+                        <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                          <Select
+                            options={districtOptions}
+                            value={
+                              districtOptions.find(
+                                (option) => option.value === formData.District
+                              ) || null
+                            }
+                            onChange={(selectedOption) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                District: selectedOption
+                                  ? selectedOption.value
+                                  : "",
+                              }))
+                            }
+                            placeholder="Select a district"
+                            isClearable
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            styles={{
+                              control: (base) => ({
+                                ...base,
+                                borderRadius: "0.5rem",
+                                borderColor: "#d1d5db",
+                                minHeight: "42px",
+                                boxShadow: "none",
+                                "&:hover": {
+                                  borderColor: "#a855f7",
+                                },
+                              }),
+                              option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isSelected
+                                  ? "#a855f7"
+                                  : state.isFocused
+                                  ? "#f3e8ff"
+                                  : undefined,
+                                "&:active": {
+                                  backgroundColor: "#a855f7",
+                                },
+                              }),
+                            }}
+                          />
+                        </div>
+                      </div>
+                      {/* </div> */}
                     </div>
                   </div>
 
-                  <div className="card w-100 w-md-50">
-                    <div className="form-group">
-                      <label className="col-form-label label-heading">
-                        Category
-                      </label>
-                      <div className="row category-listing">
+                  {/* Category Section */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FaBuilding className="mr-2 h-5 w-5 text-blue-500" />
+                      Job Category
+                    </h4>
+
+                    <div className="space-y-4">
+                      {/* Category */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Category
+                        </label>
                         <Select
                           options={categoryOptions}
                           value={categoryOptions.find(
                             (option) => option.value === formData.category
                           )}
                           onChange={handleCategoryChange}
-                          className="basic-single"
-                          classNamePrefix="select"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
                           placeholder="Select Category"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#3b82f6",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#3b82f6"
+                                : state.isFocused
+                                ? "#eff6ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#3b82f6",
+                              },
+                            }),
+                          }}
                         />
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="card w-100 w-md-50">
-                    <div className="form-group">
-                      <label className="col-form-label label-heading">
-                        Select SubCategory
-                      </label>
-                      <div className="row category-listing">
+                      {/* SubCategory */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          SubCategory
+                        </label>
                         <Select
                           options={subcategories}
                           value={subcategories.find(
                             (option) => option.value === formData.SubCategory
                           )}
                           onChange={handleSubcategoryChange}
-                          className="basic-single"
-                          classNamePrefix="select"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
                           placeholder="Select Subcategory"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderRadius: "0.5rem",
+                              borderColor: "#d1d5db",
+                              minHeight: "42px",
+                              boxShadow: "none",
+                              "&:hover": {
+                                borderColor: "#3b82f6",
+                              },
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isSelected
+                                ? "#3b82f6"
+                                : state.isFocused
+                                ? "#eff6ff"
+                                : undefined,
+                              "&:active": {
+                                backgroundColor: "#3b82f6",
+                              },
+                            }),
+                          }}
                         />
                       </div>
                     </div>
@@ -5010,1823 +5138,155 @@ const JOBBOARDPage = () => {
                     ""
                   )}
 
-                  {/* <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Vaccinated
-                    </label>
-                    <select
-                      onChange={(e) => setVaccinated(e.target.value)}
-                      value={Vaccinated}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="">Select Vaccinated</option>
-                      <option value="Vaccinated">Vaccinated</option>
-                      <option value="Not Vaccinated">Not Vaccinated</option>
-                    </select>
-                  </div> */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FiBriefcase className="mr-2 h-5 w-5 text-blue-500" />
+                      Job Details
+                    </h4>
 
-                  {/* Car Brand Selection */}
-
-                  {/* SalaryRange */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formSalaryRange"
-                    >
-                      Expected Salary Range
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter SalaryRange"
-                      value={SalaryRange}
-                      onChange={(e) => setSalaryRange(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="card gap-2">
-                    <div className="card-header"></div>
-                    <div className="card-body">
-                      <div className="space-y-6">
-                        {/* KM Driven */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            KM Driven
-                          </label>
+                    <div className="space-y-4">
+                      {/* Salary Range */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiDollarSign className="mr-2 h-4 w-4 text-blue-500" />
+                            Expected Salary Range
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiDollarSign className="h-5 w-5 text-gray-400" />
+                          </div>
                           <input
-                            type="text"
-                            name="kmDriven"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter kilometers driven"
-                            value={formData.kmDriven}
-                            onChange={handleChange}
+                            type="number"
+                            placeholder="Enter Salary Range"
+                            value={SalaryRange}
+                            onChange={(e) => setSalaryRange(e.target.value)}
+                            required
+                            className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                           />
                         </div>
+                      </div>
 
-                        {/* Transmission */}
-                        <div className="bg-white rounded-lg shadow p-4">
-                          <h4 className="text-lg font-semibold mb-3 text-gray-800">
-                            Transmission
-                          </h4>
-                          <div className="space-y-2">
-                            {["Automatic", "Manual"].map((type) => (
-                              <label
-                                key={type}
-                                className="flex items-center space-x-2"
-                              >
-                                <input
-                                  type="checkbox"
-                                  name={type}
-                                  checked={formData.Transmission === type}
-                                  onChange={handleTransmissionChange}
-                                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                      {/* Description */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiFileText className="mr-2 h-4 w-4 text-blue-500" />
+                            Description
+                          </div>
+                        </label>
+                        <textarea
+                          rows={3}
+                          placeholder="Enter description"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                        />
+                      </div>
+
+                      {/* Job Description */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiBriefcase className="mr-2 h-4 w-4 text-blue-500" />
+                            Job Description
+                          </div>
+                        </label>
+                        <textarea
+                          rows={4}
+                          placeholder="Enter detailed job description"
+                          value={jobdescription}
+                          onChange={(e) => setJobDescription(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                        />
+                      </div>
+
+                      {/* Phone */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <div className="flex items-center">
+                            <FiPhone className="mr-2 h-4 w-4 text-blue-500" />
+                            Phone
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiPhone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Enter Phone Number"
+                            value={PhoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                            className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Image Uploads */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                      <FiImage className="mr-2 h-5 w-5 text-blue-500" />
+                      Supporting Images
+                    </h4>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {[...Array(6)].map((_, index) => (
+                        <div
+                          key={index}
+                          className="border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3 transition-colors hover:border-blue-500 dark:hover:border-blue-400"
+                        >
+                          <div className="flex flex-col items-center">
+                            {imageUrls[index] ? (
+                              <div className="relative w-full">
+                                <img
+                                  src={imageUrls[index] || "/placeholder.svg"}
+                                  alt={`Preview ${index + 1}`}
+                                  className="w-full h-28 object-cover rounded-md"
                                 />
-                                <span className="text-gray-700">{type}</span>
+                                <label
+                                  htmlFor={`image-upload-${index}`}
+                                  className="absolute bottom-2 right-2 bg-white dark:bg-gray-800 rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <FiUpload className="h-4 w-4 text-blue-500" />
+                                </label>
+                              </div>
+                            ) : (
+                              <label
+                                htmlFor={`image-upload-${index}`}
+                                className="flex flex-col items-center justify-center w-full h-28 cursor-pointer"
+                              >
+                                <FiUpload className="h-8 w-8 text-gray-400 mb-2" />
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                  Image {index + 1}
+                                </span>
                               </label>
-                            ))}
+                            )}
+                            <input
+                              id={`image-upload-${index}`}
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileChange(index)}
+                              className="hidden"
+                            />
                           </div>
                         </div>
-
-                        {/* Condition */}
-                        <div className="bg-white rounded-lg shadow p-4">
-                          <h4 className="text-lg font-semibold mb-3 text-gray-800">
-                            Condition
-                          </h4>
-                          <div className="space-y-2">
-                            {["New", "Used"].map((status) => (
-                              <label
-                                key={status}
-                                className="flex items-center space-x-2"
-                              >
-                                <input
-                                  type="checkbox"
-                                  name={status}
-                                  checked={formData.Condition === status}
-                                  onChange={handleCondition}
-                                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                                />
-                                <span className="text-gray-700">{status}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="card-body">
-                      <div className="mb-6 relative">
-                        <div className="mb-2">
-                          <h4 className="text-lg font-semibold text-gray-800">
-                            Make
-                          </h4>
-                        </div>
-
-                        <input
-                          type="text"
-                          placeholder="Select car brand"
-                          value={query}
-                          onChange={(e) => {
-                            setQuery(e.target.value);
-                            setSelected(""); // clear selected value on change
-                            setShowList(true);
-                          }}
-                          onFocus={() => setShowList(true)}
-                          onBlur={() =>
-                            setTimeout(() => setShowList(false), 150)
-                          } // delay to allow click
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                        />
-
-                        {showList && filteredBrands.length > 0 && (
-                          <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                            {filteredBrands.map((brand) => (
-                              <li
-                                key={brand}
-                                className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
-                                onMouseDown={() => handleSelect(brand)} // use onMouseDown to avoid blur
-                              >
-                                {brand}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                      {(selected === "Toyota" || selected === "Ford") && (
-                        <div className="mt-6">
-                          <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                            Model
-                          </h4>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                            value={formData.Model}
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {(selected === "Toyota"
-                              ? toyotaModels
-                              : fordModels
-                            ).map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      {selected === "Chevrolet" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {chevroletModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Nissan" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {nissanModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Hyundai" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {hyundaiModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      {selected === "Genesis" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {genesisModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Lexus" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {lexusModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "GMC" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {gmcModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Mercedes" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {mercedesModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Honda" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {hondaModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "BMW" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Model</option>
-                            {bmwModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Motorcycles" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Brand
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Motorcycle Brand</option>
-                            {motorcycleBrands.map((brand) => (
-                              <option key={brand} value={brand}>
-                                {brand}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Kia" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Kia Model</option>
-                            {kiaModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Dodge" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Dodge Model</option>
-                            {dodgeModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Chrysler" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Chrysler Model</option>
-                            {chryslerModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Jeep" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Jeep Model</option>
-                            {jeepModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Mitsubishi" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Mitsubishi Model</option>
-                            {mitsubishiModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Mazda" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Mazda Model</option>
-                            {mazdaModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Porsche" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Porsche Model</option>
-                            {porscheModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Audi" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Audi Model</option>
-                            {audiModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Suzuki" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Suzuki Model</option>
-                            {suzukiModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Infiniti" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Infiniti Model</option>
-                            {infinitiModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Hummer" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Hummer Model</option>
-                            {hummerModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Lincoln" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Lincoln Model</option>
-                            {lincolnModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Volkswagen" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Volkswagen Model</option>
-                            {volkswagenModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Daihatsu" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Daihatsu Model</option>
-                            {daihatsuModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Geely" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Geely Model</option>
-                            {geelyModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Mercury" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Mercury Model</option>
-                            {mercuryModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Volvo" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Volvo Model</option>
-                            {volvoModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Peugeot" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Peugeot Model</option>
-                            {peugeotModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Bentley" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Bentley Model</option>
-                            {bentleyModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Jaguar" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Jaguar Model</option>
-                            {jaguarModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Subaru" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Subaru Model</option>
-                            {subaruModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "MG" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select MG Model</option>
-                            {mgModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Changan" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Changan Model</option>
-                            {changanModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Renault" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Renault Model</option>
-                            {renaultModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Buick" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Buick Model</option>
-                            {buickModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Rolls-Royce" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Rolls-Royce Model</option>
-                            {rollsRoyceModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Lamborghini" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Lamborghini Model</option>
-                            {lamborghiniModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Opel" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Opel Model</option>
-                            {opelModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Skoda" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Skoda Model</option>
-                            {skodaModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Ferrari" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Ferrari Model</option>
-                            {ferrariModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Citroen" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Citroen Model</option>
-                            {citroenModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Chery" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Chery Model</option>
-                            {cheryModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      {selected === "Daewoo" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Daewoo Model</option>
-                            {daewooModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "SABB" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select SABB Model</option>
-                            {sabbModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "SsangYong" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select SsangYong Model</option>
-                            {ssangYongModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Aston Martin" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Aston Martin Model</option>
-                            {astonMartinModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Proton" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Proton Model</option>
-                            {protonModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Haval" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Haval Model</option>
-                            {havalModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "GAC" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select GAC Model</option>
-                            {gacModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Great Wall" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Great Wall Model</option>
-                            {greatWallModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "FAW" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select FAW Model</option>
-                            {fawModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "BYD" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select BYD Model</option>
-                            {bydModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Alfa Romeo" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Alfa Romeo Model</option>
-                            {alfaRomeoModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "TATA" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select TATA Model</option>
-                            {tataModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "JETOUR" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select JETOUR Model</option>
-                            {jetourModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "CMC" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select CMC Model</option>
-                            {cmcModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "VICTORY AUTO" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Victory Auto Model</option>
-                            {victoryAutoModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "MAXUS" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Maxus Model</option>
-                            {maxusModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "BAIC" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Baic Model</option>
-                            {baicModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "DONGFENG" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Dongfeng Model</option>
-                            {dongfengModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "EXEED" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select EXEED Model</option>
-                            {exeedModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Tank" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Tank Model</option>
-                            {tankModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Lynk & Co" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Lynk & Co Model</option>
-                            {lynkCoModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "Lucid" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select Lucid Model</option>
-                            {lucidModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {selected === "INEOS" && (
-                        <div className="mt-4">
-                          <label className="block mb-2 text-sm font-medium text-gray-700">
-                            Model
-                          </label>
-                          <select
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                Model: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Select INEOS Model</option>
-                            {ineosModels.map((model) => (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-                    <div className="card-body">
-                      <div className="form-group">
-                        <label className="col-form-label">Mileage</label>
-                        <input
-                          type="text"
-                          name="mileage"
-                          className="form-control pass-input"
-                          placeholder="Enter mileage"
-                          value={formData.mileage}
-                          onChange={handleChange}
-                        />
-                      </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Employment Type
-                    </label>
-                    <select
-                      onChange={(e) => setEmploymentType(e.target.value)}
-                      value={EmploymentType}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option disabled value="">
-                        Employment Type
-                      </option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Part-time">Part-time</option>
-                      <option value="Temporary">Temporary</option>
-
-                      <option value="Internship">Internship</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {[...Array(6)].map((_, index) => (
-                    <div className="mb-4" key={index}>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">{`Image Upload ${
-                        index + 1
-                      }`}</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange(index)}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      />
-                      {imageUrls[index] && (
-                        <img
-                          src={imageUrls[index]}
-                          alt={`Preview ${index + 1}`}
-                          className="mt-2 w-32 h-32 object-cover border rounded"
-                        />
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Location */}
-                  {/* <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div> */}
-
-                  {/* Description */}
-
-                  {/* Time Ago */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Time Ago (Date Posted)
-                    </label>
-                    <DatePicker
-                      selected={timeAgo} // Pass the state as the selected value.
-                      onChange={(date: Date | null) => setTimeAgo(date)} // Update state when a new date is selected.
-                      dateFormat="MMMM d, yyyy"
-                      showYearDropdown
-                      scrollableYearDropdown
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      required
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Phone Number"
-                      value={PhoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-
-                  {/* WhatsApp */}
-                  {/* <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      WhatsApp
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter WhatsApp number"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div> */}
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Job Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Enter description"
-                      value={jobdescription}
-                      onChange={(e) => setJobDescription(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                   >
-                    Add Listing
+                    Add Job Listing
                   </button>
                 </form>
               </div>
