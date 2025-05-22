@@ -10,7 +10,15 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
-
+import {
+  FiX,
+  FiUser,
+  FiPhone,
+  FiUpload,
+  FiCheck,
+  FiImage,
+} from "react-icons/fi";
+import { FaCar, FaCarSide } from "react-icons/fa";
 // For date picker
 import DatePicker, { registerLocale } from "react-datepicker";
 import { enUS } from "date-fns/locale"; // Import English locale
@@ -849,99 +857,202 @@ const CommercialAdscom = () => {
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 overflow-y-auto">
-          <div
-            className="flex justify-center items-center h-full"
-            style={{ marginTop: "4%" }}
-          >
-            <div
-              className="relative w-full max-w-lg"
-              style={{ marginTop: "0%" }}
-            >
-              <button
-                onClick={closeModal}
-                className="absolute top-2 right-2 text-gray-700 hover:text-gray-900"
-              >
-                &times;
-              </button>
-              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h3 className="text-center text-2xl font-bold mb-4">
-                  Add a New Car Listing
-                </h3>
-                <form onSubmit={handleAddCar}>
-                  {/* Name */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formName"
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm overflow-y-auto">
+          <div className="flex justify-center items-center min-h-screen py-8 px-4">
+            <div className="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mt-20 -mr-20 blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
 
-                  {/* Price */}
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="formPrice"
-                    >
-                      Phone
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Enter Phone"
-                      value={phone}
-                      onChange={(e) => setphone(e.target.value)}
-                      required
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
+                <button
+                  onClick={closeModal}
+                  className="absolute  top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 cursor-pointer transition-colors z-10"
+                  aria-label="Close"
+                >
+                  <FiX className="mt-12 text-white w-5 h-5" />
+                </button>
 
-                  <div className="p-4 border rounded-lg shadow-md bg-white w-96 mx-auto text-center">
-                    <h2 className="text-lg font-semibold mb-4">
-                      Upload main add banner for Home Screen
-                    </h2>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="mb-4"
-                    />
-                    {preview && (
-                      <div className="mb-4">
-                        <img
-                          src={preview}
-                          alt="Preview"
-                          className="w-full h-48 object-cover rounded-lg"
+                <div className="flex items-center mb-2">
+                  <div className="flex space-x-2 mr-3">
+                    <FaCar className="text-white/90 h-6 w-6" />
+                    <FaCarSide className="text-white/90 h-6 w-6" />
+                  </div>
+                  <h3 className="text-white text-2xl font-bold relative z-10">
+                    Add a New Car Listing
+                  </h3>
+                </div>
+                <p className="text-white/80 mt-1 relative z-10">
+                  Fill in the details below to create your car listing
+                </p>
+              </div>
+
+              {/* Form */}
+              <div className="p-6 bg-gray-50 dark:bg-gray-800">
+                <form onSubmit={handleAddCar} className="space-y-6">
+                  {/* Basic Information Section */}
+                  <div className="bg-white dark:bg-gray-750 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                        <FiUser className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Basic Information
+                    </h4>
+
+                    <div className="space-y-4">
+                      {/* Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiUser className="mr-2 h-4 w-4 text-blue-500" />
+                            Name
+                          </div>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                         />
                       </div>
-                    )}
-                    <button
-                      onClick={handleUpload}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
-                      disabled={uploading}
-                    >
-                      {uploading ? "Uploading..." : "Upload Image"}
-                    </button>
+
+                      {/* Phone */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          <div className="flex items-center">
+                            <FiPhone className="mr-2 h-4 w-4 text-blue-500" />
+                            Phone
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiPhone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="number"
+                            placeholder="Enter Phone"
+                            value={phone}
+                            onChange={(e) => setphone(e.target.value)}
+                            required
+                            className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Image Upload Section */}
+                  <div className="bg-white dark:bg-gray-750 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                        <FiImage className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Upload Banner Image
+                    </h4>
+
+                    <div className="flex flex-col items-center">
+                      {preview ? (
+                        <div className="mb-4 w-full">
+                          <div className="relative group">
+                            <img
+                              src={preview || "/placeholder.svg"}
+                              alt="Preview"
+                              className="w-full h-48 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                              <label
+                                htmlFor="banner-upload"
+                                className="bg-white dark:bg-gray-800 rounded-full p-2 shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              >
+                                <FiUpload className="h-5 w-5 text-blue-600" />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <label
+                          htmlFor="banner-upload"
+                          className="flex flex-col items-center justify-center w-full h-48 cursor-pointer bg-gray-50 dark:bg-gray-700/30 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+                        >
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <FiUpload className="h-10 w-10 text-gray-400 mb-3" />
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                              <span className="font-semibold">
+                                Click to upload
+                              </span>{" "}
+                              or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              PNG, JPG or JPEG (MAX. 2MB)
+                            </p>
+                          </div>
+                        </label>
+                      )}
+
+                      <input
+                        id="banner-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={handleUpload}
+                        disabled={uploading || !preview}
+                        className={`mt-4 px-4 py-2.5 rounded-lg flex items-center justify-center transition-colors ${
+                          uploading || !preview
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-700 text-white"
+                        }`}
+                      >
+                        {uploading ? (
+                          <>
+                            <svg
+                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <FiUpload className="mr-2 h-4 w-4" />
+                            Upload Image
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium rounded-xl shadow-md hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center"
                   >
-                    Add Listing
+                    <FiCheck className="mr-2 h-5 w-5" />
+                    Add Car Listing
                   </button>
                 </form>
               </div>
-              {/* </div> */}
             </div>
           </div>
         </div>
