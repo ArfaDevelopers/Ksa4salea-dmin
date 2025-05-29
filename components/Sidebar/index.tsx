@@ -110,6 +110,7 @@ const menuGroups = [
           { label: "Popup Banner", route: "/Bannermain" },
           { label: "Slider Images", route: "/SliderImage" },
           { label: "Ads detail Images", route: "/AdsdetailImages" },
+          { label: "Body Content", route: "/BodyContent" },
 
           // { label: "Banner Image", route: "/Bannerimg" },
           // { label: "Hero Banner", route: "/HeroBanner" },

@@ -1,49 +1,44 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+import JoditEditor from "jodit-react";
 import { db } from "../Firebase/FirebaseConfig";
 import {
   addDoc,
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
-  setDoc,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-
-// For date picker
-import DatePicker, { registerLocale } from "react-datepicker";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { format } from "date-fns";
 
-interface AboutUsItem {
+interface BodyContentItem {
   id: string;
   content: string;
   createdAt: Timestamp | Date;
 }
 
-const AboutUs: React.FC = () => {
+const BodyContent: React.FC = () => {
   const MySwal = withReactContent(Swal);
+  const editor = useRef(null);
 
   const [input, setInput] = useState<string>("");
-  const [aboutList, setAboutList] = useState<AboutUsItem[]>([]);
+  const [aboutList, setAboutList] = useState<BodyContentItem[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
 
-  // Fetch data
   const fetchData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "AboutUs"));
+      const querySnapshot = await getDocs(collection(db, "BodyContent"));
       const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as AboutUsItem[];
+      })) as BodyContentItem[];
       setAboutList(data);
     } catch (error) {
       console.error("Error fetching About Us data:", error);
@@ -54,22 +49,32 @@ const AboutUs: React.FC = () => {
     fetchData();
   }, []);
 
-  // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) {
-      MySwal.fire("Warning", "Please enter About Us content", "warning");
+      MySwal.fire("Warning", "Please enter content", "warning");
       return;
     }
 
     try {
       if (editId) {
-        await updateDoc(doc(db, "AboutUs", editId), {
+        // Update existing entry
+        await updateDoc(doc(db, "BodyContent", editId), {
           content: input,
         });
         MySwal.fire("Updated", "Content updated successfully", "success");
       } else {
-        await addDoc(collection(db, "AboutUs"), {
+        // Prevent adding more than one item
+        if (aboutList.length >= 1) {
+          MySwal.fire(
+            "Warning",
+            "Only one Terms and Conditions entry is allowed.",
+            "warning"
+          );
+          return;
+        }
+
+        await addDoc(collection(db, "BodyContent"), {
           content: input,
           createdAt: Timestamp.now(),
         });
@@ -84,13 +89,11 @@ const AboutUs: React.FC = () => {
     }
   };
 
-  // Edit handler
-  const handleEdit = (item: AboutUsItem) => {
+  const handleEdit = (item: BodyContentItem) => {
     setInput(item.content);
     setEditId(item.id);
   };
 
-  // Delete handler
   const handleDelete = async (id: string) => {
     const result = await MySwal.fire({
       title: "Are you sure?",
@@ -101,7 +104,7 @@ const AboutUs: React.FC = () => {
     });
 
     if (result.isConfirmed) {
-      await deleteDoc(doc(db, "AboutUs", id));
+      await deleteDoc(doc(db, "BodyContent", id));
       MySwal.fire("Deleted", "Content has been deleted", "success");
       fetchData();
     }
@@ -114,16 +117,20 @@ const AboutUs: React.FC = () => {
       </h2>
 
       <form onSubmit={handleSubmit} className="mb-8">
-        <textarea
-          rows={4}
-          className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400"
-          placeholder="Enter About Us content..."
+        <JoditEditor
+          ref={editor}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          tabIndex={1}
+          onChange={(newContent) => setInput(newContent)}
         />
         <button
           type="submit"
-          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          disabled={!editId && aboutList.length >= 1}
+          className={`mt-4 px-6 py-2 rounded-lg transition duration-200 focus:outline-none ${
+            !editId && aboutList.length >= 1
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
         >
           {editId ? "Update" : "Add"} Content
         </button>
@@ -136,7 +143,10 @@ const AboutUs: React.FC = () => {
             className="bg-white p-4 rounded shadow flex justify-between items-start border"
           >
             <div className="flex-1">
-              <p className="text-gray-800">{item.content}</p>
+              <div
+                className="text-gray-800"
+                dangerouslySetInnerHTML={{ __html: item.content }}
+              />
               {item.createdAt && (
                 <p className="text-xs text-gray-500 mt-1">
                   Created at:{" "}
@@ -170,4 +180,4 @@ const AboutUs: React.FC = () => {
   );
 };
 
-export default AboutUs;
+export default BodyContent;
