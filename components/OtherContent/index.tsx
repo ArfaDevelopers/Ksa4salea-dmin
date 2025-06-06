@@ -18,27 +18,27 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { format } from "date-fns";
 
-interface BodyContentItem {
+interface OtherContentItem {
   id: string;
   content: string;
   createdAt: Timestamp | Date;
 }
 
-const BodyContent: React.FC = () => {
+const OtherContent: React.FC = () => {
   const MySwal = withReactContent(Swal);
   const editor = useRef(null);
 
   const [input, setInput] = useState<string>("");
-  const [aboutList, setAboutList] = useState<BodyContentItem[]>([]);
+  const [aboutList, setAboutList] = useState<OtherContentItem[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
 
   const fetchData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "BodyContent"));
+      const querySnapshot = await getDocs(collection(db, "OtherContent"));
       const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as BodyContentItem[];
+      })) as OtherContentItem[];
       setAboutList(data);
     } catch (error) {
       console.error("Error fetching About Us data:", error);
@@ -59,7 +59,7 @@ const BodyContent: React.FC = () => {
     try {
       if (editId) {
         // Update existing entry
-        await updateDoc(doc(db, "BodyContent", editId), {
+        await updateDoc(doc(db, "OtherContent", editId), {
           content: input,
         });
         MySwal.fire("Updated", "Content updated successfully", "success");
@@ -74,7 +74,7 @@ const BodyContent: React.FC = () => {
           return;
         }
 
-        await addDoc(collection(db, "BodyContent"), {
+        await addDoc(collection(db, "OtherContent"), {
           content: input,
           createdAt: Timestamp.now(),
         });
@@ -89,7 +89,7 @@ const BodyContent: React.FC = () => {
     }
   };
 
-  const handleEdit = (item: BodyContentItem) => {
+  const handleEdit = (item: OtherContentItem) => {
     setInput(item.content);
     setEditId(item.id);
   };
@@ -104,7 +104,7 @@ const BodyContent: React.FC = () => {
     });
 
     if (result.isConfirmed) {
-      await deleteDoc(doc(db, "BodyContent", id));
+      await deleteDoc(doc(db, "OtherContent", id));
       MySwal.fire("Deleted", "Content has been deleted", "success");
       fetchData();
     }
@@ -113,7 +113,7 @@ const BodyContent: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h2 className="text-3xl font-semibold text-center mb-6">
-        Manage Automotive Page Content{" "}
+        Manage Electronic Page Content
       </h2>
 
       <form onSubmit={handleSubmit} className="mb-8">
@@ -180,4 +180,4 @@ const BodyContent: React.FC = () => {
   );
 };
 
-export default BodyContent;
+export default OtherContent;

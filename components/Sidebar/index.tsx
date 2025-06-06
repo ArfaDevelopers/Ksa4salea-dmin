@@ -32,6 +32,7 @@ import { SiWoocommerce } from "react-icons/si";
 import { FaRoadSpikes } from "react-icons/fa6";
 import { TbSlideshow } from "react-icons/tb";
 import { PiUserGearFill } from "react-icons/pi";
+import { RiBodyScanLine } from "react-icons/ri";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -110,7 +111,31 @@ const menuGroups = [
           { label: "Popup Banner", route: "/Bannermain" },
           { label: "Slider Images", route: "/SliderImage" },
           { label: "Ads detail Images", route: "/AdsdetailImages" },
-          { label: "Body Content", route: "/BodyContent" },
+
+          // { label: "Banner Image", route: "/Bannerimg" },
+          // { label: "Hero Banner", route: "/HeroBanner" },
+          // { label: "Commercial Ads", route: "/CommercialAdscom" },
+          // { label: "Games & Sport", route: "/GamesSport" },
+        ],
+      },
+      {
+        icon: (
+          <RiBodyScanLine
+            style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
+          />
+        ),
+        label: "Losting page content",
+        route: "#",
+        children: [
+          { label: "JobBoard Content", route: "/JobBoardcontent" },
+          { label: "Fashion Page content", route: "/BodyContentFashion" },
+          { label: "Electronic Content", route: "/BodyContentElectronic" },
+          { label: "Automotive Content", route: "/BodyContent" },
+          { label: "RealEstate Content", route: "/RealEstateContent" },
+          { label: "Services Content", route: "/ServicesContent" },
+          { label: "SportGames Content", route: "/SportGamesContent" },
+          { label: "Pet & Animals Content", route: "/OtherContent" },
+          { label: "Other Content", route: "/PetAnimalsContent" },
 
           // { label: "Banner Image", route: "/Bannerimg" },
           // { label: "Hero Banner", route: "/HeroBanner" },
