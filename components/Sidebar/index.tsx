@@ -124,17 +124,20 @@ const menuGroups = [
             style={{ fontSize: "1em", height: "1.3rem", width: "1rem" }}
           />
         ),
-        label: "Losting page content",
+        label: "Listing page content",
         route: "#",
         children: [
-          { label: "JobBoard Content", route: "/JobBoardcontent" },
-          { label: "Fashion Page content", route: "/BodyContentFashion" },
+          { label: "Motors Content", route: "/BodyContent" },
           { label: "Electronic Content", route: "/BodyContentElectronic" },
-          { label: "Automotive Content", route: "/BodyContent" },
+          { label: "Fashion content", route: "/BodyContentFashion" },
+          { label: "Home & Furniture Content", route: "/HomeFurnitureContent" },
+
+          { label: "Jobs Content", route: "/JobBoardcontent" },
+
           { label: "RealEstate Content", route: "/RealEstateContent" },
           { label: "Services Content", route: "/ServicesContent" },
-          { label: "SportGames Content", route: "/SportGamesContent" },
-          { label: "Pet & Animals Content", route: "/OtherContent" },
+          { label: "Games & Toys Content", route: "/SportGamesContent" },
+          { label: "Pet Content", route: "/OtherContent" },
           { label: "Other Content", route: "/PetAnimalsContent" },
 
           // { label: "Banner Image", route: "/Bannerimg" },
