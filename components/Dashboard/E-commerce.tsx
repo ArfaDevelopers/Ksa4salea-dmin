@@ -66,11 +66,30 @@ const ECommerce: React.FC = () => {
 
     trackVisit();
   }, []);
+  const [Activelisting, setActivelisting] = useState(0);
+
+  useEffect(() => {
+    // Function to fetch data from the API
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://168.231.80.24:9002/api/total-data-count"
+        );
+        const data = await response.json();
+        setActivelisting(data.totalCount);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Call the fetch function
+    fetchData();
+  }, []);
   useEffect(() => {
     const fetchCollectionCounts = async () => {
       try {
         const response = await axios.get(
-          "http://168.231.80.24:9002/api/collection-counts"
+          "http://168.231.80.24:9002/api/total-data-count"
         );
 
         if (response.data.success) {
@@ -152,7 +171,7 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
         <CardDataStats
           title="Total Product"
-          total={totalProduct.toString()} // Convert the number to string here if required
+          total={Activelisting.toString()} // Convert the number to string here if required
           rate=""
           levelUp
         >
