@@ -66,6 +66,24 @@ const ECommerce: React.FC = () => {
 
     trackVisit();
   }, []);
+  const [Activelistingusers, setActivelistingusers] = useState(0);
+
+  useEffect(() => {
+    // Function to fetch data from the API
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://168.231.80.24:9002/api/users");
+        const data = await response.json();
+        setActivelistingusers(data.totalUsers);
+        console.log(data, "http://168.231.80.24:9002/api/users");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Call the fetch function
+    fetchData();
+  }, []);
   const [Activelisting, setActivelisting] = useState(0);
 
   useEffect(() => {
@@ -195,7 +213,7 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
         <CardDataStats
           title="Total Users"
-          total={userCount.toString()}
+          total={Activelistingusers?.toString()}
           rate=""
           levelDown
         >
