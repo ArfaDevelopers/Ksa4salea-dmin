@@ -40,7 +40,7 @@ type Ad = {
   description: string;
   location: string;
   img: string;
-  price: string;
+  Price: string;
   DrivenKm: any;
   Assembly: any;
   EngineCapacity: any;
@@ -145,7 +145,7 @@ const CommercialAdscom = () => {
             description: data.description || "",
             location: data.location || "",
             img: data.img || "",
-            price: data.price || "",
+            Price: data.Price || "",
             Assembly: data.Assembly || "",
             BodyType: data.BodyType || "", // Fixed typo here
             Color: data.Color || "",
@@ -246,7 +246,7 @@ const CommercialAdscom = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setphone(adData.price);
+        setphone(adData.Price);
 
         // Ensure all required fields are present or provide defaults
         const selectedAd: Ad = {
@@ -257,7 +257,7 @@ const CommercialAdscom = () => {
           description: adData.description || "No description",
           location: adData.location || "Unknown",
           img: adData.img || "",
-          price: adData.price || "0",
+          Price: adData.Price || "0",
           DrivenKm: adData.DrivenKm || "AdType",
           Assembly: adData.Assembly || "Assembly",
           City: adData.City || "City",
@@ -306,7 +306,7 @@ const CommercialAdscom = () => {
         setPurpose(selectedAd.purpose);
         setType(selectedAd.type);
 
-        setphone(selectedAd.price);
+        setphone(selectedAd.Price);
         setLocation(selectedAd.location);
         setName(selectedAd.title);
         setSelectedAd(selectedAd.AdType);

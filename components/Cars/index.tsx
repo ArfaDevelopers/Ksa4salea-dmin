@@ -261,9 +261,9 @@ const Cars = () => {
     tagline: "",
     City: "",
 
-    priceRange: "",
-    priceFrom: "65",
-    priceTo: "120",
+    PriceRange: "",
+    PriceFrom: "65",
+    PriceTo: "120",
     selectedFeature: "",
     location: "",
     address: "8697-8747 Stirling Rd, Florida",
@@ -283,7 +283,7 @@ const Cars = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Price, setPrice] = useState("");
   const [mileage, setmileage] = useState("");
 
   const [link, setLink] = useState("");
@@ -2328,7 +2328,7 @@ const Cars = () => {
         setDescription(adData.description);
         // setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPrice(adData.Price);
         setFormData((prev) => ({
           ...prev,
           SubCategory: adData.SubCategory || "",
@@ -3308,7 +3308,7 @@ const Cars = () => {
     "Stargazer",
   ];
   const chevroletModels = [
-    "Caprice",
+    "CaPrice",
     "Tahoe",
     "Suburban",
     "Lumina",
@@ -3427,7 +3427,7 @@ const Cars = () => {
         Title: name,
         galleryImages: imageUrls, // 👈 Save all images in one array
         Location: location,
-        Price: price,
+        Price: Price,
         Link: link,
         category: Category1,
         NestedSubCategory: nestedSubCategory,
@@ -6734,8 +6734,8 @@ const Cars = () => {
                     </label>
                     <input
                       type="number"
-                      placeholder="Enter price"
-                      value={price}
+                      placeholder="Enter Price"
+                      value={Price}
                       onChange={(e) => setPrice(e.target.value)}
                       required
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

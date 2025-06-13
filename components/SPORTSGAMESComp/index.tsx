@@ -229,9 +229,9 @@ const SPORTSGAMESComp = () => {
     tagline: "",
     City: "",
 
-    priceRange: "",
-    priceFrom: "65",
-    priceTo: "120",
+    PriceRange: "",
+    PriceFrom: "65",
+    PriceTo: "120",
     selectedFeature: "",
     location: "",
     address: "8697-8747 Stirling Rd, Florida",
@@ -249,7 +249,7 @@ const SPORTSGAMESComp = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
 
   const [link, setLink] = useState("");
@@ -2259,7 +2259,7 @@ const SPORTSGAMESComp = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPrice(adData.Price);
         setFormData((prev) => ({
           ...prev,
           SubCategory: adData.SubCategory || "",
@@ -2593,7 +2593,7 @@ const SPORTSGAMESComp = () => {
         // img5: imageUrls[4], // img5
         // img6: imageUrls[5], // img6
         location: location,
-        price: price,
+        Price: Price,
         category: Category1,
 
         RAM: RAM,

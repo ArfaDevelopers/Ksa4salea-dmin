@@ -219,9 +219,9 @@ const FashionStyle = () => {
     tagline: "",
     City: "",
 
-    priceRange: "",
-    priceFrom: "65",
-    priceTo: "120",
+    PriceRange: "",
+    PriceFrom: "65",
+    PriceTo: "120",
     selectedFeature: "",
     location: "",
     address: "8697-8747 Stirling Rd, Florida",
@@ -241,7 +241,7 @@ const FashionStyle = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
   const [layerHydroWall, setlayerHydroWall] = useState("");
   const [LBS, setLBS] = useState("");
@@ -2579,7 +2579,7 @@ const FashionStyle = () => {
         category: Category1,
         createdAt: Timestamp.now(),
 
-        price: price,
+        Price: Price,
         Color: Color,
         Gender: Gender,
         layerHydroWall: layerHydroWall,
@@ -3388,8 +3388,8 @@ const FashionStyle = () => {
                     </div>
                     <input
                       type="number"
-                      placeholder="Enter price"
-                      value={price}
+                      placeholder="Enter Price"
+                      value={Price}
                       onChange={(e) => setPrice(e.target.value)}
                       required
                       className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"

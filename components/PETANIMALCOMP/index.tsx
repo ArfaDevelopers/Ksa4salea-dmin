@@ -233,9 +233,9 @@ const PETANIMALCOMP = () => {
     tagline: "",
     City: "",
 
-    priceRange: "",
-    priceFrom: "65",
-    priceTo: "120",
+    PriceRange: "",
+    PriceFrom: "65",
+    PriceTo: "120",
     selectedFeature: "",
     location: "",
     address: "8697-8747 Stirling Rd, Florida",
@@ -253,7 +253,7 @@ const PETANIMALCOMP = () => {
   const [name, setName] = useState("");
   const [imageUrls, setImageUrls] = useState(Array(6).fill("")); // Array to hold image URLs
   const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
+  const [Price, setPrice] = useState("");
   const [ManufactureYear, setManufactureYear] = useState("");
 
   const [link, setLink] = useState("");
@@ -2269,7 +2269,7 @@ const PETANIMALCOMP = () => {
         setDescription(adData.description);
         setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
-        setPrice(adData.price);
+        setPrice(adData.Price);
         setFormData((prev) => ({
           ...prev,
           SubCategory: adData.SubCategory || "",
@@ -2605,7 +2605,7 @@ const PETANIMALCOMP = () => {
         // img5: imageUrls[4], // img5
         // img6: imageUrls[5], // img6
         location: location,
-        price: price,
+        Price: Price,
         RAM: RAM,
         Size: Size,
         Breed: Breed,
@@ -4323,8 +4323,8 @@ const PETANIMALCOMP = () => {
                           </div>
                           <input
                             type="number"
-                            placeholder="Enter price"
-                            value={price}
+                            placeholder="Enter Price"
+                            value={Price}
                             onChange={(e) => setPrice(e.target.value)}
                             required
                             className="w-full pl-10 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
