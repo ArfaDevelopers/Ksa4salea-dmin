@@ -60,7 +60,7 @@ type Ad = {
   views: string;
   createdAt: any;
 
-  timeAgo: string;
+  // timeAgo: string;
   title: string;
   description: string;
   displayName: string;
@@ -331,7 +331,7 @@ const Cars = () => {
     useState("");
   const [selectedFuelType, setSelectedFuelType] = useState("");
   const [Insurance, selectedInsurance] = useState("");
-  const [AdditionalFeatures, setAdditionalFeatures] = useState("");
+  const [AdditionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
 
   const [selectedAdType, setSelectedAdType] = useState("");
   const [ads, setAds] = useState<Ad[]>([]); // Define the type here as an array of 'Ad' objects
@@ -2155,7 +2155,7 @@ const Cars = () => {
             return {
               id: id,
               link: data.link || "",
-              timeAgo: data.timeAgo || "",
+              // timeAgo: data.timeAgo || "",
               title: data.title || "",
               description: data.description || "",
               location: data.location || "",
@@ -2326,7 +2326,7 @@ const Cars = () => {
       if (adDoc.exists()) {
         const adData = adDoc.data();
         setDescription(adData.description);
-        setTimeAgo(adData.timeAgo);
+        // setTimeAgo(adData.timeAgo);
         setLocation(adData.location);
         setPrice(adData.price);
         setFormData((prev) => ({
@@ -2340,7 +2340,7 @@ const Cars = () => {
         const selectedAd: Ad = {
           id,
           link: adData.link || "",
-          timeAgo: adData.timeAgo || new Date().toISOString(),
+          // timeAgo: adData.timeAgo || new Date().toISOString(),
           title: adData.title || "Untitled",
           description: adData.description || "No description",
           displayName: adData.displayName || "No displayName",
@@ -2464,7 +2464,7 @@ const Cars = () => {
     setmileage("");
     setCondition("");
     setAssembly("");
-    setTimeAgo(new Date());
+    // setTimeAgo(new Date());
 
     setRegisteredCity("");
     setDrivenKm("");
@@ -2481,7 +2481,7 @@ const Cars = () => {
     setSelectedEngineType("");
     setSelectedColor("");
     setInteriorColor("");
-    setAdditionalFeatures("");
+    setAdditionalFeatures([]);
 
     setSelectedTransmission("");
     setSelectedVideoAvailability("");
@@ -2502,11 +2502,17 @@ const Cars = () => {
     setSelectedFuelType(fuelType);
     console.log(fuelType); // Log selected fuel type to the console
   };
-  const handleAdditionalFeatures = (event: any) => {
-    const fuelType = event.target.value;
-    setAdditionalFeatures(fuelType);
-    console.log(fuelType); // Log selected fuel type to the console
+  const handleAdditionalFeatures = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedOptions = Array.from(
+      event.target.selectedOptions,
+      (option) => option.value
+    );
+    setAdditionalFeatures(selectedOptions);
+    console.log(selectedOptions); // Logs an array of selected features
   };
+
   const handleInsuranceChange = (event: any) => {
     const fuelType = event.target.value;
     selectedInsurance(fuelType);
@@ -3414,41 +3420,26 @@ const Cars = () => {
   // Function to add a new car to Firestore
   const handleAddCar = async (e: any) => {
     e.preventDefault();
-
-    // if (imageUrls.some((url) => !url)) {
-    //   alert("Please upload all images before submitting.");
-    //   return;
-    // }
-
     try {
-      // Get a reference to the 'carData' collection
       const carsCollection = collection(db, "Cars");
 
-      // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
         Title: name,
-        img: imageUrls[0], // img1
-        img2: imageUrls[1], // img2
-        img3: imageUrls[2], // img3
-        img4: imageUrls[3], // img4
-        img5: imageUrls[4], // img5
-        img6: imageUrls[5], // img6
+        galleryImages: imageUrls, // 👈 Save all images in one array
         Location: location,
         Price: price,
         Link: link,
-        timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
         category: Category1,
         NestedSubCategory: nestedSubCategory,
         Description: description,
-        // displayName: displayName,
 
         registeredCity: registeredCity,
         assembly: assembly,
-        LastUpdated: lastUpdated.toISOString(),
         Condition: Condition,
         Purpose: purpose,
         RegionalSpec: selectedSpec,
         Insurance: Insurance,
+        createdAt: Timestamp.now(),
 
         Model: model,
         whatsapp: whatsapp,
@@ -3480,22 +3471,6 @@ const Cars = () => {
       });
 
       alert("Car added successfully!");
-      // Reset all fields
-      // setName("");
-      // setImageUrls(Array(6).fill("")); // Reset all image URLs
-      // setImageFiles(Array(6).fill(null)); // Reset all image files
-      // setLocation("");
-      // setPrice("");
-      // setLink("");
-      // setDescription("");
-      setTimeAgo(new Date()); // Reset time to current date
-      //   setRegisteredCity("Un-Registered");
-      //   setAssembly("");
-      //   setCondition("");
-      //   setPurpose("");
-      //   setModel("");
-      //   setWhatsapp("");
-      //   setType("Sale");
     } catch (error) {
       console.error("Error adding car: ", error);
       alert("Error adding car.");
@@ -7149,7 +7124,7 @@ const Cars = () => {
                     />
                   </div>
                   {/* Time Ago */}
-                  <div className="mb-4">
+                  {/* <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Time Ago (Date Posted)
                     </label>
@@ -7162,7 +7137,7 @@ const Cars = () => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       required
                     />
-                  </div>
+                  </div> */}
                   {/* Registered City */}
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -7280,6 +7255,7 @@ const Cars = () => {
                           </div>
                         </label>
                         <select
+                          multiple
                           onChange={handleAdditionalFeatures}
                           value={AdditionalFeatures}
                           className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors appearance-none bg-no-repeat bg-right"
@@ -7290,9 +7266,6 @@ const Cars = () => {
                             paddingRight: "2.5rem",
                           }}
                         >
-                          <option value="" disabled>
-                            Select Additional Feature
-                          </option>
                           <option value="fullOption">Full option</option>
                           <option value="insured">Insured</option>
                           <option value="selfParking">Self Parking</option>

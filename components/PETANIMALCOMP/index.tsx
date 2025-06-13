@@ -2594,12 +2594,16 @@ const PETANIMALCOMP = () => {
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
         title: name,
-        img: imageUrls[0], // img1
-        img2: imageUrls[1], // img2
-        img3: imageUrls[2], // img3
-        img4: imageUrls[3], // img4
-        img5: imageUrls[4], // img5
-        img6: imageUrls[5], // img6
+        galleryImages: imageUrls, // 👈 Save all images in one array
+
+        createdAt: Timestamp.now(),
+
+        // img: imageUrls[0], // img1
+        // img2: imageUrls[1], // img2
+        // img3: imageUrls[2], // img3
+        // img4: imageUrls[3], // img4
+        // img5: imageUrls[4], // img5
+        // img6: imageUrls[5], // img6
         location: location,
         price: price,
         RAM: RAM,
@@ -2639,13 +2643,13 @@ const PETANIMALCOMP = () => {
         Compatibility: Compatibility,
         SellerType: SellerType,
         link: link,
-        timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
+        // timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
         States: selectedStates,
         description: description,
         sellerType: selectedSellerType,
         engineCapacity: selectedEngineCapacity,
         bodyType: selectedBodyType,
-        lastUpdated: lastUpdated.toISOString(),
+        // lastUpdated: lastUpdated.toISOString(),
         model: model,
         whatsapp: whatsapp,
         Type: Type,

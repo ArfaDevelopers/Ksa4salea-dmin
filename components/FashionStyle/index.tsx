@@ -2567,14 +2567,17 @@ const FashionStyle = () => {
       // Add a new document to the 'carData' collection
       const docRef = await addDoc(carsCollection, {
         title: name,
-        img: imageUrls[0], // img1
-        img2: imageUrls[1], // img2
-        img3: imageUrls[2], // img3
-        img4: imageUrls[3], // img4
-        img5: imageUrls[4], // img5
-        img6: imageUrls[5], // img6
+        galleryImages: imageUrls, // 👈 Save all images in one array
+
+        // img: imageUrls[0], // img1
+        // img2: imageUrls[1], // img2
+        // img3: imageUrls[2], // img3
+        // img4: imageUrls[3], // img4
+        // img5: imageUrls[4], // img5
+        // img6: imageUrls[5], // img6
         location: location,
         category: Category1,
+        createdAt: Timestamp.now(),
 
         price: price,
         Color: Color,
@@ -2593,12 +2596,12 @@ const FashionStyle = () => {
         Fit: Fit,
         link: link,
         Brand: selectedCarBrand,
-        timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
+        // timeAgo: (timeAgo ?? new Date()).toISOString(), // Use the current date if timeAgo is null
         States: selectedStates,
         description: description,
         sellerType: selectedSellerType,
         LBS: LBS,
-        lastUpdated: lastUpdated.toISOString(),
+        // lastUpdated: lastUpdated.toISOString(),
         model: model,
         whatsapp: whatsapp,
         type: type,
