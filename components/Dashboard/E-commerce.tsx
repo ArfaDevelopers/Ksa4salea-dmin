@@ -66,6 +66,22 @@ const ECommerce: React.FC = () => {
 
     trackVisit();
   }, []);
+  useEffect(() => {
+    // Function to fetch data from the API
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:9002/api/totalAmount");
+        const data = await response.json();
+        // setActivelistingusers(data.totalUsers);
+        console.log(data, "data__________");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Call the fetch function
+    fetchData();
+  }, []);
   const [Activelistingusers, setActivelistingusers] = useState(0);
 
   useEffect(() => {
