@@ -1998,57 +1998,61 @@ const TRAVEL = () => {
   };
 
   useEffect(() => {
+    console.log("useEffect triggered");
+
     const fetchAds = async () => {
       setLoading(true);
       try {
-        const payload: any = {};
+        const params: any = {};
 
         if (selectedOption.includes("Featured Ads")) {
-          payload.FeaturedAds = "Featured Ads";
+          params.FeaturedAds = "Featured Ads";
         }
 
         if (selectedOption.includes("Not Featured Ads")) {
-          payload.FeaturedAds = "Not Featured Ads";
+          params.FeaturedAds = "Not Featured Ads";
         }
 
         if (selectedOption.includes("true")) {
-          payload.isActive = "true";
+          params.isActive = "true";
         }
 
         if (selectedOption.includes("inactive")) {
-          payload.isActive = "false";
+          params.isActive = "false";
         }
 
         if (selectedOption.includes("Premium")) {
-          payload.AdType = "Premium";
+          params.AdType = "Premium";
         }
 
         if (selectedDate) {
-          payload.createdDate = selectedDate;
+          params.createdDate = selectedDate;
         }
 
         if (searchTerm.trim() !== "") {
-          payload.searchText = searchTerm.trim(); // ✅ Add search text to payload
+          params.searchText = searchTerm.trim();
         }
 
-        console.log("Sending payload:", payload);
+        console.log("Sending query params:", params);
 
-        const response = await axios.post(
-          "http://168.231.80.24:9002/currentUserDatafashion/TRAVEL",
-          payload
-        );
+        const response = await axios.get("http://168.231.80.24:9002/TRAVEL", {
+          params,
+        });
 
         setAds(response.data);
         console.log("Fetched Ads:", response.data);
-      } catch (error) {
-        console.error("Error fetching ads:", error);
+      } catch (error: any) {
+        console.error(
+          "Error fetching ads:",
+          error?.response?.data || error.message
+        );
       } finally {
         setLoading(false);
       }
     };
 
     fetchAds();
-  }, [refresh, selectedOption, selectedDate, searchTerm]); // ✅ Added searchTerm here
+  }, [refresh, selectedOption, selectedDate, searchTerm]);
 
   const handleDateChange = (date: string) => {
     setSelectedDate(date);

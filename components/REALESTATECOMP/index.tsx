@@ -381,6 +381,65 @@ const REALESTATECOMP = () => {
   }));
 
   const [cityList, setCityList] = useState<string[]>([]);
+  useEffect(() => {
+    console.log("useEffect triggered");
+
+    const fetchAds = async () => {
+      setLoading(true);
+      try {
+        const params: any = {};
+
+        if (selectedOption.includes("Featured Ads")) {
+          params.FeaturedAds = "Featured Ads";
+        }
+
+        if (selectedOption.includes("Not Featured Ads")) {
+          params.FeaturedAds = "Not Featured Ads";
+        }
+
+        if (selectedOption.includes("true")) {
+          params.isActive = "true";
+        }
+
+        if (selectedOption.includes("inactive")) {
+          params.isActive = "false";
+        }
+
+        if (selectedOption.includes("Premium")) {
+          params.AdType = "Premium";
+        }
+
+        if (selectedDate) {
+          params.createdDate = selectedDate;
+        }
+
+        if (searchTerm.trim() !== "") {
+          params.searchText = searchTerm.trim();
+        }
+
+        console.log("Sending query params:", params);
+
+        const response = await axios.get(
+          "http://168.231.80.24:9002/REALESTATECOMP",
+          {
+            params,
+          }
+        );
+
+        setAds(response.data);
+        console.log("Fetched Ads:", response.data);
+      } catch (error: any) {
+        console.error(
+          "Error fetching ads:",
+          error?.response?.data || error.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAds();
+  }, [refresh, selectedOption, selectedDate, searchTerm]);
 
   useEffect(() => {
     // Check if cityData is an array directly
@@ -2194,59 +2253,6 @@ const REALESTATECOMP = () => {
     );
   };
   const closeModal = () => setIsOpen(false);
-
-  useEffect(() => {
-    const fetchAds = async () => {
-      setLoading(true);
-      try {
-        const payload: any = {};
-
-        if (selectedOption.includes("Featured Ads")) {
-          payload.FeaturedAds = "Featured Ads";
-        }
-
-        if (selectedOption.includes("Not Featured Ads")) {
-          payload.FeaturedAds = "Not Featured Ads";
-        }
-
-        if (selectedOption.includes("true")) {
-          payload.isActive = "true";
-        }
-
-        if (selectedOption.includes("inactive")) {
-          payload.isActive = "false";
-        }
-
-        if (selectedOption.includes("Premium")) {
-          payload.AdType = "Premium";
-        }
-
-        if (selectedDate) {
-          payload.createdDate = selectedDate;
-        }
-
-        if (searchTerm.trim() !== "") {
-          payload.searchText = searchTerm.trim(); // ✅ Add search text to payload
-        }
-
-        console.log("Sending payload:", payload);
-
-        const response = await axios.post(
-          "http://168.231.80.24:9002/currentUserData/REALESTATECOMP",
-          payload
-        );
-
-        setAds(response.data);
-        console.log("Fetched Ads:", response.data);
-      } catch (error) {
-        console.error("Error fetching ads:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAds();
-  }, [refresh, selectedOption, selectedDate, searchTerm]); // ✅ Added searchTerm here
 
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
