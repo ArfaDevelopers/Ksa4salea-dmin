@@ -2924,214 +2924,183 @@ const JOBBOARDPage = () => {
   };
   useEffect(() => {
     const fetchAds = async () => {
+      setLoading(true);
       try {
-        const adsCollection = collection(db, "JOBBOARD");
-        const adsSnapshot = await getDocs(adsCollection);
+        const payload: any = {};
 
-        // Fetch views
-        const viewsDocRef = doc(db, "views", "jobboard");
-        const viewsDocSnap = await getDoc(viewsDocRef);
-        const productViews = viewsDocSnap.exists()
-          ? viewsDocSnap.data().products || {}
-          : {};
+        if (selectedOption.includes("Featured Ads")) {
+          payload.FeaturedAds = "Featured Ads";
+        }
 
-        const updatedViews = { ...productViews }; // To later update back to Firestore
+        if (selectedOption.includes("Not Featured Ads")) {
+          payload.FeaturedAds = "Not Featured Ads";
+        }
 
-        const adsList: Ad[] = await Promise.all(
-          adsSnapshot.docs.map(async (docSnap) => {
-            const data = docSnap.data() || {};
-            const id = docSnap.id;
+        if (selectedOption.includes("true")) {
+          payload.isActive = "true";
+        }
 
-            // 🔼 Increment the view count in memory
-            updatedViews[id] = (updatedViews[id] || 0) + 1;
+        if (selectedOption.includes("inactive")) {
+          payload.isActive = "false";
+        }
 
-            return {
-              id: id,
-              link: data.link || "",
-              timeAgo: data.timeAgo || "",
-              title: data.title || "",
-              description: data.description || "",
-              location: data.location || "",
-              img: data.img || "",
-              Price: data.Price || "",
-              Assembly: data.Assembly || "",
-              BodyType: data.BodyType || "",
-              Color: data.Color || "",
-              DrivenKm: data.DrivenKm || "",
-              EngineCapacity: data.EngineCapacity || "",
-              City: data.City || "",
-              PictureAvailability: data.PictureAvailability || "",
-              EngineType: data.EngineType || "",
-              ManufactureYear: data.ManufactureYear || "",
-              ModalCategory: data.ModalCategory || "",
-              CoNumberOfDoorsor: data.NumberOfDoors || "",
-              PhoneNumber: data.PhoneNumber || "",
-              Registeredin: data.Registeredin || "",
-              SeatingCapacity: data.SeatingCapacity || "",
-              SellerType: data.SellerType || "",
-              Transmission: data.Transmission || "",
-              TrustedCars: data.TrustedCars || "",
-              VideoAvailability: data.VideoAvailability || "",
-              assembly: data.assembly || "",
-              bodyType: data.bodyType || "",
-              engineCapacity: data.engineCapacity || "",
-              isFeatured: data.isFeatured || "",
-              model: data.model || "",
-              purpose: data.purpose || "",
-              registeredCity: data.registeredCity || "",
-              sellerType: data.sellerType || "",
-              type: data.type || "",
-              whatsapp: data.whatsapp || "",
-              isActive: data.isActive || "",
-              FeaturedAds: data.FeaturedAds || "",
-              AdType: data.AdType || "",
-              FuelType: data.FuelType || "",
-              galleryImages: data.galleryImages || {},
-              userId: data.userId || {},
-              category: data.category || {},
-              displayName: data.displayName || {},
-              createdAt: data.createdAt || {},
-              Condition: data.Condition || {},
+        if (selectedOption.includes("Premium")) {
+          payload.AdType = "Premium";
+        }
 
-              views: data.views || 0, // Show updated view count
-            };
-          })
+        if (selectedDate) {
+          payload.createdDate = selectedDate;
+        }
+
+        if (searchTerm.trim() !== "") {
+          payload.searchText = searchTerm.trim(); // ✅ Add search text to payload
+        }
+
+        console.log("Sending payload:", payload);
+
+        const response = await axios.post(
+          "http://168.231.80.24:9002/currentUserDatafashion/JOBBOARD",
+          payload
         );
 
-        // 🔥 Save updated views back to Firestore
-        await setDoc(viewsDocRef, { products: updatedViews }, { merge: true });
-
-        console.log(adsList, "adsList with views");
-        let filteredAds = adsList;
-
-        // Filter by selectedDate
-        if (selectedDate) {
-          filteredAds = filteredAds.filter((ad) => {
-            const createdAtTimestamp = ad.createdAt;
-            if (createdAtTimestamp.seconds) {
-              const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
-                .toISOString()
-                .split("T")[0];
-              return createdAtDate === selectedDate;
-            }
-            return false;
-          });
-        }
-
-        // If "All" is selected, skip filtering
-        if (selectedOption.includes("All")) {
-          setAds(filteredAds);
-        } else {
-          let tempAds = filteredAds;
-
-          if (selectedOption.includes("true")) {
-            tempAds = tempAds.filter((ad) => ad.isActive === true);
-          }
-
-          if (selectedOption.includes("inactive")) {
-            tempAds = tempAds.filter(
-              (ad) => !ad.isActive || ad.isActive === "" || ad.isActive === null
-            );
-          }
-
-          if (selectedOption.includes("Paid")) {
-            tempAds = tempAds.filter((ad) => ad.FeaturedAds === "Featured Ads");
-          }
-
-          if (selectedOption.includes("Unpaid")) {
-            tempAds = tempAds.filter(
-              (ad) => ad.FeaturedAds === "Not Featured Ads"
-            );
-          }
-
-          setAds(tempAds);
-        }
-
-        setLoading(false);
+        setAds(response.data);
+        console.log("Fetched Ads:", response.data);
       } catch (error) {
         console.error("Error fetching ads:", error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchAds();
-  }, [refresh, selectedOption, activeCheckboxes, selectedDate]);
-  const handleDateChange = (date: string) => {
-    setSelectedDate(date);
-  };
+  }, [refresh, selectedOption, selectedDate, searchTerm]); // ✅ Added searchTerm here
+
   // useEffect(() => {
   //   const fetchAds = async () => {
   //     try {
-  //       const adsCollection = collection(db, "JOBBOARD"); // Get reference to the 'Cars' collection
-  //       const adsSnapshot = await getDocs(adsCollection); // Fetch the data
+  //       const adsCollection = collection(db, "JOBBOARD");
+  //       const adsSnapshot = await getDocs(adsCollection);
 
-  //       const adsList: Ad[] = adsSnapshot.docs.map((doc) => {
-  //         const data = doc.data() || {}; // Ensure data exists
+  //       // Fetch views
+  //       const viewsDocRef = doc(db, "views", "jobboard");
+  //       const viewsDocSnap = await getDoc(viewsDocRef);
+  //       const productViews = viewsDocSnap.exists()
+  //         ? viewsDocSnap.data().products || {}
+  //         : {};
 
-  //         return {
-  //           id: doc.id,
-  //           link: data.link || "",
-  //           timeAgo: data.timeAgo || "",
-  //           title: data.title || "",
-  //           description: data.description || "",
-  //           location: data.location || "",
-  //           img: data.img || "",
-  //           Price: data.Price || "",
-  //           Assembly: data.Assembly || "",
-  //           BodyType: data.BodyType || "", // Fixed typo here
-  //           Color: data.Color || "",
-  //           DrivenKm: data.DrivenKm || "",
-  //           EngineCapacity: data.EngineCapacity || "",
-  //           City: data.City || "",
-  //           PictureAvailability: data.PictureAvailability || "",
-  //           EngineType: data.EngineType || "",
-  //           ManufactureYear: data.ManufactureYear || "",
-  //           ModalCategory: data.ModalCategory || "",
-  //           CoNumberOfDoorsor: data.NumberOfDoors || "", // Ensure correct property name
-  //           PhoneNumber: data.PhoneNumber || "",
-  //           Registeredin: data.Registeredin || "",
-  //           SeatingCapacity: data.SeatingCapacity || "",
-  //           SellerType: data.SellerType || "",
-  //           Transmission: data.Transmission || "",
-  //           TrustedCars: data.TrustedCars || "",
-  //           VideoAvailability: data.VideoAvailability || "",
-  //           assembly: data.assembly || "",
-  //           bodyType: data.bodyType || "",
-  //           condition: data.condition || "",
-  //           engineCapacity: data.engineCapacity || "",
-  //           isFeatured: data.isFeatured || "",
-  //           model: data.model || "",
-  //           purpose: data.purpose || "",
-  //           registeredCity: data.registeredCity || "",
-  //           sellerType: data.sellerType || "",
-  //           type: data.type || "",
-  //           whatsapp: data.whatsapp || "",
-  //           FeaturedAds: data.FeaturedAds || "",
+  //       const updatedViews = { ...productViews }; // To later update back to Firestore
 
-  //           AdType: data.AdType || "",
-  //           FuelType: data.FuelType || "",
-  //           galleryImages: data.galleryImages || "",
-  //           userId: data.userId || "",
+  //       const adsList: Ad[] = await Promise.all(
+  //         adsSnapshot.docs.map(async (docSnap) => {
+  //           const data = docSnap.data() || {};
+  //           const id = docSnap.id;
 
-  //           category: data.category || "",
-  //           displayName: data.displayName || "",
+  //           // 🔼 Increment the view count in memory
+  //           updatedViews[id] = (updatedViews[id] || 0) + 1;
 
-  //           isActive: data.isActive || "",
-  //         };
-  //       });
+  //           return {
+  //             id: id,
+  //             link: data.link || "",
+  //             timeAgo: data.timeAgo || "",
+  //             title: data.title || "",
+  //             description: data.description || "",
+  //             location: data.location || "",
+  //             img: data.img || "",
+  //             Price: data.Price || "",
+  //             Assembly: data.Assembly || "",
+  //             BodyType: data.BodyType || "",
+  //             Color: data.Color || "",
+  //             DrivenKm: data.DrivenKm || "",
+  //             EngineCapacity: data.EngineCapacity || "",
+  //             City: data.City || "",
+  //             PictureAvailability: data.PictureAvailability || "",
+  //             EngineType: data.EngineType || "",
+  //             ManufactureYear: data.ManufactureYear || "",
+  //             ModalCategory: data.ModalCategory || "",
+  //             CoNumberOfDoorsor: data.NumberOfDoors || "",
+  //             PhoneNumber: data.PhoneNumber || "",
+  //             Registeredin: data.Registeredin || "",
+  //             SeatingCapacity: data.SeatingCapacity || "",
+  //             SellerType: data.SellerType || "",
+  //             Transmission: data.Transmission || "",
+  //             TrustedCars: data.TrustedCars || "",
+  //             VideoAvailability: data.VideoAvailability || "",
+  //             assembly: data.assembly || "",
+  //             bodyType: data.bodyType || "",
+  //             engineCapacity: data.engineCapacity || "",
+  //             isFeatured: data.isFeatured || "",
+  //             model: data.model || "",
+  //             purpose: data.purpose || "",
+  //             registeredCity: data.registeredCity || "",
+  //             sellerType: data.sellerType || "",
+  //             type: data.type || "",
+  //             whatsapp: data.whatsapp || "",
+  //             isActive: data.isActive || "",
+  //             FeaturedAds: data.FeaturedAds || "",
+  //             AdType: data.AdType || "",
+  //             FuelType: data.FuelType || "",
+  //             galleryImages: data.galleryImages || {},
+  //             userId: data.userId || {},
+  //             category: data.category || {},
+  //             displayName: data.displayName || {},
+  //             createdAt: data.createdAt || {},
+  //             Condition: data.Condition || {},
 
-  //       console.log(adsList, "adsList___________adsList");
+  //             views: data.views || 0, // Show updated view count
+  //           };
+  //         })
+  //       );
 
-  //       console.log(adsList, "adsList___________adsList");
-  //       if (selectedOption === "All") {
-  //         setAds(adsList); // Set the state with the ads data
-  //       } else {
-  //         var newad = adsList.filter(
-  //           (val) => val.FeaturedAds === selectedOption
-  //         );
-  //         setAds(newad); // Set the state with the ads data
+  //       // 🔥 Save updated views back to Firestore
+  //       await setDoc(viewsDocRef, { products: updatedViews }, { merge: true });
+
+  //       console.log(adsList, "adsList with views");
+  //       let filteredAds = adsList;
+
+  //       // Filter by selectedDate
+  //       if (selectedDate) {
+  //         filteredAds = filteredAds.filter((ad) => {
+  //           const createdAtTimestamp = ad.createdAt;
+  //           if (createdAtTimestamp.seconds) {
+  //             const createdAtDate = new Date(createdAtTimestamp.seconds * 1000)
+  //               .toISOString()
+  //               .split("T")[0];
+  //             return createdAtDate === selectedDate;
+  //           }
+  //           return false;
+  //         });
   //       }
-  //       setLoading(false); // Stop loading when data is fetched
+
+  //       // If "All" is selected, skip filtering
+  //       if (selectedOption.includes("All")) {
+  //         setAds(filteredAds);
+  //       } else {
+  //         let tempAds = filteredAds;
+
+  //         if (selectedOption.includes("true")) {
+  //           tempAds = tempAds.filter((ad) => ad.isActive === true);
+  //         }
+
+  //         if (selectedOption.includes("inactive")) {
+  //           tempAds = tempAds.filter(
+  //             (ad) => !ad.isActive || ad.isActive === "" || ad.isActive === null
+  //           );
+  //         }
+
+  //         if (selectedOption.includes("Paid")) {
+  //           tempAds = tempAds.filter((ad) => ad.FeaturedAds === "Featured Ads");
+  //         }
+
+  //         if (selectedOption.includes("Unpaid")) {
+  //           tempAds = tempAds.filter(
+  //             (ad) => ad.FeaturedAds === "Not Featured Ads"
+  //           );
+  //         }
+
+  //         setAds(tempAds);
+  //       }
+
+  //       setLoading(false);
   //     } catch (error) {
   //       console.error("Error fetching ads:", error);
   //       setLoading(false);
@@ -3139,7 +3108,11 @@ const JOBBOARDPage = () => {
   //   };
 
   //   fetchAds();
-  // }, [refresh, selectedOption]);
+  // }, [refresh, selectedOption, activeCheckboxes, selectedDate]);
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date);
+  };
+
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -3602,8 +3575,8 @@ const JOBBOARDPage = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("Paid")}
-              onChange={() => handleCheckboxChange("Paid")}
+              checked={selectedOption.includes("Featured Ads")}
+              onChange={() => handleCheckboxChange("Featured Ads")}
               className="form-checkbox text-blue-600"
             />
             <span>Paid</span>
@@ -3612,8 +3585,8 @@ const JOBBOARDPage = () => {
           <label className="inline-flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={selectedOption.includes("Unpaid")}
-              onChange={() => handleCheckboxChange("Unpaid")}
+              checked={selectedOption.includes("Not Featured Ads")}
+              onChange={() => handleCheckboxChange("Not Featured Ads")}
               className="form-checkbox text-blue-600"
             />
             <span>Unpaid</span>
@@ -3829,7 +3802,9 @@ const JOBBOARDPage = () => {
                   </div>
                 </th>
                 <td className="px-6 py-4">
-                  {ad.FeaturedAds === "Featured Ads" ? "Paid" : "Unpaid"}
+                  {ad.FeaturedAds === "Featured Ads"
+                    ? "Featured Ads"
+                    : "Not Featured Ads"}
                 </td>
 
                 <td className="px-6 py-4">
