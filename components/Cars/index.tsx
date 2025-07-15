@@ -3491,8 +3491,8 @@ const Cars = () => {
       >
         Add New
       </button>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <div className="flex space-x-4 items-center">
+      <div className="relative overflow-x-auto">
+        <div className="flex space-x-4 items-center mb-2">
           <span className="text-gray-700 font-medium">Filter:</span>
 
           <label className="inline-flex items-center space-x-2">
@@ -3572,7 +3572,7 @@ const Cars = () => {
             <span>Date Posted</span>
           </label> */}
         </div>
-        <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
+        <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 p-3 bg-white dark:bg-gray-900">
           <div>
             <button
               id="dropdownActionButton"
@@ -3738,20 +3738,28 @@ const Cars = () => {
                     </label>
                   </div>
                 </td>
-                <th
+                <td
                   scope="row"
-                  className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                  className="items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
                 >
                   <img
                     className="w-10 h-10 rounded-full"
+                    style={{
+                      display: "inline-block",
+                    }}
                     src={ad.galleryImages[0]}
                     alt={ad.title}
                   />
-                  <div className="ps-3">
+                  <div
+                    className="ps-3"
+                    style={{
+                      display: "inline-block",
+                    }}
+                  >
                     <div className="text-base font-semibold">{ad.title}</div>
                     <div className="font-normal text-gray-500"></div>
                   </div>
-                </th>
+                </td>
                 <td className="px-6 py-4">
                   {ad.FeaturedAds === "Featured Ads" ? "Paid" : "Unpaid"}
                 </td>
@@ -3798,8 +3806,11 @@ const Cars = () => {
                     : "-"}
                 </td>
 
-                <td className="px-6 py-4 flex items-center gap-2">
+                <td className="px-6 py-4 items-center gap-2">
                   <input
+                    style={{
+                      marginRight: "5px",
+                    }}
                     type="checkbox"
                     checked={ad.isActive}
                     onChange={() => {
