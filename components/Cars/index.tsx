@@ -52,6 +52,45 @@ import { MdEdit } from "react-icons/md";
 
 // Register the English locale
 registerLocale("en-US", enUS);
+interface City {
+  CITY_ID: number;
+  "City En Name": string;
+  REGION_ID: number;
+}
+
+interface CityOption {
+  value: number;
+  label: string;
+  regionId: number;
+  cityId: number;
+}
+
+interface SelectedCity {
+  REGION_ID: number;
+  CITY_ID: number;
+  label: string;
+}
+interface District {
+  DISTRICT_ID: number;
+  REGION_ID: number;
+  CITY_ID: number;
+  "District En Name": string;
+}
+
+interface DistrictOption {
+  value: number;
+  label: string;
+  regionId: number;
+  cityId: number;
+}
+
+interface SelectedDistrict {
+  REGION_ID: number;
+  CITY_ID: number;
+  DISTRICT_ID: number;
+  label: string;
+}
+
 type Ad = {
   id: any; // Change from string to number
   link: string;
@@ -125,7 +164,7 @@ interface SelectedOption {
   label: string;
 }
 interface CityOption {
-  value: string;
+  value: number;
   label: string;
 }
 
@@ -303,12 +342,8 @@ const Cars = () => {
   const [whatsapp, setWhatsapp] = useState("03189391781");
   const [type, setType] = useState("Sale");
   const [selectedCity, setSelectedCity] = useState<string>("");
-  const [cities, setCities] = useState<ICity[]>([]); // IMPORTANT: Set type ICity[]
+  const [cities, setCities] = useState<City[]>([]);
 
-  useEffect(() => {
-    const saudiCities = City.getCitiesOfCountry("SA") || []; // fallback to empty array
-    setCities(saudiCities);
-  }, []);
   const [Registeredin, setRegisteredin] = useState("");
   const [TrustedCars, setTrustedCars] = useState("");
   const [selectedTransmission, setSelectedTransmission] = useState("");
@@ -363,55 +398,235 @@ const Cars = () => {
   const [nestedSubCategory, setNestedSubCategory] = useState<{
     NestedSubCategory?: string;
   }>({});
-  const [locationList, setLocationList] = useState<string[]>([]);
-  console.log("1111111111111", locationList);
-  // useEffect(() => {
-  //   // Assuming Location.json is like { "location": [ ... ] } or is an array itself
-  //   if (locationData.location && Array.isArray(locationData.location)) {
-  //     setLocationList(locationData.location);
-  //   } else if (Array.isArray(locationData)) {
-  //     setLocationList(locationData);
-  //   } else {
-  //     // fallback empty or log error
-  //     setLocationList([]);
-  //     console.error("Location JSON data is not in expected format");
-  //   }
-  // }, []);
-  useEffect(() => {
-    console.log("11111122222", locationData); // Check what data you're getting
-    if (Array.isArray(locationData)) {
-      setLocationList(locationData); // Set cityList directly from locationData if it's an array
-    } else {
-      setLocationList([]); // You were using setLocationList before; make sure it's setCityList here
-      console.error("City data is not in expected format");
-    }
-  }, [locationData]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isCityModalVisible, setIsCityModalVisible] = useState(false);
+  const [isCityModalVisible1, setIsCityModalVisible1] = useState(false);
 
-  const districtOptions = locationList.map((loc) => ({
-    value: loc,
-    label: loc,
+  const [selectedDistricts, setSelectedDistricts] = useState<
+    SelectedDistrict[]
+  >([]);
+  console.log(selectedDistricts, "selectedDistricts___________");
+
+  const [selectedCities, setSelectedCities] = useState<SelectedCity[]>([]);
+
+  const [selectedRegion, setSelectedRegionId] = useState<number | "">("");
+  console.log(selectedRegion, "selectedRegion_____2");
+  const [districts, setDistricts] = useState<District[]>([]);
+  console.log(districts, "selectedRegion_____3");
+  console.log(formData, "selectedRegion_____4");
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (!selectedRegion) return;
+
+      try {
+        const response = await fetch(
+          `http://168.231.80.24:9002/api/cities?REGION_ID=${selectedRegion}`
+        );
+        const data = await response.json();
+
+        if (data.cities) {
+          setCities(data.cities);
+          console.log("Fetched cities:", data.cities);
+        } else {
+          console.warn("No cities found");
+        }
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    };
+
+    fetchCities();
+  }, [selectedRegion]);
+
+  const cityOptions: CityOption[] = cities.map((city) => ({
+    value: city.CITY_ID,
+    label: city["City En Name"],
+    regionId: city.REGION_ID,
+    cityId: city.CITY_ID,
   }));
 
-  const [cityList, setCityList] = useState<string[]>([]);
+  const handleCheckboxChange1 = (option: CityOption) => {
+    const exists = selectedCities.some(
+      (city) => city.CITY_ID === option.cityId
+    );
 
-  useEffect(() => {
-    // Check if cityData is an array directly
-    if (Array.isArray(cityData)) {
-      setCityList(cityData); // Set cityList directly from cityData if it's an array
+    if (exists) {
+      // Uncheck
+      setSelectedCities([]);
     } else {
-      setCityList([]);
-      console.error("City data is not in expected format");
+      // Add with label and string values
+      setSelectedCities([
+        {
+          CITY_ID: option.cityId,
+          REGION_ID: option.regionId,
+          label: option.label,
+        },
+      ]);
     }
-  }, [cityData]);
+  };
 
-  const CityOptions = useMemo(
-    () =>
-      cityList.map((city) => ({
-        value: city, // Adjust based on your cityData structure
-        label: city,
-      })),
-    [cityList]
-  );
+  type District = {
+    District_ID: number;
+    "District En Name": string;
+    REGION_ID: number;
+    CITY_ID: number;
+    // Add other properties if needed
+  };
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (!selectedCities.length) return;
+
+      const REGION_ID = selectedCities[0]?.REGION_ID;
+      const CITY_ID = selectedCities[0]?.CITY_ID;
+
+      try {
+        const response = await fetch(
+          `http://168.231.80.24:9002/api/districts?REGION_ID=${REGION_ID}&CITY_ID=${CITY_ID}`
+        );
+        const data = await response.json();
+        if (data.districts) {
+          setDistricts(data.districts);
+          console.log("Districts fetched:", data.districts);
+        }
+      } catch (error) {
+        console.error("Error fetching districts:", error);
+      }
+    };
+
+    fetchDistricts();
+  }, [selectedCities]);
+
+  const regionOptions = [
+    {
+      value: 1,
+      label: "Riyadh (الرياض)",
+      regionId: 1,
+      regionEn: "Riyadh",
+      // regionAr: "الرياض",
+      latitude: 24.63651,
+      longitude: 46.718845,
+    },
+    {
+      value: 2,
+      label: "Makkah (مكة المكرمة)",
+      regionId: 2,
+      regionEn: "Makkah",
+      // regionAr: "مكة المكرمة",
+      latitude: 21.406328,
+      longitude: 39.809088,
+    },
+    {
+      value: 3,
+      label: "Al Madinah (المدينة المنورة)",
+      regionId: 3,
+      regionEn: "Al Madinah",
+      // regionAr: "المدينة المنورة",
+      latitude: 24.427145,
+      longitude: 39.649658,
+    },
+    {
+      value: 4,
+      label: "Al Qassim (القصيم)",
+      regionId: 4,
+      regionEn: "Al Qassim",
+      // regionAr: "القصيم",
+      latitude: 26.338499,
+      longitude: 43.965396,
+    },
+    {
+      value: 5,
+      label: "Eastern (المنطقة الشرقية)",
+      regionId: 5,
+      regionEn: "Eastern",
+      // regionAr: "المنطقة الشرقية",
+      latitude: 26.372185,
+      longitude: 49.993286,
+    },
+    {
+      value: 6,
+      label: "Asir (عسير)",
+      regionId: 6,
+      regionEn: "Asir",
+      // regionAr: "عسير",
+      latitude: 18.20848,
+      longitude: 42.533569,
+    },
+    {
+      value: 7,
+      label: "Tabuk (تبوك)",
+      regionId: 7,
+      regionEn: "Tabuk",
+      // regionAr: "تبوك",
+      latitude: 28.401064,
+      longitude: 36.573486,
+    },
+    {
+      value: 8,
+      label: "Hail (حائل)",
+      regionId: 8,
+      regionEn: "Hail",
+      // regionAr: "حائل",
+      latitude: 27.527758,
+      longitude: 41.698608,
+    },
+    {
+      value: 9,
+      label: "Northern Borders (الحدود الشماليه)",
+      regionId: 9,
+      regionEn: "Northern Borders",
+      // regionAr: "الحدود الشماليه",
+      latitude: 30.977609,
+      longitude: 41.011962,
+    },
+    {
+      value: 10,
+      label: "Jazan (جازان)",
+      regionId: 10,
+      regionEn: "Jazan",
+      // regionAr: "جازان",
+      latitude: 16.890959,
+      longitude: 42.548375,
+    },
+    {
+      value: 11,
+      label: "Najran (نجران)",
+      regionId: 11,
+      regionEn: "Najran",
+      // regionAr: "نجران",
+      latitude: 17.489489,
+      longitude: 44.134333,
+    },
+    {
+      value: 12,
+      label: "Al Bahah (الباحة)",
+      regionId: 12,
+      regionEn: "Al Bahah",
+      // regionAr: "الباحة",
+      latitude: 20.014645,
+      longitude: 41.456909,
+    },
+    {
+      value: 13,
+      label: "Al Jawf (الجوف)",
+      regionId: 13,
+      regionEn: "Al Jawf",
+      // regionAr: "الجوف",
+      latitude: 29.971888,
+      longitude: 40.200476,
+    },
+  ];
+  const regionPairs = [];
+  for (let i = 0; i < regionOptions.length; i += 2) {
+    regionPairs.push(regionOptions.slice(i, i + 2));
+  }
+
+  const districtOptions = districts.map((district) => ({
+    value: district.District_ID,
+    label: district["District En Name"],
+    regionId: district.REGION_ID,
+    cityId: district.CITY_ID,
+  }));
   const subcategoriesMapping = {
     categories: [
       {
@@ -3354,7 +3569,7 @@ const Cars = () => {
         RegionalSpec: selectedSpec,
         Insurance: Insurance,
         createdAt: Timestamp.now(),
-
+        regionId: selectedRegion,
         Model: model,
         whatsapp: whatsapp,
         type: type,
@@ -3377,9 +3592,16 @@ const Cars = () => {
         Transmission: selectedTransmission,
         TrustedCars: TrustedCars,
         Registeredin: Registeredin,
-        City: selectedCity,
+        // City: selectedCity,
         DrivenKm: DrivenKm,
         PhoneNumber: PhoneNumber,
+        SelectedCities: selectedCities,
+        CityName: selectedCities[0]?.label,
+        City: selectedCities[0]?.label,
+        CITY_ID: selectedCities[0]?.CITY_ID,
+        REGION_ID: selectedCities[0]?.REGION_ID,
+        DISTRICT_ID: selectedDistricts[0]?.DISTRICT_ID,
+        District: selectedDistricts[0]?.label,
 
         mileage: mileage,
       });
@@ -3882,7 +4104,93 @@ const Cars = () => {
                       </div>
                       Location Information
                     </h4>
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <FaMapMarkedAlt className="mr-2 h-4 w-4 text-purple-500" />
+                        Select Region
+                      </label>
+                      {regionOptions.slice(0, 4).map((region) => (
+                        <div className="form-check" key={region.regionId}>
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={`region-${region.regionId}`}
+                            checked={selectedRegion === region.regionId}
+                            onChange={() =>
+                              setSelectedRegionId(
+                                selectedRegion === region.regionId
+                                  ? ""
+                                  : region.regionId
+                              )
+                            }
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`region-${region.regionId}`}
+                          >
+                            {region.label}
+                          </label>
+                        </div>
+                      ))}{" "}
+                      <button
+                        type="button"
+                        className="btn btn-link p-0 underline"
+                        onClick={() => setModalVisible(true)}
+                      >
+                        Show more choices...
+                      </button>
+                      <div className="p-4">
+                        {/* Modal */}
+                        {modalVisible && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="relative bg-white p-6 rounded-lg shadow-lg w-96 max-h-[90vh] overflow-y-auto">
+                              {/* ❌ Close Icon */}
+                              <button
+                                onClick={() => setModalVisible(false)}
+                                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+                              >
+                                &times;
+                              </button>
 
+                              <h2 className="text-xl font-semibold mb-4">
+                                Modal Title
+                              </h2>
+                              <p className="text-gray-700 mb-4">I am content</p>
+
+                              <ul className="space-y-2">
+                                {regionOptions.map((region) => (
+                                  <li key={region.regionId}>
+                                    <label
+                                      className="form-check-label flex items-center"
+                                      htmlFor={`modal-region-${region.regionId}`}
+                                    >
+                                      <input
+                                        className="form-check-input mr-2 mt-1"
+                                        type="checkbox"
+                                        id={`modal-region-${region.regionId}`}
+                                        checked={
+                                          selectedRegion === region.regionId
+                                        }
+                                        onChange={() =>
+                                          setSelectedRegionId(
+                                            selectedRegion === region.regionId
+                                              ? ""
+                                              : region.regionId
+                                          )
+                                        }
+                                      />
+                                      <span className="font-medium text-gray-800">
+                                        {region.regionEn}
+                                      </span>
+                                    </label>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     <div className="space-y-5">
                       {/* City */}
 
@@ -3890,105 +4198,177 @@ const Cars = () => {
                       <div className="space-y-2">
                         <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
                           <FaCity className="mr-2 h-4 w-4 text-purple-500" />
-                          City
+                          City here
                         </label>
-                        <WindowedSelect
-                          options={CityOptions}
-                          value={
-                            CityOptions.find(
-                              (option) => option.value === formData.City
-                            ) || null
-                          }
-                          onChange={(newValue: unknown, actionMeta) => {
-                            const selectedOption = newValue as {
-                              value: string;
-                            } | null;
-                            setFormData((prev) => ({
-                              ...prev,
-                              City: selectedOption ? selectedOption.value : "",
-                            }));
-                          }}
-                          placeholder="Select a City"
-                          isClearable
-                          className="react-select-container"
-                          classNamePrefix="react-select"
-                          windowThreshold={100}
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              borderRadius: "0.5rem",
-                              borderColor: "#d1d5db",
-                              minHeight: "42px",
-                              boxShadow: "none",
-                              "&:hover": {
-                                borderColor: "#a855f7",
-                              },
-                            }),
-                            option: (base, state) => ({
-                              ...base,
-                              backgroundColor: state.isSelected
-                                ? "#a855f7"
-                                : state.isFocused
-                                ? "#f3e8ff"
-                                : undefined,
-                              "&:active": {
-                                backgroundColor: "#a855f7",
-                              },
-                            }),
-                          }}
-                        />
+                        {cityOptions.slice(0, 4).map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center gap-2 text-gray-800"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedCities.some(
+                                (city) => city.CITY_ID === option.cityId
+                              )}
+                              onChange={() => handleCheckboxChange1(option)}
+                              className="accent-blue-500"
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        ))}
+
+                        <button
+                          type="button"
+                          className="btn btn-link p-0"
+                          onClick={() => setIsCityModalVisible1(true)}
+                        >
+                          Show more choices...
+                        </button>
+                        {isCityModalVisible1 && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="relative bg-white p-6 rounded-lg shadow-lg w-96 max-h-[90vh] overflow-y-auto">
+                              {/* ❌ Close Icon */}
+                              <button
+                                onClick={() => setIsCityModalVisible1(false)}
+                                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+                              >
+                                &times;
+                              </button>
+
+                              <h2 className="text-xl font-semibold mb-4">
+                                Select City
+                              </h2>
+
+                              <ul className="space-y-2">
+                                {cityOptions.map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className="flex items-center gap-2 text-gray-800"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedCities.some(
+                                        (city) => city.CITY_ID === option.cityId
+                                      )}
+                                      onChange={() =>
+                                        handleCheckboxChange1(option)
+                                      }
+                                      className="accent-blue-500"
+                                    />
+                                    <span>{option.label}</span>
+                                  </label>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* District */}
+                    </div>
+                    <div className="space-y-5">
+                      {/* City */}
+
+                      {/* City */}
                       <div className="space-y-2">
                         <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                          <FaMapMarkedAlt className="mr-2 h-4 w-4 text-purple-500" />
-                          District
+                          <FaCity className="mr-2 h-4 w-4 text-purple-500" />
+                          Select District{" "}
                         </label>
-                        <Select
-                          options={districtOptions}
-                          value={
-                            districtOptions.find(
-                              (option) => option.value === formData.District
-                            ) || null
-                          }
-                          onChange={(selectedOption) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              District: selectedOption
-                                ? selectedOption.value
-                                : "",
-                            }))
-                          }
-                          placeholder="Select a district"
-                          isClearable
-                          className="react-select-container"
-                          classNamePrefix="react-select"
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              borderRadius: "0.5rem",
-                              borderColor: "#d1d5db",
-                              minHeight: "42px",
-                              boxShadow: "none",
-                              "&:hover": {
-                                borderColor: "#a855f7",
-                              },
-                            }),
-                            option: (base, state) => ({
-                              ...base,
-                              backgroundColor: state.isSelected
-                                ? "#a855f7"
-                                : state.isFocused
-                                ? "#f3e8ff"
-                                : undefined,
-                              "&:active": {
-                                backgroundColor: "#a855f7",
-                              },
-                            }),
-                          }}
-                        />
+                        {districtOptions.slice(0, 4).map((option) => {
+                          const isChecked = selectedDistricts.some(
+                            (district) => district.DISTRICT_ID === option.value
+                          );
+
+                          return (
+                            <label
+                              key={option.value}
+                              className="flex items-center gap-2 text-gray-800 text-sm"
+                            >
+                              <input
+                                type="checkbox"
+                                className="accent-blue-500"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedDistricts([
+                                      {
+                                        REGION_ID: option.regionId,
+                                        CITY_ID: option.cityId,
+                                        DISTRICT_ID: option.value,
+                                        label: option.label,
+                                      },
+                                    ]);
+                                  } else {
+                                    setSelectedDistricts([]);
+                                  }
+                                }}
+                              />
+                              <span>{option.label}</span>
+                            </label>
+                          );
+                        })}
+
+                        <button
+                          type="button"
+                          className="btn btn-link p-0"
+                          onClick={() => setIsCityModalVisible(true)}
+                        >
+                          Show more choices...
+                        </button>
+                        {isCityModalVisible && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="relative bg-white p-6 rounded-lg shadow-lg w-96 max-h-[90vh] overflow-y-auto">
+                              {/* ❌ Close Icon */}
+                              <button
+                                onClick={() => setIsCityModalVisible(false)}
+                                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+                              >
+                                &times;
+                              </button>
+
+                              <ul className="space-y-2">
+                                {districtOptions.slice(0, 4).map((option) => {
+                                  const isChecked = selectedDistricts.some(
+                                    (district) =>
+                                      district.DISTRICT_ID === option.value
+                                  );
+
+                                  return (
+                                    <label
+                                      key={option.value}
+                                      className="flex items-center gap-2 text-gray-800 text-sm"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        className="accent-blue-500"
+                                        checked={isChecked}
+                                        onChange={(e) => {
+                                          if (e.target.checked) {
+                                            setSelectedDistricts([
+                                              {
+                                                REGION_ID: option.regionId,
+                                                CITY_ID: option.cityId,
+                                                DISTRICT_ID: option.value,
+                                                label: option.label,
+                                              },
+                                            ]);
+                                          } else {
+                                            setSelectedDistricts([]);
+                                          }
+                                        }}
+                                      />
+                                      <span>{option.label}</span>
+                                    </label>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
                       </div>
+
+                      {/* District */}
                     </div>
                   </div>
                   {/* Category Section */}
