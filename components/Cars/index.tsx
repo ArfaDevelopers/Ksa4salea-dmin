@@ -4328,7 +4328,7 @@ const Cars = () => {
                               </button>
 
                               <ul className="space-y-2">
-                                {districtOptions.slice(0, 4).map((option) => {
+                                {districtOptions.map((option) => {
                                   const isChecked = selectedDistricts.some(
                                     (district) =>
                                       district.DISTRICT_ID === option.value
