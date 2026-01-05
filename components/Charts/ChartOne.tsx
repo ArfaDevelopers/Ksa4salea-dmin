@@ -1,12 +1,18 @@
 "use client";
 
 import { ApexOptions } from "apexcharts";
-import React from "react";
+import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
+import { ChartDataSeries } from "@/types/dateFilter";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
+
+interface ChartOneProps {
+  period1Data?: ChartDataSeries;
+  period2Data?: ChartDataSeries;
+}
 
 const options: ApexOptions = {
   legend: {
@@ -128,18 +134,68 @@ interface ChartOneState {
   }[];
 }
 
-const ChartOne: React.FC = () => {
-  const series = [
-      {
-        name: "Product One",
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-      },
+const ChartOne: React.FC<ChartOneProps> = ({ period1Data, period2Data }) => {
+  // Default hardcoded data for backward compatibility
+  const defaultSeries = [
+    {
+      name: "Product One",
+      data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
+    },
+    {
+      name: "Product Two",
+      data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
+    },
+  ];
 
-      {
-        name: "Product Two",
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
+  const defaultCategories = [
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+  ];
+
+  // Use dynamic data if provided, otherwise use defaults
+  const series = useMemo(() => {
+    if (period1Data && period2Data) {
+      return [
+        {
+          name: period1Data.name,
+          data: period1Data.data,
+        },
+        {
+          name: period2Data.name,
+          data: period2Data.data,
+        },
+      ];
+    }
+    return defaultSeries;
+  }, [period1Data, period2Data]);
+
+  const categories = useMemo(() => {
+    if (period1Data?.categories) {
+      return period1Data.categories;
+    }
+    return defaultCategories;
+  }, [period1Data]);
+
+  // Update options with dynamic categories
+  const chartOptions: ApexOptions = useMemo(() => {
+    return {
+      ...options,
+      xaxis: {
+        ...options.xaxis,
+        categories: categories,
       },
-    ]
+    };
+  }, [categories]);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -150,8 +206,12 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-primary">Total Revenue</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-primary">
+                {period1Data?.name || "Total Revenue"}
+              </p>
+              <p className="text-sm font-medium">
+                {period1Data ? "" : "12.04.2022 - 12.05.2022"}
+              </p>
             </div>
           </div>
           <div className="flex min-w-47.5">
@@ -159,8 +219,12 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-secondary">Total Sales</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-secondary">
+                {period2Data?.name || "Total Sales"}
+              </p>
+              <p className="text-sm font-medium">
+                {period2Data ? "" : "12.04.2022 - 12.05.2022"}
+              </p>
             </div>
           </div>
         </div>
@@ -182,7 +246,7 @@ const ChartOne: React.FC = () => {
       <div>
         <div id="chartOne" className="-ml-5">
           <ReactApexChart
-            options={options}
+            options={chartOptions}
             series={series}
             type="area"
             height={350}
