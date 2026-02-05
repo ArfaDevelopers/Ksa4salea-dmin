@@ -68,13 +68,13 @@ const AboutUs: React.FC = () => {
         if (aboutList.length >= 1) {
           MySwal.fire(
             "Warning",
-            "Only one Terms and Conditions entry is allowed.",
+            "Only one About Us entry is allowed.",
             "warning"
           );
           return;
         }
 
-        await addDoc(collection(db, "TermsConditions"), {
+        await addDoc(collection(db, "AboutUs"), {
           content: input,
           createdAt: Timestamp.now(),
         });
