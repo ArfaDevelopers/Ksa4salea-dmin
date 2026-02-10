@@ -21,16 +21,26 @@ import { format } from "date-fns";
 interface BodyContentElectronicItem {
   id: string;
   content: string;
+  content_en?: string;
+  content_ar?: string;
   createdAt: Timestamp | Date;
 }
 
 const BodyContentElectronic: React.FC = () => {
   const MySwal = withReactContent(Swal);
-  const editor = useRef(null);
+  const editorEn = useRef(null);
+  const editorAr = useRef(null);
 
-  const [input, setInput] = useState<string>("");
+  const [inputEn, setInputEn] = useState<string>("");
+  const [inputAr, setInputAr] = useState<string>("");
   const [aboutList, setAboutList] = useState<BodyContentElectronicItem[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"en" | "ar">("en");
+
+  const joditConfigAr = {
+    direction: "rtl",
+    language: "ar",
+  };
 
   const fetchData = async () => {
     try {
@@ -43,7 +53,7 @@ const BodyContentElectronic: React.FC = () => {
       })) as BodyContentElectronicItem[];
       setAboutList(data);
     } catch (error) {
-      console.error("Error fetching About Us data:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -53,37 +63,36 @@ const BodyContentElectronic: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) {
-      MySwal.fire("Warning", "Please enter content", "warning");
+    if (!inputEn.trim() && !inputAr.trim()) {
+      MySwal.fire("Warning", "Please enter content in at least one language", "warning");
       return;
     }
 
     try {
       if (editId) {
-        // Update existing entry
         await updateDoc(doc(db, "BodyContentElectronic", editId), {
-          content: input,
+          content: inputEn,
+          content_en: inputEn,
+          content_ar: inputAr,
         });
         MySwal.fire("Updated", "Content updated successfully", "success");
       } else {
-        // Prevent adding more than one item
         if (aboutList.length >= 1) {
-          MySwal.fire(
-            "Warning",
-            "Only one Terms and Conditions entry is allowed.",
-            "warning"
-          );
+          MySwal.fire("Warning", "Only one content entry is allowed.", "warning");
           return;
         }
 
         await addDoc(collection(db, "BodyContentElectronic"), {
-          content: input,
+          content: inputEn,
+          content_en: inputEn,
+          content_ar: inputAr,
           createdAt: Timestamp.now(),
         });
         MySwal.fire("Added", "Content added successfully", "success");
       }
 
-      setInput("");
+      setInputEn("");
+      setInputAr("");
       setEditId(null);
       fetchData();
     } catch (error) {
@@ -92,7 +101,8 @@ const BodyContentElectronic: React.FC = () => {
   };
 
   const handleEdit = (item: BodyContentElectronicItem) => {
-    setInput(item.content);
+    setInputEn(item.content_en || item.content || "");
+    setInputAr(item.content_ar || "");
     setEditId(item.id);
   };
 
@@ -119,12 +129,61 @@ const BodyContentElectronic: React.FC = () => {
       </h2>
 
       <form onSubmit={handleSubmit} className="mb-8">
-        <JoditEditor
-          ref={editor}
-          value={input}
-          tabIndex={1}
-          onChange={(newContent) => setInput(newContent)}
-        />
+        <div className="flex mb-4 border-b">
+          <button
+            type="button"
+            onClick={() => setActiveTab("en")}
+            className={`px-6 py-2 font-medium transition-colors ${
+              activeTab === "en"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            🇬🇧 English
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("ar")}
+            className={`px-6 py-2 font-medium transition-colors ${
+              activeTab === "ar"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            🇸🇦 Arabic (العربية)
+          </button>
+        </div>
+
+        <div className={activeTab === "en" ? "block" : "hidden"}>
+          <label className="block text-sm font-medium text-gray-700 mb-2">English Content</label>
+          <JoditEditor
+            ref={editorEn}
+            value={inputEn}
+            tabIndex={1}
+            onChange={(newContent) => setInputEn(newContent)}
+          />
+        </div>
+
+        <div className={activeTab === "ar" ? "block" : "hidden"}>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Arabic Content (المحتوى العربي)</label>
+          <JoditEditor
+            ref={editorAr}
+            value={inputAr}
+            tabIndex={1}
+            config={joditConfigAr}
+            onChange={(newContent) => setInputAr(newContent)}
+          />
+        </div>
+
+        <div className="flex gap-4 mt-4 text-sm">
+          <span className={inputEn.trim() ? "text-green-600" : "text-gray-400"}>
+            ✓ English {inputEn.trim() ? "Added" : "Empty"}
+          </span>
+          <span className={inputAr.trim() ? "text-green-600" : "text-gray-400"}>
+            ✓ Arabic {inputAr.trim() ? "Added" : "Empty"}
+          </span>
+        </div>
+
         <button
           type="submit"
           disabled={!editId && aboutList.length >= 1}
@@ -140,41 +199,45 @@ const BodyContentElectronic: React.FC = () => {
 
       <div className="space-y-4">
         {aboutList.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white p-4 rounded shadow flex justify-between items-start border"
-          >
-            <div className="flex-1">
+          <div key={item.id} className="bg-white p-4 rounded shadow border">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-semibold text-lg">Content Preview</h3>
+              <div className="flex items-center gap-2">
+                <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-800">
+                  <MdEdit size={20} />
+                </button>
+                <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-800">
+                  <RiDeleteBin5Line size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-blue-600 mb-2">🇬🇧 English:</h4>
               <div
-                className="text-gray-800"
-                dangerouslySetInnerHTML={{ __html: item.content }}
+                className="text-gray-800 border-l-4 border-blue-200 pl-4"
+                dangerouslySetInnerHTML={{ __html: item.content_en || item.content || "<em>No English content</em>" }}
               />
-              {item.createdAt && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Created at:{" "}
-                  {format(
-                    item.createdAt instanceof Timestamp
-                      ? item.createdAt.toDate()
-                      : new Date(item.createdAt),
-                    "PPP p"
-                  )}
-                </p>
-              )}
             </div>
-            <div className="flex items-center gap-2 ml-4">
-              <button
-                onClick={() => handleEdit(item)}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                <MdEdit size={20} />
-              </button>
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <RiDeleteBin5Line size={20} />
-              </button>
+
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-green-600 mb-2">🇸🇦 Arabic:</h4>
+              <div
+                className="text-gray-800 border-r-4 border-green-200 pr-4"
+                dir="rtl"
+                dangerouslySetInnerHTML={{ __html: item.content_ar || "<em>لا يوجد محتوى عربي</em>" }}
+              />
             </div>
+
+            {item.createdAt && (
+              <p className="text-xs text-gray-500 mt-2">
+                Created at:{" "}
+                {format(
+                  item.createdAt instanceof Timestamp ? item.createdAt.toDate() : new Date(item.createdAt),
+                  "PPP p"
+                )}
+              </p>
+            )}
           </div>
         ))}
       </div>
