@@ -39,7 +39,7 @@ const BodyContent: React.FC = () => {
 
   // Jodit config for RTL (Arabic)
   const joditConfigAr = {
-    direction: "rtl",
+    direction: "rtl" as const,
     language: "ar",
   };
 

@@ -24,7 +24,7 @@ const SportGamesContent: React.FC = () => {
 
   const COLLECTION_NAME = "SportGamesContent";
   const PAGE_TITLE = "Sports & Games";
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {

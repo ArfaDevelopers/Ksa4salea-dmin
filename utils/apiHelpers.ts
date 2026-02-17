@@ -21,11 +21,11 @@ export async function fetchLeads(dateRange?: DateRange): Promise<number> {
     }
 
     const response = await fetch(url);
+    if (!response.ok) return 0;
     const data = await response.json();
 
     return data.success ? data.totalLeads : 0;
-  } catch (error) {
-    console.error("Error fetching leads:", error);
+  } catch {
     return 0;
   }
 }
@@ -44,11 +44,11 @@ export async function fetchCalls(dateRange?: DateRange): Promise<number> {
     }
 
     const response = await fetch(url);
+    if (!response.ok) return 0;
     const data = await response.json();
 
     return data.success ? data.totalCalls : 0;
-  } catch (error) {
-    console.error("Error fetching calls:", error);
+  } catch {
     return 0;
   }
 }
@@ -67,11 +67,11 @@ export async function fetchWhatsAppMessages(dateRange?: DateRange): Promise<numb
     }
 
     const response = await fetch(url);
+    if (!response.ok) return 0;
     const data = await response.json();
 
     return data.success ? data.totalMessages : 0;
-  } catch (error) {
-    console.error("Error fetching WhatsApp messages:", error);
+  } catch {
     return 0;
   }
 }
@@ -90,11 +90,11 @@ export async function fetchEmails(dateRange?: DateRange): Promise<number> {
     }
 
     const response = await fetch(url);
+    if (!response.ok) return 0;
     const data = await response.json();
 
     return data.success ? data.totalEmails : 0;
-  } catch (error) {
-    console.error("Error fetching emails:", error);
+  } catch {
     return 0;
   }
 }
@@ -113,11 +113,11 @@ export async function fetchUsers(dateRange?: DateRange): Promise<number> {
     }
 
     const response = await fetch(url);
+    if (!response.ok) return 0;
     const data = await response.json();
 
     return data.success ? data.totalUsers : 0;
-  } catch (error) {
-    console.error("Error fetching users:", error);
+  } catch {
     return 0;
   }
 }
@@ -136,11 +136,11 @@ export async function fetchListings(dateRange?: DateRange): Promise<number> {
     }
 
     const response = await fetch(url);
+    if (!response.ok) return 0;
     const data = await response.json();
 
     return data.success ? data.totalCount : 0;
-  } catch (error) {
-    console.error("Error fetching listings:", error);
+  } catch {
     return 0;
   }
 }

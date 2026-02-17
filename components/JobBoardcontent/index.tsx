@@ -24,7 +24,7 @@ const JobBoardcontent: React.FC = () => {
 
   const COLLECTION_NAME = "JobBoardcontent";
   const PAGE_TITLE = "Job Board";
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {

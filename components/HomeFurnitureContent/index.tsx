@@ -24,7 +24,7 @@ const HomeFurnitureContent: React.FC = () => {
 
   const COLLECTION_NAME = "HomeFurnitureContent";
   const PAGE_TITLE = "Home & Furniture";
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {

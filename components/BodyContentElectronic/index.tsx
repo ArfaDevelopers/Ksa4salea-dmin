@@ -38,7 +38,7 @@ const BodyContentElectronic: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"en" | "ar">("en");
 
   const joditConfigAr = {
-    direction: "rtl",
+    direction: "rtl" as const,
     language: "ar",
   };
 
