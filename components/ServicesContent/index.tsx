@@ -24,7 +24,7 @@ const ServicesContent: React.FC = () => {
 
   const COLLECTION_NAME = "ServicesContent";
   const PAGE_TITLE = "Services";
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {

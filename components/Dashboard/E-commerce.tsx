@@ -304,56 +304,51 @@ const ECommerce: React.FC = () => {
     trackVisit();
   }, []);
   useEffect(() => {
-    // Function to fetch data from the API
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:9002/api/totalAmount");
+        if (!response.ok) return;
         const data = await response.json();
-        // setActivelistingusers(data.totalUsers);
         console.log(data, "data__________");
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
+        // Server not available, silently ignore
       }
     };
 
-    // Call the fetch function
     fetchData();
   }, []);
   const [Activelistingusers, setActivelistingusers] = useState(0);
 
   useEffect(() => {
-    // Function to fetch data from the API
     const fetchData = async () => {
       try {
         const response = await fetch("http://168.231.80.24:9002/api/users");
+        if (!response.ok) return;
         const data = await response.json();
         setActivelistingusers(data.totalUsers);
-        console.log(data, "http://168.231.80.24:9002/api/users");
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
+        // Server not available, silently ignore
       }
     };
 
-    // Call the fetch function
     fetchData();
   }, []);
   const [Activelisting, setActivelisting] = useState(0);
 
   useEffect(() => {
-    // Function to fetch data from the API
     const fetchData = async () => {
       try {
         const response = await fetch(
           "http://168.231.80.24:9002/api/total-data-count"
         );
+        if (!response.ok) return;
         const data = await response.json();
         setActivelisting(data.totalCount ?? 0);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
+        // Server not available, silently ignore
       }
     };
 
-    // Call the fetch function
     fetchData();
   }, []);
   useEffect(() => {
@@ -371,19 +366,12 @@ const ECommerce: React.FC = () => {
             0
           );
 
-          console.log("Collection counts:", counts);
-          console.log("Users count:", counts.users);
-
           setCounts(counts);
-          setTotalProduct(total); // Make sure totalProduct is always a string
-
-          console.log(typeof totalProduct, "totalProduct____________________"); // Logs the type of totalProduct
+          setTotalProduct(total);
           setUserCount(counts.users.toString());
-        } else {
-          console.error("API success false:", response.data);
         }
-      } catch (error) {
-        console.error("Error fetching collection counts:", error);
+      } catch {
+        // Server not available, silently ignore
       }
     };
 

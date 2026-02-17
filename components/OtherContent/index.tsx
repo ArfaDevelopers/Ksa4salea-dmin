@@ -24,7 +24,7 @@ const OtherContent: React.FC = () => {
 
   const COLLECTION_NAME = "OtherContent";
   const PAGE_TITLE = "Pet Animals";
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {

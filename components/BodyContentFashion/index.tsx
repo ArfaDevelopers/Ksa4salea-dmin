@@ -40,7 +40,7 @@ const BodyContentFashion: React.FC = () => {
   const COLLECTION_NAME = "BodyContentFashion";
   const PAGE_TITLE = "Fashion Style";
 
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {

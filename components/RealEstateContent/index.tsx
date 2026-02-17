@@ -24,7 +24,7 @@ const RealEstateContent: React.FC = () => {
 
   const COLLECTION_NAME = "RealEstateContent";
   const PAGE_TITLE = "Real Estate";
-  const joditConfigAr = { direction: "rtl", language: "ar" };
+  const joditConfigAr = { direction: "rtl" as const, language: "ar" };
 
   const fetchData = async () => {
     try {
