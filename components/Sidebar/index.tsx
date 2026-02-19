@@ -749,7 +749,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               }}
               width={176}
               height={32}
-              src={"/images/loogoban.png"}
+              src={"/images/loogobaner.png"}
               alt="Logo"
               priority
             />

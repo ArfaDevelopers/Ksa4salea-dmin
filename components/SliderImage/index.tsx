@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { db } from "../Firebase/FirebaseConfig";
-import { collection, getDocs, doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { FiPlus, FiTrash2, FiUpload, FiImage, FiEdit } from "react-icons/fi";
@@ -16,19 +16,21 @@ const SliderImage: React.FC = () => {
   ]);
   const [previews, setPreviews] = useState<string[]>(["", ""]);
   const [uploading, setUploading] = useState(false);
-  const [existingImageId, setExistingImageId] = useState<string | null>(null);
+  const SLIDER_DOC_ID = "defaultSliderImage";
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "SliderImage"));
-        if (!querySnapshot.empty) {
-          const docData = querySnapshot.docs[0];
-          setExistingImageId(docData.id);
-          const urls = docData.data().imageUrls;
+        const docSnap = await getDoc(doc(db, "SliderImage", SLIDER_DOC_ID));
+        if (docSnap.exists()) {
+          const urls = docSnap.data().imageUrls;
           if (Array.isArray(urls) && urls.length >= 2) {
-            setPreviews(urls);
-            setSelectedImages(Array(urls.length).fill(null));
+            // Replace any invalid blob: URLs with empty string so user knows to re-upload
+            const cleanedUrls = urls.map((url: string) =>
+              !url || url.startsWith("blob:") ? "" : url
+            );
+            setPreviews(cleanedUrls);
+            setSelectedImages(Array(cleanedUrls.length).fill(null));
           }
         }
       } catch (error) {
@@ -53,22 +55,9 @@ const SliderImage: React.FC = () => {
     img.src = imageUrl;
 
     img.onload = () => {
-      if (img.width === 1280 && img.height === 477) {
-        const updatedImages = [...selectedImages];
-        const updatedPreviews = [...previews];
-        updatedImages[index] = file;
-        updatedPreviews[index] = imageUrl;
-        setSelectedImages(updatedImages);
-        setPreviews(updatedPreviews);
-      } else {
-        MySwal.fire({
-          icon: "error",
-          title: "Invalid Image Size",
-          text: `Please upload an image with exact dimensions: 1280 × 477 pixels.`,
-          confirmButtonColor: "#d33",
-        });
-        URL.revokeObjectURL(imageUrl); // clean up
-      }
+      // Accept any image size — just store the file and preview
+      setSelectedImages(prev => { const u = [...prev]; u[index] = file; return u; });
+      setPreviews(prev => { const u = [...prev]; u[index] = imageUrl; return u; });
     };
 
     img.onerror = () => {
@@ -153,17 +142,20 @@ const SliderImage: React.FC = () => {
             formData
           );
 
-          uploadedUrls.push(response.data.secure_url);
-        } else if (previews[i]) {
+          const secureUrl = response.data.secure_url;
+          if (!secureUrl) throw new Error("Cloudinary did not return a valid URL");
+          uploadedUrls.push(secureUrl);
+        } else if (previews[i] && !previews[i].startsWith("blob:")) {
+          // Only save real URLs (Cloudinary), never blob: URLs
           uploadedUrls.push(previews[i]);
         }
       }
 
-      const docRef = doc(
-        db,
-        "SliderImage",
-        existingImageId || "defaultSliderImage"
-      );
+      if (uploadedUrls.length < 2) {
+        throw new Error("Not enough valid images to save. Please select at least 2 images.");
+      }
+
+      const docRef = doc(db, "SliderImage", SLIDER_DOC_ID);
 
       await setDoc(docRef, {
         imageUrls: uploadedUrls,
@@ -172,9 +164,10 @@ const SliderImage: React.FC = () => {
 
       MySwal.fire("Success", "Images saved successfully!", "success");
       setSelectedImages(Array(uploadedUrls.length).fill(null));
-    } catch (error) {
+      setPreviews(uploadedUrls); // Replace blob URLs with real Cloudinary URLs
+    } catch (error: any) {
       console.error("Upload error:", error);
-      MySwal.fire("Error", "Failed to upload images.", "error");
+      MySwal.fire("Error", error?.message || "Failed to upload images.", "error");
     } finally {
       setUploading(false);
     }
