@@ -2,7 +2,8 @@
 
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import JoditEditor from "jodit-react";
+import dynamic from "next/dynamic";
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 import { db } from "../Firebase/FirebaseConfig";
 import {
   addDoc,
