@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   distDir: ".next",
   images: {
+    unoptimized: true,
     domains: ["res.cloudinary.com"],
   },
 };
