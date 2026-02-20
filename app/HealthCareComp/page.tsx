@@ -7,7 +7,7 @@ import RealEstate from "@/components/RealEstate";
 import HealthCareComp from "@/components/HealthCareComp";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard HealthCareComp",
+  title: "Mazhool | Admin Dashboard HealthCareComp",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

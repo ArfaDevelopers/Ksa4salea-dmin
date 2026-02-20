@@ -8,7 +8,7 @@ import REALESTATECOMP from "@/components/REALESTATECOMP";
 import TRAVEL from "@/components/TRAVEL";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard TRAVEL",
+  title: "Mazhool | Admin Dashboard TRAVEL",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

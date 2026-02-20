@@ -8,7 +8,7 @@ import ElectronicComp from "@/components/ElectronicComp";
 import FashionStyle from "@/components/FashionStyle";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard FashionStyle",
+  title: "Mazhool | Admin Dashboard FashionStyle",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };
