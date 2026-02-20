@@ -9,7 +9,7 @@ import Profile from "@/components/Profile";
 import SliderImage from "@/components/SliderImage";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard SliderImage",
+  title: "Mazhool | Admin Dashboard SliderImage",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

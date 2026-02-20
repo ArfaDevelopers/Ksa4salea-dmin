@@ -8,7 +8,7 @@ import Bannerimg from "@/components/Bannerimg";
 import Bannermain from "@/components/Bannermain";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard Bannermain",
+  title: "Mazhool | Admin Dashboard Bannermain",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

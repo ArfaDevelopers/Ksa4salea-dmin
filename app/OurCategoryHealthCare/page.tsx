@@ -11,7 +11,7 @@ import OurCategory from "@/components/OurCategory";
 import OurCategoryHealthCare from "@/components/OurCategoryHealthCare";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard OurCategoryHealthCare",
+  title: "Mazhool | Admin Dashboard OurCategoryHealthCare",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

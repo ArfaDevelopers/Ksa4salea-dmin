@@ -9,7 +9,7 @@ import Bannermain from "@/components/Bannermain";
 import HeroBanner from "@/components/HeroBanner";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard HeroBanner",
+  title: "Mazhool | Admin Dashboard HeroBanner",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

@@ -9,7 +9,7 @@ import JOBBOARDPage from "@/components/JOBBOARDPage";
 import Reported from "@/components/Reported";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard Reported",
+  title: "Mazhool | Admin Dashboard Reported",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };

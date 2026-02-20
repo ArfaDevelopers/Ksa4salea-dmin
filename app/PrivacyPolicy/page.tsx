@@ -9,7 +9,7 @@ import TermsConditions from "@/components/TermsConditions";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
 
 export const metadata: Metadata = {
-  title: "ksa4sale | Admin Dashboard PrivacyPolicy",
+  title: "Mazhool | Admin Dashboard PrivacyPolicy",
   description:
     "This is Next.js Calender page for TailAdmin  Tailwind CSS Admin Dashboard Template",
 };
